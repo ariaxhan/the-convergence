@@ -1,9 +1,9 @@
 """MAB (Multi-Armed Bandit) plugins for The Convergence framework."""
 
 from convergence.plugins.mab.thompson_sampling import (
-    ThompsonSamplingStrategy,
-    ThompsonSamplingPlugin,
     ThompsonSamplingConfig,
+    ThompsonSamplingPlugin,
+    ThompsonSamplingStrategy,
 )
 
 __all__ = [

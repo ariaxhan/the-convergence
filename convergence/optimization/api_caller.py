@@ -1,12 +1,12 @@
 """
 Generic API caller for any HTTP/gRPC endpoint.
 """
+import json
 import os
 import time
-import asyncio
-import json
-from typing import Dict, Any, Optional
 from pathlib import Path
+from typing import Any, Dict, Optional
+
 import httpx
 
 from convergence.optimization.models import APIResponse
@@ -42,16 +42,16 @@ except ImportError:
 
 class APICaller:
     """Makes calls to any API endpoint."""
-    
+
     def __init__(self, timeout: int = 60):
         """
         Initialize API caller.
-        
+
         Args:
             timeout: Default timeout in seconds
         """
         self.client = httpx.AsyncClient(timeout=timeout)
-    
+
     async def call(
         self,
         endpoint: str,
@@ -63,7 +63,7 @@ class APICaller:
     ) -> APIResponse:
         """
         Make API call with given parameters.
-        
+
         Args:
             endpoint: API endpoint URL
             method: HTTP method (GET, POST, etc.)
@@ -71,7 +71,7 @@ class APICaller:
             auth: Authentication config
             headers: Custom headers
             timeout: Override default timeout
-            
+
         Returns:
             APIResponse with result, latency, cost, success flag
         """
@@ -80,7 +80,7 @@ class APICaller:
             return await self._call_with_weave(endpoint, method, params, auth, headers, timeout)
         else:
             return await self._call_impl(endpoint, method, params, auth, headers, timeout)
-    
+
     async def _call_impl(
         self,
         endpoint: str,
@@ -92,11 +92,11 @@ class APICaller:
     ) -> APIResponse:
         """Internal implementation of API call."""
         start_time = time.time()
-        
+
         try:
             # Build request headers
             request_headers = headers or {}
-            
+
             # Handle authentication
             if auth:
                 token = None
@@ -106,7 +106,7 @@ class APICaller:
                         token = os.getenv(token_env)
                         if token:
                             request_headers["Authorization"] = f"Bearer {token}"
-                
+
                 elif auth.get("type") == "api_key":
                     key_env = auth.get("token_env")
                     if key_env:
@@ -125,10 +125,10 @@ class APICaller:
                                 f"  - {Path.home() / '.env'}\n"
                                 f"  - Project root .env"
                             )
-            
+
             # Make request
             method_upper = method.upper()
-            
+
             if method_upper == "POST":
                 response = await self.client.post(
                     endpoint,
@@ -152,17 +152,17 @@ class APICaller:
                     headers=request_headers,
                     timeout=timeout or 60.0
                 )
-            
+
             latency_ms = (time.time() - start_time) * 1000
-            
+
             # Parse response - FAIL HARD if not JSON
             try:
                 response.raise_for_status()
                 result = response.json()
-            except httpx.HTTPStatusError as e:
+            except httpx.HTTPStatusError:
                 # Re-raise HTTP errors (will be caught by outer handler)
                 raise
-            except json.JSONDecodeError as e:
+            except json.JSONDecodeError:
                 # JSON parsing failed - this is a real error
                 latency_ms = (time.time() - start_time) * 1000
                 return APIResponse(
@@ -171,14 +171,14 @@ class APICaller:
                     latency_ms=latency_ms,
                     error=f"Invalid JSON response: {response.text[:200]}"
                 )
-            
+
             return APIResponse(
                 success=True,
                 result=result,
                 latency_ms=latency_ms,
                 estimated_cost_usd=self._estimate_cost(result)
             )
-            
+
         except httpx.TimeoutException as e:
             latency_ms = (time.time() - start_time) * 1000
             return APIResponse(
@@ -187,7 +187,7 @@ class APICaller:
                 latency_ms=latency_ms,
                 error=f"Timeout: {str(e)}"
             )
-        
+
         except httpx.HTTPStatusError as e:
             latency_ms = (time.time() - start_time) * 1000
             return APIResponse(
@@ -196,7 +196,7 @@ class APICaller:
                 latency_ms=latency_ms,
                 error=f"HTTP {e.response.status_code}: {e.response.text}"
             )
-        
+
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
             return APIResponse(
@@ -205,17 +205,17 @@ class APICaller:
                 latency_ms=latency_ms,
                 error=f"Error: {str(e)}"
             )
-    
+
     def _estimate_cost(self, result: Any) -> float:
         """
         Estimate cost from API response.
-        
+
         For LLM APIs, looks for token usage.
         Can be extended for other API types.
-        
+
         Args:
             result: API response result
-            
+
         Returns:
             Estimated cost in USD
         """
@@ -226,24 +226,24 @@ class APICaller:
                 usage = result["usage"]
                 prompt_tokens = usage.get("prompt_tokens", 0)
                 completion_tokens = usage.get("completion_tokens", 0)
-                
+
                 # Rough estimate for GPT-4 (adjust for your API)
                 # GPT-4: $0.03/1K prompt, $0.06/1K completion
                 cost = (prompt_tokens * 0.00003) + (completion_tokens * 0.00006)
                 return cost
-            
+
             # Anthropic-style usage
             if "usage" in result and "input_tokens" in result["usage"]:
                 usage = result["usage"]
                 input_tokens = usage.get("input_tokens", 0)
                 output_tokens = usage.get("output_tokens", 0)
-                
+
                 # Claude: $0.015/1K input, $0.075/1K output
                 cost = (input_tokens * 0.000015) + (output_tokens * 0.000075)
                 return cost
-        
+
         return 0.0
-    
+
     async def _call_with_weave(
         self,
         endpoint: str,
@@ -256,7 +256,7 @@ class APICaller:
         """Weave-tracked version of API call."""
         if not WEAVE_AVAILABLE or not weave:
             return await self._call_impl(endpoint, method, params, auth, headers, timeout)
-        
+
         # Decorate the implementation with proper parameters for Weave tracking
         @weave.op()
         async def tracked_call(
@@ -276,9 +276,9 @@ class APICaller:
                 "timeout": timeout,
                 "timestamp": time.time()
             }
-            
+
             result = await self._call_impl(endpoint, method, params, auth, headers, timeout)
-            
+
             # Add response metadata
             weave_context.update({
                 "success": result.success,
@@ -286,19 +286,19 @@ class APICaller:
                 "cost_usd": result.estimated_cost_usd,
                 "error": result.error
             })
-            
+
             return result
-        
+
         return await tracked_call(endpoint, method, params, auth, headers, timeout)
-    
+
     async def close(self):
         """Close HTTP client."""
         await self.client.aclose()
-    
+
     async def __aenter__(self):
         """Async context manager entry."""
         return self
-    
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         await self.close()

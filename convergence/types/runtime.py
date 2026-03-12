@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 if TYPE_CHECKING:
     from convergence.runtime.reward_evaluator import RewardEvaluatorConfig
@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 class SelectionStrategyConfig(BaseModel):
     """Configuration for MAB selection strategy."""
-    
+
     exploration_bonus: float = Field(
         0.0, ge=0.0, le=1.0,
         description="Bonus added to under-explored arms (0-1)"
@@ -143,7 +143,7 @@ __all__ = [
 def _rebuild_runtime_config():
     """Rebuild RuntimeConfig model to resolve RewardEvaluatorConfig forward reference."""
     try:
-        from convergence.runtime.reward_evaluator import RewardEvaluatorConfig
+        from convergence.runtime.reward_evaluator import RewardEvaluatorConfig  # noqa: F401
         RuntimeConfig.model_rebuild()
     except ImportError:
         # RewardEvaluatorConfig not available yet, will be rebuilt on first use

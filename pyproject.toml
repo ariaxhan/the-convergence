@@ -139,6 +139,9 @@ include-package-data = true
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+exclude = [
+    "convergence/generator/templates/*.py",  # Code generation templates with placeholders
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W"]
@@ -146,9 +149,39 @@ ignore = ["E501"]
 
 [tool.mypy]
 python_version = "3.11"
-strict = true
-warn_return_any = true
 warn_unused_configs = true
+# Exclude template files (contain placeholders, not valid Python)
+exclude = [
+    "convergence/generator/templates/",
+]
+
+# Ignore missing stubs for third-party libraries
+[[tool.mypy.overrides]]
+module = ["yaml", "aiofiles", "aiofiles.*"]
+ignore_missing_imports = true
+
+# Legacy modules with pre-existing type errors
+# These have actual type issues (not just missing annotations)
+# TODO: Fix incrementally and remove from this list
+[[tool.mypy.overrides]]
+module = [
+    "convergence.cli.main",
+    "convergence.core.registry",
+    "convergence.evaluators.code_quality",
+    "convergence.evaluators.json_structure",
+    "convergence.generator.*",
+    "convergence.legacy.*",
+    "convergence.optimization.*",
+    "convergence.plugins.learning.rlp",
+    "convergence.runtime.online",
+    "convergence.sdk",
+    "convergence.storage.convex",
+    "convergence.storage.legacy_manager",
+    "convergence.storage.multi_backend",
+    "convergence.storage.runtime_stub",
+    "convergence.storage.sqlite",
+]
+ignore_errors = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

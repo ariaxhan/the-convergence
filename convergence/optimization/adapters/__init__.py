@@ -23,18 +23,19 @@ To add a new adapter:
 4. Register in runner._detect_adapter()
 """
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Any, Dict
+
 from ..models import APIResponse
 
 
 class APIAdapter(ABC):
     """
     Base class for API-specific request/response transformations.
-    
+
     Adapters bridge the gap between The Convergence's optimization framework
     and provider-specific API formats.
     """
-    
+
     @abstractmethod
     def transform_request(
         self,
@@ -43,18 +44,18 @@ class APIAdapter(ABC):
     ) -> Dict[str, Any]:
         """
         Transform optimization params into API-specific format.
-        
+
         Args:
             optimization_params: Optimization parameters being tested
                                  (e.g., temperature, max_tokens, topK)
             test_case: Test case with input data and expected results
                        (e.g., {"input": {"prompt": "..."}, "expected": {...}})
-            
+
         Returns:
             API-specific request payload ready for HTTP POST
         """
         pass
-    
+
     @abstractmethod
     def transform_response(
         self,
@@ -63,11 +64,11 @@ class APIAdapter(ABC):
     ) -> APIResponse:
         """
         Transform API response for evaluator consumption.
-        
+
         Args:
             api_response: Raw API response from the provider
             optimization_params: Optimization parameters used in request
-            
+
         Returns:
             Transformed APIResponse with extracted/normalized data
         """

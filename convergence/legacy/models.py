@@ -4,10 +4,11 @@ Data models for the legacy system.
 These models are completely RL-agnostic and work with any API type.
 They track optimization runs, winners, and decision provenance.
 """
-from typing import Dict, Any, List, Optional
-from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class TrackingBackend(str, Enum):
@@ -23,14 +24,14 @@ class LegacyConfig(BaseModel):
     enabled: bool = True
     session_id: Optional[str] = None  # Auto-generated if not provided
     tracking_backend: TrackingBackend = TrackingBackend.BUILTIN
-    
+
     # Storage paths
     sqlite_path: str = "./data/legacy.db"
     export_dir: str = "./legacy"
-    
+
     # Export settings
     export_formats: List[str] = Field(default_factory=lambda: ["winners_only", "full_audit"])
-    
+
     # External tracker configs (optional)
     mlflow_config: Dict[str, Any] = Field(default_factory=dict)
     aim_config: Dict[str, Any] = Field(default_factory=dict)
@@ -47,7 +48,7 @@ class Session(BaseModel):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     config_fingerprint: str  # Hash of search space + evaluation config
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    
+
     class Config:
         json_encoders = {
             datetime: lambda v: v.isoformat()
@@ -68,7 +69,7 @@ class TestCaseResult(BaseModel):
     full_response: Optional[Dict[str, Any]] = None
     success: bool = True
     error: Optional[str] = None
-    
+
     class Config:
         json_encoders = {
             datetime: lambda v: v.isoformat()
@@ -91,7 +92,7 @@ class OptimizationRun(BaseModel):
     cost_usd: float = 0.0
     generation: int = 0  # For evolutionary tracking
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    
+
     class Config:
         json_encoders = {
             datetime: lambda v: v.isoformat()
@@ -109,7 +110,7 @@ class TestCaseWinner(BaseModel):
     previous_winner_id: Optional[str] = None
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     improvement: float = 0.0  # Improvement over previous winner
-    
+
     class Config:
         json_encoders = {
             datetime: lambda v: v.isoformat()
@@ -124,7 +125,7 @@ class RunLineage(BaseModel):
     relationship_type: str  # "evolution", "mutation", "crossover", "manual", "mab_selection"
     changes: Dict[str, Any]  # What changed from parent to child
     improvement: float = 0.0  # Score improvement
-    
+
     class Config:
         json_encoders = {
             datetime: lambda v: v.isoformat()
@@ -139,7 +140,7 @@ class DecisionLog(BaseModel):
     decision_type: str  # "winner_update", "config_selected", "session_created", etc.
     reasoning: str  # Human-readable explanation
     data: Dict[str, Any] = Field(default_factory=dict)  # Supporting data
-    
+
     class Config:
         json_encoders = {
             datetime: lambda v: v.isoformat()

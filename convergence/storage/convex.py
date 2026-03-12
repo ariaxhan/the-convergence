@@ -7,11 +7,11 @@ Supports custom Convex clients or auto-imports from your backend environment.
 Usage:
     # Option 1: Auto-import from your backend
     storage = ConvexStorage()
-    
+
     # Option 2: Pass your own Convex client/toolkit
     from my_app.convex import my_convex_client
     storage = ConvexStorage(client=my_convex_client)
-    
+
     # Option 3: Pass async functions directly
     storage = ConvexStorage(
         save_rl_data_fn=my_save_rl_data,
@@ -20,20 +20,19 @@ Usage:
     )
 """
 
-from typing import Any, List, Optional, Callable, Awaitable
-import asyncio
+from typing import Any, Awaitable, Callable, List, Optional
 
 
 class ConvexStorage:
     """
     Convex storage backend - routes Convergence data to Convex.
-    
+
     Flexible initialization:
     1. Auto-import: ConvexStorage() - imports from app.convex_toolkit.api
     2. Client injection: ConvexStorage(client=my_client)
     3. Function injection: ConvexStorage(save_rl_data_fn=my_fn, ...)
     """
-    
+
     def __init__(
         self,
         client: Optional[Any] = None,
@@ -46,7 +45,7 @@ class ConvexStorage:
     ):
         """
         Initialize Convex storage.
-        
+
         Args:
             client: Optional Convex client/toolkit object with methods like
                    save_rl_data(), save_experiment(), etc.
@@ -56,18 +55,18 @@ class ConvexStorage:
             complete_run_fn: Optional custom function for completing runs
             get_rl_data_fn: Optional custom function for loading RL data
             get_run_fn: Optional custom function for loading runs
-        
+
         If no arguments provided, attempts to auto-import from:
         - app.convex_toolkit.api.convergence_storage_convex (if available)
-        
+
         Examples:
             # Auto-import (for apps with standard structure)
             storage = ConvexStorage()
-            
+
             # Inject client
             from my_app.convex import convex_client
             storage = ConvexStorage(client=convex_client)
-            
+
             # Inject custom functions
             storage = ConvexStorage(
                 save_rl_data_fn=my_custom_save,
@@ -103,11 +102,11 @@ class ConvexStorage:
                     "3. Standard backend structure with app.convex_toolkit.api available\n\n"
                     "See documentation for examples."
                 ) from e
-    
+
     async def save(self, key: str, value: Any) -> None:
         """
         Save data to Convex, routing by key prefix.
-        
+
         Key Patterns:
         - episode:* → RL training data
         - experiment:* → Optimization experiment
@@ -132,7 +131,7 @@ class ConvexStorage:
             # Log error but don't crash optimization
             print(f"❌ Convex save failed for {key}: {e}")
             raise
-    
+
     async def _save_rl_data(self, key: str, value: Any) -> None:
         """Save RL training data."""
         # Determine record type from key prefix
@@ -146,7 +145,7 @@ class ConvexStorage:
             record_type = "training_run"
         else:
             record_type = "episode"  # Default
-        
+
         # Use custom function if provided, otherwise use client
         if self._custom_fns and self._custom_fns.get('save_rl_data'):
             response = await self._custom_fns['save_rl_data'](
@@ -175,10 +174,10 @@ class ConvexStorage:
             fitness_score=value.get("fitness_score"),
             success=value.get("success"),
         )
-        
+
         if not response.get("success"):
             raise RuntimeError(f"Failed to save RL data: {response.get('error')}")
-    
+
     async def _save_experiment(self, key: str, value: Any) -> None:
         """Save optimization experiment."""
         # Use custom function if provided, otherwise use client
@@ -216,10 +215,10 @@ class ConvexStorage:
             full_metrics=value.get("metrics"),
             session_id=value.get("session_id"),
         )
-        
+
         if not response.get("success"):
             raise RuntimeError(f"Failed to save experiment: {response.get('error')}")
-    
+
     async def _save_run(self, key: str, value: Any) -> None:
         """Save or update optimization run."""
         # Check if this is start or complete
@@ -267,10 +266,10 @@ class ConvexStorage:
                     system_name=value.get("system_name", "unknown"),
                     algorithm_name=value.get("algorithm_name", "unknown"),
                 )
-        
+
         if not response.get("success"):
             raise RuntimeError(f"Failed to save run: {response.get('error')}")
-    
+
     async def load(self, key: str) -> Any:
         """Load data from Convex by key."""
         try:
@@ -288,7 +287,7 @@ class ConvexStorage:
                     response = await self.storage.get_optimization_run(run_id)
             else:
                 raise KeyError(f"Unknown key pattern: {key}")
-            
+
             if response.get("success"):
                 data = response.get("data")
                 if data is None:
@@ -298,7 +297,7 @@ class ConvexStorage:
                 raise KeyError(f"Key not found: {key}")
         except Exception as e:
             raise KeyError(f"Failed to load {key}: {e}")
-    
+
     async def exists(self, key: str) -> bool:
         """Check if key exists in Convex."""
         try:
@@ -306,35 +305,35 @@ class ConvexStorage:
             return True
         except KeyError:
             return False
-    
+
     async def delete(self, key: str) -> None:
         """Delete from Convex (not implemented - Convex handles retention)."""
         # Convex manages its own data retention
         # We don't need to implement delete for optimization data
         pass
-    
+
     async def list_keys(self, prefix: str = "") -> List[str]:
         """
         List keys by prefix.
-        
+
         Note: Limited implementation - Convex doesn't have a generic list_keys API.
         Use specific queries instead (e.g., query_rl_episodes_for_training).
         """
         # This would require custom queries per prefix type
         # For now, return empty list - users should use specific query functions
-        print(f"⚠️ list_keys not fully implemented for Convex storage. Use specific queries instead.")
+        print("⚠️ list_keys not fully implemented for Convex storage. Use specific queries instead.")
         return []
-    
+
     async def count_keys(self, prefix: str = "") -> int:
         """Count keys by prefix."""
         keys = await self.list_keys(prefix)
         return len(keys)
-    
+
     async def clear(self, prefix: str = "") -> int:
         """Clear keys by prefix (not implemented - use Convex dashboard)."""
-        print(f"⚠️ clear not implemented for Convex storage. Use Convex dashboard for data management.")
+        print("⚠️ clear not implemented for Convex storage. Use Convex dashboard for data management.")
         return 0
-    
+
     async def close(self) -> None:
         """Close storage (no-op for Convex)."""
         pass
