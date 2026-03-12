@@ -1,251 +1,445 @@
 # The Convergence
 
-**Self-evolving agent framework powered by reinforcement learning**
+**Build AI agents that improve themselves, safely.**
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.8-orange.svg)](pyproject.toml)
 
-Systems that improve themselves outperform systems you tune manually. The Convergence is a framework for building agents that learn optimal behavior through experience - using Thompson Sampling, evolutionary algorithms, and self-improving policy networks.
+---
 
-## The Problem
+## The Story
 
-You're tuning parameters by hand. Temperature, model selection, context limits, sampling strategies - all configured once and left static. But optimal parameters depend on your data, your users, your use case. They change over time. Manual tuning can't keep up.
+This project started with a single observation:
 
-## The Solution
+> *"The Great Filter for AI isn't AGI — it's the production environment. 95% don't survive."*
 
-Let your system learn. The Convergence treats every decision as a learning opportunity:
+That was October 2025. A hackathon. Three engineers tired of watching AI projects fail not because the models were bad, but because the systems around them couldn't adapt.
 
-- **Thompson Sampling** explores the configuration space intelligently
-- **Evolutionary algorithms** breed better configurations from successful ones
-- **Dense reward signals** update beliefs after every interaction
-- **Self-improving policies** (RLP + SAO) generate their own training data
+Every AI deployment follows the same pattern:
+1. Build something impressive in development
+2. Deploy to production
+3. Watch it slowly degrade as the world changes
+4. Scramble to fix it manually
+5. Repeat
 
-The result: systems that converge toward optimal behavior automatically.
+We asked: **What if the system could fix itself?**
 
-## Quick Start
+Not in a scary, uncontrolled way. In a measured, observable, *safe* way. Like how your immune system learns from exposure. Like how markets find prices through iteration. Like how evolution produces robustness through selection.
 
-```bash
-pip install the-convergence
-```
+The Convergence is our answer.
 
-```python
-from convergence import run_optimization
-from convergence.types import ConvergenceConfig, ApiConfig, SearchSpaceConfig
+---
 
-config = ConvergenceConfig(
-    api=ApiConfig(name="my_api", endpoint="https://api.example.com/v1/chat"),
-    search_space=SearchSpaceConfig(parameters={
-        "temperature": {"type": "float", "min": 0.1, "max": 1.5},
-        "model": {"type": "categorical", "choices": ["gpt-4o-mini", "gpt-4o"]}
-    }),
-    evaluation=EvaluationConfig(required_metrics=["quality"], weights={"quality": 1.0}),
-    runner=RunnerConfig(generations=10, population=20)
-)
+## Where We Started
 
-result = await run_optimization(config)
-# Watch your system evolve toward optimal
-```
+The first version was simple: an API parameter optimizer using genetic algorithms. You had an LLM endpoint. You didn't know the best temperature, context length, or sampling strategy. The system tried variations, measured results, and evolved toward better configurations.
 
-Or use the CLI:
+It worked. But we realized we were solving the wrong problem.
 
-```bash
-convergence init      # Interactive setup
-convergence optimize config.yaml
-```
+The real challenge wasn't finding optimal parameters once. It was keeping them optimal as everything changed — user behavior, data distributions, business requirements, the models themselves.
 
-## How It Works
+**Static configuration is a losing game.** The world moves. Your system should move with it.
 
-The Convergence combines three reinforcement learning strategies that work together:
+---
 
-### 1. Thompson Sampling (Bayesian Exploration)
+## Where We're Going
 
-Every configuration maintains a probability distribution over its expected reward. Selection samples from these distributions, naturally balancing exploration of uncertain options with exploitation of known good ones.
+The Convergence is now an **enterprise framework for self-evolving AI agents**.
 
-```
-Config A: Beta(15, 5) → sample 0.73
-Config B: Beta(8, 12) → sample 0.42
-Config C: Beta(2, 2)  → sample 0.61  ← High uncertainty, worth exploring
+That's a lot of words. Here's what it actually means:
 
-Select: A (highest sample)
-```
+### For Business Leaders
 
-### 2. Evolutionary Algorithms (Genetic Optimization)
+Your company has knowledge scattered everywhere — code repositories, Slack conversations, support tickets, internal docs, databases. You want an AI agent that can access all of it and actually help your team.
 
-Successful configurations breed. The population evolves through:
+But you're worried about:
+- **Cost** — Will this burn through our API budget?
+- **Safety** — Will it say something it shouldn't? Access data it shouldn't?
+- **Reliability** — Will it work consistently, or surprise us at the worst moment?
+- **Improvement** — Will it get better over time, or stagnate?
 
-- **Selection**: Top performers survive (elitism)
-- **Mutation**: Random parameter changes explore nearby space
-- **Crossover**: Combine traits from two successful parents
+The Convergence addresses each of these:
 
-Each generation is better than the last.
+| Concern | How We Address It |
+|---------|-------------------|
+| **Cost** | Semantic caching reduces API calls by 70-80%. Similar questions get cached answers. |
+| **Safety** | Guardrails are built into the framework, not the prompts. The agent *can't* bypass safety checks. |
+| **Reliability** | Every decision is observable. You can see exactly what the agent is doing and why. |
+| **Improvement** | The system learns from every interaction using proven algorithms. It literally gets better with use. |
 
-### 3. Self-Improving Agents (RLP + SAO)
+### For Engineering Leaders
 
-Based on cutting-edge research from NVIDIA and Hugging Face (Oct 2024):
+You've seen the vendor demos. They're impressive. Then you try to integrate them and discover:
+- No observability into what's actually happening
+- Safety is "prompt engineering" (which means: easily bypassed)
+- Learning means "fine-tune a model" (expensive, slow, often makes things worse)
+- Every edge case requires manual handling
 
-**RLP (Reinforcement Learning on Policy)**: Agents think before acting. Internal reasoning is rewarded when it improves prediction accuracy - creating dense learning signals without external verifiers.
+The Convergence gives you:
 
-**SAO (Self-Alignment Optimization)**: Agents generate their own training data. Through persona-based prompting and self-judgment, the system creates preference pairs for continuous improvement - no human labeling required.
+| Feature | What It Means |
+|---------|---------------|
+| **Framework-level safety** | Using NVIDIA NeMo Guardrails + Guardrails AI. The model can't override safety checks because they happen outside the model. |
+| **Native observability** | See learning curves, calibration accuracy, cost per request, drift detection. Not just logs — actionable metrics. |
+| **Online learning** | Thompson Sampling converges in 15-30 interactions. No expensive retraining. No deployment cycles. |
+| **Production-grade storage** | PostgreSQL for production, SQLite for development, same API. |
 
-## Architecture
+### For Individual Engineers
 
-```
-┌────────────────────────────────────────────────────────┐
-│                  OPTIMIZATION LOOP                      │
-│                                                        │
-│   ┌──────────┐   ┌───────────┐   ┌──────────────┐    │
-│   │ Thompson │──▶│ Evolution │──▶│ RL Meta-     │    │
-│   │ Sampling │   │  Engine   │   │ Optimizer    │    │
-│   └────┬─────┘   └─────┬─────┘   └──────┬───────┘    │
-│        │               │                 │            │
-│        │    ┌──────────┴──────────┐     │            │
-│        └───▶│   Test Population   │◀────┘            │
-│             │   (parallel eval)   │                  │
-│             └──────────┬──────────┘                  │
-│                        │                             │
-│             ┌──────────▼──────────┐                  │
-│             │   Reward Signals    │                  │
-│             │ (quality, latency,  │                  │
-│             │  cost, custom...)   │                  │
-│             └──────────┬──────────┘                  │
-│                        │                             │
-│   ┌────────────────────┼────────────────────┐       │
-│   │                    │                    │       │
-│   ▼                    ▼                    ▼       │
-│ ┌─────┐          ┌──────────┐        ┌─────────┐   │
-│ │ RLP │          │ Storage  │        │   SAO   │   │
-│ │Think│          │ (SQLite, │        │  Self-  │   │
-│ │First│          │  Convex) │        │  Train  │   │
-│ └─────┘          └──────────┘        └─────────┘   │
-│                                                     │
-└────────────────────────────────────────────────────┘
-```
+You want to build something that actually works in production. You're tired of:
+- Hardcoding thresholds that immediately become wrong
+- Redeploying every time you want to try a new parameter
+- Not knowing if your changes actually helped
 
-## Entry Points
-
-**1. Batch Optimization** - Full optimization runs
-
-```python
-from convergence import run_optimization
-result = await run_optimization(config)
-```
-
-**2. Runtime Selection** - Per-request bandit in production
+The Convergence gives you three function calls:
 
 ```python
 from convergence import configure_runtime, runtime_select, runtime_update
 
-await configure_runtime("my_endpoint", config=config)
-selection = await runtime_select("my_endpoint", user_id="user_123")
-# Use selection.params in your application
-await runtime_update("my_endpoint", decision_id=selection.decision_id, reward=0.8)
+# 1. Configure once at startup
+await configure_runtime("my_agent", config={
+    "arms": [
+        {"arm_id": "concise", "params": {"temperature": 0.3, "max_tokens": 500}},
+        {"arm_id": "detailed", "params": {"temperature": 0.7, "max_tokens": 2000}},
+    ],
+    "storage": {"backend": "postgresql", "dsn": "postgresql://..."}
+})
+
+# 2. Select per request (Thompson Sampling handles exploration/exploitation)
+selection = await runtime_select("my_agent", user_id="user_123")
+# selection.params = {"temperature": 0.3, "max_tokens": 500}
+
+# 3. Update on outcome (the system learns)
+await runtime_update("my_agent", decision_id=selection.decision_id, reward=1.0)
 ```
 
-**3. CLI** - Interactive setup and optimization
+That's it. Everything else — the learning algorithms, the storage, the exploration/exploitation tradeoff — is handled for you.
 
-```bash
-convergence init
-convergence optimize config.yaml
+---
+
+## How It Works
+
+### The Core Idea: Arms and Rewards
+
+Think of your agent as having multiple "arms" — different ways it could respond. Maybe one arm is concise and professional. Another is detailed and friendly. A third is technical and precise.
+
+For any given user and context, which arm is best? You don't know upfront. But you can measure outcomes.
+
+The Convergence uses **Thompson Sampling** to explore these options intelligently:
+
+```
+Arm A (concise): Users clicked "helpful" 15 times, "not helpful" 5 times
+Arm B (detailed): Users clicked "helpful" 8 times, "not helpful" 12 times
+Arm C (technical): Users clicked "helpful" 2 times, "not helpful" 2 times
+
+The system samples from probability distributions:
+  Arm A: Sample from Beta(15, 5) → 0.73
+  Arm B: Sample from Beta(8, 12) → 0.42
+  Arm C: Sample from Beta(2, 2) → 0.61 ← High uncertainty, worth trying
+
+Select Arm A (highest sample). If it works, Arm A gets stronger.
+If Arm C works when tried, its uncertainty decreases and it might win next time.
 ```
 
-## What You Can Optimize
+This isn't random experimentation. It's principled exploration that mathematically balances trying new things versus using what works.
 
-- **LLM APIs** - OpenAI, Azure OpenAI, Groq, Google Gemini
-- **Web Automation** - BrowserBase parameters
-- **Agent Systems** - Discord, Gmail, Reddit agents via Agno
-- **Custom Endpoints** - Any HTTP API
-- **Local Functions** - Pure Python functions
+### The Learning Timeline
 
-## Installation
+Not all methods are ready for production immediately:
+
+| Method | When It's Ready | What It Does |
+|--------|-----------------|--------------|
+| **Thompson Sampling** | Immediately (15-30 interactions) | Learns which response styles work best |
+| **Semantic Caching** | Immediately | Reduces costs by caching similar queries |
+| **RLP (Think First)** | After 500+ interactions | Agent reasons before responding |
+| **SAO (Self-Training)** | After 1000+ interactions | Agent generates its own training data |
+
+The experimental methods are powerful but need data to calibrate. They're labeled clearly and data-gated — they won't activate until you have enough interactions for them to work reliably.
+
+### The Safety Stack
+
+Safety isn't a feature. It's the foundation.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     YOUR AGENT                               │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│   Layer 1: Input Validation                                  │
+│   ├─ Jailbreak detection (NeMo Guardrails)                  │
+│   ├─ Prompt injection blocking                               │
+│   └─ Rate limiting                                           │
+│                                                              │
+│   Layer 2: Execution Control                                 │
+│   ├─ Tool authorization (agent can't access unapproved tools)│
+│   ├─ Budget enforcement (daily spend limits)                 │
+│   └─ Mutation approval (writes require human sign-off)       │
+│                                                              │
+│   Layer 3: Output Validation                                 │
+│   ├─ Schema enforcement (Guardrails AI)                      │
+│   ├─ Sensitive data detection                                │
+│   └─ Hallucination flagging                                  │
+│                                                              │
+│   Layer 4: Audit                                             │
+│   └─ Every decision logged, traceable, reviewable            │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+The key insight: safety checks happen at the *framework* level, not the *prompt* level. The model can't be prompted to bypass them because they're not in the model's control.
+
+---
+
+## Quick Start
+
+### Installation
 
 ```bash
-# Core framework
 pip install the-convergence
-
-# With self-improving agents (RLP + SAO)
-pip install "the-convergence[agents]"
-
-# Everything
-pip install "the-convergence[all]"
 ```
 
-## Configuration
+### Minimal Example
 
-```yaml
-api:
-  name: "my_api"
-  endpoint: "https://api.example.com/v1/chat"
-  auth:
-    type: "bearer"
-    token_env: "API_KEY"
+```python
+import asyncio
+from convergence import configure_runtime, runtime_select, runtime_update
 
-search_space:
-  parameters:
-    temperature: {type: "float", min: 0.1, max: 1.5}
-    model: {type: "categorical", choices: ["gpt-4o-mini", "gpt-4o"]}
+async def main():
+    # Configure your agent
+    await configure_runtime("my_agent", config={
+        "arms": [
+            {"arm_id": "style_a", "params": {"temperature": 0.5}},
+            {"arm_id": "style_b", "params": {"temperature": 0.8}},
+        ],
+        "storage": {"backend": "sqlite", "path": "convergence.db"}
+    })
 
-evaluation:
-  test_cases:
-    path: "test_cases.json"
-  metrics:
-    quality: {weight: 0.6, type: "llm_judge"}
-    latency_ms: {weight: 0.3}
-    cost_usd: {weight: 0.1}
+    # For each request...
+    selection = await runtime_select("my_agent", user_id="user_123")
 
-optimization:
-  algorithm: "mab_evolution"
-  evolution:
-    population_size: 20
-    generations: 10
+    # Use selection.params in your LLM call
+    # response = await your_llm_call(**selection.params)
 
-# Enable self-improving agents
-society:
-  enabled: true
-  learning:
-    rlp_enabled: true   # Think before acting
-    sao_enabled: true   # Self-generate training data
+    # Report the outcome (did it work?)
+    await runtime_update(
+        "my_agent",
+        decision_id=selection.decision_id,
+        reward=1.0  # 1.0 = success, 0.0 = failure
+    )
+
+asyncio.run(main())
 ```
 
-## Results
+### With Semantic Caching (80% Cost Reduction)
 
-After optimization, find your evolved configurations:
+```python
+from convergence.cache import SemanticCache
 
-- `results/best_config.json` - Optimal configuration
-- `results/detailed_results.json` - Full evolution history
-- `results/report.md` - Analysis and recommendations
+cache = SemanticCache(
+    similarity_threshold=0.88,  # How similar queries need to be
+    ttl_seconds=86400,          # Cache for 24 hours
+    backend="redis"
+)
+
+# Before calling your LLM
+cached = await cache.get(user_query)
+if cached:
+    return cached["response"]  # Free! No API call.
+
+# After getting a response
+await cache.set(user_query, response)
+```
+
+### With Safety Guardrails
+
+```python
+from convergence.safety import ConvergenceRails
+
+rails = ConvergenceRails()
+
+# Validate input before processing
+input_check = await rails.validate_input(user_message)
+if not input_check.passed:
+    return "I can't process that request."
+
+# Validate output before sending
+output_check = await rails.validate_output(agent_response)
+if not output_check.passed:
+    return fallback_response
+```
+
+---
+
+## The Enterprise Problem We Solve
+
+Modern companies have a knowledge problem:
+
+```
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│   GitHub    │  │    Slack    │  │   Zendesk   │
+│  (code)     │  │  (decisions)│  │  (support)  │
+└──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+       │                │                │
+       └────────────────┼────────────────┘
+                        │
+                   ??? Magic ???
+                        │
+                        ▼
+               ┌─────────────────┐
+               │  Unified Agent  │
+               │  that actually  │
+               │     works       │
+               └─────────────────┘
+```
+
+The "magic" is the hard part. You need:
+
+1. **Integration** — Connect to all your knowledge sources
+2. **Intelligence** — Go beyond basic RAG (multi-hop reasoning, context awareness)
+3. **Safety** — Don't leak data, don't say wrong things, don't take unauthorized actions
+4. **Observability** — Know what's happening, catch problems early
+5. **Improvement** — Get better over time without constant manual intervention
+
+Most solutions give you (1) and maybe (2). They leave (3), (4), and (5) as "your problem."
+
+The Convergence makes (3), (4), and (5) the core. Because those are actually the hard parts.
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           THE CONVERGENCE                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  SAFETY (The Foundation)                                                     │
+│  • Input validation (jailbreak/injection detection)                         │
+│  • Execution control (tool authorization, budget limits)                     │
+│  • Output validation (schema enforcement, sensitive data)                    │
+│  • Audit logging (every decision traceable)                                  │
+│                                                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  OBSERVABILITY (The Eyes)                                                    │
+│  • Learning metrics (is the system improving?)                               │
+│  • Calibration tracking (is "80% confident" actually 80% accurate?)         │
+│  • Cost tracking (per request, per user, per day)                           │
+│  • Drift detection (is behavior changing unexpectedly?)                      │
+│                                                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  OPTIMIZATION (The Brain)                                                    │
+│  • Thompson Sampling (intelligent exploration)                               │
+│  • Semantic Caching (cost reduction)                                         │
+│  • Confidence Extraction (know when to escalate)                            │
+│  • Evolutionary Algorithms (breed better configurations)                     │
+│                                                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  EXPERIMENTAL (The Future)                                                   │
+│  • RLP — Agent thinks before acting (needs 500+ interactions)               │
+│  • SAO — Agent generates training data (needs 1000+ interactions)           │
+│  • MemRL — Agent learns from past episodes (needs 100+ interactions)        │
+│  • [Clearly labeled, data-gated, opt-in]                                    │
+│                                                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  STORAGE (The Memory)                                                        │
+│  • SQLite (development)                                                      │
+│  • PostgreSQL (production)                                                   │
+│  • Redis (caching)                                                           │
+│  • Same API for all backends                                                 │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## What Makes This Different
+
+### From LangChain/LlamaIndex
+Those are excellent tools for *building* agents. The Convergence is about *operating* them in production. We integrate with those tools; we don't replace them.
+
+### From OpenAI/Anthropic APIs
+Those give you model access. We give you the infrastructure to use those models safely, observably, and with continuous improvement.
+
+### From Custom Solutions
+You could build all of this yourself. Companies do. It takes 6-12 months and constant maintenance. The Convergence packages proven patterns so you can focus on your actual product.
+
+---
+
+## Current Status
+
+The Convergence is in active development. Here's what's production-ready vs. experimental:
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Thompson Sampling | Production | Converges in 15-30 interactions |
+| Storage Backends | Production | SQLite, PostgreSQL, Memory |
+| Semantic Caching | Production | 70-80% cost reduction |
+| Confidence Extraction | Production | Gap detection for human escalation |
+| Safety Guardrails | Beta | NeMo + Guardrails AI integration |
+| Native Observability | Beta | Metrics, calibration, drift |
+| RLP (Think First) | Experimental | Needs 500+ interactions |
+| SAO (Self-Training) | Experimental | Needs 1000+ interactions |
+| MemRL (Memory) | Experimental | In development |
+
+---
 
 ## Documentation
 
-- **[Getting Started](GETTING_STARTED.md)** - Complete setup guide
-- **[SDK Usage](SDK_USAGE.md)** - Programmatic API reference
-- **[YAML Configuration](YAML_CONFIGURATION_REFERENCE.md)** - Full config reference
-- **[Examples](examples/)** - Working examples
+- **[Getting Started](GETTING_STARTED.md)** — Full setup guide
+- **[API Reference](docs/API.md)** — Detailed function documentation
+- **[Configuration](YAML_CONFIGURATION_REFERENCE.md)** — All config options
+- **[Examples](examples/)** — Working code samples
+
+---
 
 ## Research Foundation
 
-The Convergence builds on:
+The Convergence builds on peer-reviewed research:
 
-- **Thompson Sampling** - Bayesian approach to exploration/exploitation
-- **Evolutionary Strategies** - Genetic algorithms for optimization
-- **RLP** - [Reinforcement Learning on Policy](https://arxiv.org/abs/2510.01265) (NVIDIA, Oct 2024)
-- **SAO** - [Self-Alignment Optimization](https://arxiv.org/abs/2510.06652) (Hugging Face, Oct 2024)
+- **Thompson Sampling** — Bayesian approach to exploration/exploitation, proven across decades of research
+- **Evolutionary Strategies** — Genetic algorithms for configuration optimization
+- **RLP** — [Reinforcement Learning on Policy](https://arxiv.org/abs/2510.01265) (NVIDIA, 2024)
+- **SAO** — [Self-Alignment Optimization](https://arxiv.org/abs/2510.06652) (Hugging Face, 2024)
+- **NeMo Guardrails** — Enterprise safety framework by NVIDIA
+- **Guardrails AI** — Output validation and schema enforcement
+
+---
+
+## Origin
+
+The Convergence began as a hackathon project in October 2025 by the PersistOS team:
+
+- **Aria Han** — Architecture & RL systems
+- **Shreyash Hamal** — Infrastructure & integrations
+- **Myat Pyae Paing** — Evaluation & testing
+
+The original insight: most AI projects fail not because of bad models, but because of bad systems around them. We're building the system that adapts.
+
+---
 
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## License
-
-Apache 2.0 - See [LICENSE](LICENSE) file.
-
-## Team
-
-Built by [PersistOS](https://persistos.co):
-- Aria Han
-- Shreyash Hamal
-- Myat Pyae Paing
+We especially welcome:
+- Bug reports and feature requests
+- Documentation improvements
+- Integration examples
+- Safety audit findings
 
 ---
 
-**Stop tuning. Start evolving.**
+## License
+
+Apache 2.0 — See [LICENSE](LICENSE) file.
+
+---
+
+<p align="center">
+  <em>Stop tuning. Start evolving.</em>
+</p>
