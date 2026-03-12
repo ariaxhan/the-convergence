@@ -15,6 +15,9 @@ from rich.console import Console
 
 from ..plugins.mab.thompson_sampling import ThompsonSamplingStrategy
 from ..storage import get_storage_registry
+
+# API Adapters - BrowserBaseAdapter is always required
+from .adapters.browserbase import BrowserBaseAdapter
 from .api_caller import APICaller
 from .config_validator import ConfigValidator
 from .evaluator import Evaluator
@@ -26,15 +29,11 @@ from .test_case_evolution import TestCaseAnalyzer, TestCaseEvolutionEngine
 
 console = Console()
 
-# API Adapters
-from .adapters.browserbase import BrowserBaseAdapter
-
 # API adapters for provider-specific request/response transformations
 try:
     # Universal agent adapter - handles ALL Agno agents (Discord, Gmail, Reddit, future agents)
     from .adapters.agno_agent import UniversalAgentAdapter
     from .adapters.azure import AzureOpenAIAdapter
-    from .adapters.browserbase import BrowserBaseAdapter
     from .adapters.gemini import GeminiAdapter
 
     # Local function adapter - for optimizing internal Python functions

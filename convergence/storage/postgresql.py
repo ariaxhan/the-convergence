@@ -17,7 +17,7 @@ try:
     import asyncpg
     ASYNCPG_AVAILABLE = True
 except ImportError:
-    asyncpg = None  # type: ignore[assignment]
+    asyncpg = None
     ASYNCPG_AVAILABLE = False
 
 

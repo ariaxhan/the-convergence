@@ -27,7 +27,7 @@ from .runtime import (
 
 # Rebuild RuntimeConfig to resolve RewardEvaluatorConfig forward reference (Pydantic v2)
 try:
-    from convergence.runtime.reward_evaluator import RewardEvaluatorConfig
+    from convergence.runtime.reward_evaluator import RewardEvaluatorConfig  # noqa: F401
     RuntimeConfig.model_rebuild()
 except ImportError:
     pass  # Will be rebuilt when RewardEvaluatorConfig is imported

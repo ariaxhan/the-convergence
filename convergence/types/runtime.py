@@ -143,7 +143,7 @@ __all__ = [
 def _rebuild_runtime_config():
     """Rebuild RuntimeConfig model to resolve RewardEvaluatorConfig forward reference."""
     try:
-        from convergence.runtime.reward_evaluator import RewardEvaluatorConfig
+        from convergence.runtime.reward_evaluator import RewardEvaluatorConfig  # noqa: F401
         RuntimeConfig.model_rebuild()
     except ImportError:
         # RewardEvaluatorConfig not available yet, will be rebuilt on first use

@@ -49,7 +49,7 @@ try:
     _CONVEX_AVAILABLE = True
 except ImportError:
     _CONVEX_AVAILABLE = False
-    ConvexStorage = None
+    ConvexStorage = None  # type: ignore[misc, assignment]
 
 # Optional PostgreSQL runtime storage (requires asyncpg)
 try:

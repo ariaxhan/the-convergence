@@ -23,13 +23,13 @@ from .text_quality import score_text_quality
 try:
     from .gemini_evaluator import score_task_decomposition
 except ImportError:
-    score_task_decomposition = None  # type: ignore[misc, assignment]
+    score_task_decomposition = None
 
 try:
     from .openai_responses import score_openai_response, score_reasoning_response
 except ImportError:
-    score_openai_response = None  # type: ignore[misc, assignment]
-    score_reasoning_response = None  # type: ignore[misc, assignment]
+    score_openai_response = None
+    score_reasoning_response = None
 
 __all__ = [
     # Base classes

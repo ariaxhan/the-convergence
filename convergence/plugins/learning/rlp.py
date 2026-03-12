@@ -21,8 +21,8 @@ import weave
 from pydantic import BaseModel, Field
 
 try:
-    import torch
-    from transformers import AutoModelForCausalLM, AutoTokenizer
+    import torch  # noqa: F401 - needed for availability check and later use
+    from transformers import AutoModelForCausalLM, AutoTokenizer  # noqa: F401
     TORCH_AVAILABLE = True
 except ImportError:
     TORCH_AVAILABLE = False

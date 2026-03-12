@@ -216,7 +216,7 @@ Return JSON with EXACT user specifications:
                     reconstructed = partial_content + '}}'
                     try:
                         extracted_info = json.loads(reconstructed)
-                    except:
+                    except json.JSONDecodeError:
                         # Fallback: create a basic extraction based on user input
                         # Try to extract provider and models from user input for fallback
                         user_lower = user_input.lower()
@@ -642,7 +642,7 @@ Generate JSON with MANDATORY detailed descriptions (no // comments):
                         reconstructed = '{"test_cases": [' + partial_content.split('"test_cases": [', 1)[1]
                         try:
                             json.loads(reconstructed)
-                        except:
+                        except json.JSONDecodeError:
                             # Fallback: create a simple test case
                             pass
                 else:

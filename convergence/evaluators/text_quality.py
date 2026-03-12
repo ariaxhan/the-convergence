@@ -146,7 +146,7 @@ def _text_structure(text: str) -> float:
     avg_length = sum(lengths) / len(lengths)
 
     if len(lengths) > 1:
-        variance = sum((l - avg_length) ** 2 for l in lengths) / len(lengths)
+        variance = sum((length - avg_length) ** 2 for length in lengths) / len(lengths)
         std_dev = math.sqrt(variance)
         variation_score = min(std_dev / 10, 1.0)
     else:
