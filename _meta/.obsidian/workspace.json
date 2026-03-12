@@ -185,6 +185,13 @@
   },
   "active": "e663c7a5c152899a",
   "lastOpenFiles": [
+    "handoffs/dashboard-deferred-handoff.md",
+    "agents/main-19821.json",
+    "handoffs/implementation-ready-20260312.md",
+    "plans/IMPLEMENTATION-CONTRACTS.md",
+    "reviews/architecture-v3-teardown.md",
+    "agents/main-85212.json",
+    "agents/main-40201-snapshot.md",
     "research/context-graphs-architecture.md",
     "plans/ARCHITECTURE-v3-RESEARCH-INFORMED.md",
     "research/CODEBASE-READINESS-ASSESSMENT.md",
@@ -208,7 +215,6 @@
     "handoffs/pattern-system-handoff.md",
     "CONVERGENCE-MEMO.md",
     "reviews/pattern-system-teardown.md",
-    "research/novel-approaches-2026.md",
-    "research/funjoin-failure-patterns.md"
+    "research/novel-approaches-2026.md"
   ]
 }
