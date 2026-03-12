@@ -307,6 +307,75 @@ The Convergence makes (3), (4), and (5) the core. Because those are actually the
 
 ---
 
+## The Centralized Knowledge Layer
+
+The real "magic" is **structured knowledge**, not just vector embeddings.
+
+Traditional RAG finds similar text chunks. But it can't answer: "Who made this decision? Why? What depends on it?"
+
+The Convergence uses a **context graph** — a knowledge architecture that both humans and AI agents can navigate:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     KNOWLEDGE TRIAD                          │
+├───────────────┬───────────────────┬─────────────────────────┤
+│     WHO       │       WHAT        │          HOW            │
+│               │                   │                         │
+│  • People     │  • Knowledge      │  • Processes            │
+│  • Teams      │  • Decisions      │  • Workflows            │
+│  • Roles      │  • Artifacts      │  • Plans                │
+│  • Orgs       │  • Research       │  • Operations           │
+│               │  • Context        │  • Sessions             │
+└───────────────┴───────────────────┴─────────────────────────┘
+
+Every piece of knowledge fits into exactly ONE category.
+No ambiguity. Relationships are explicit.
+```
+
+### Why This Matters
+
+**Without structure:**
+- Agent loads everything → tokens wasted, context polluted
+- Agent loads nothing → starts cold, misses context
+- Agent guesses → hallucinates relationships
+
+**With a context graph:**
+- **Progressive disclosure** — Load only what's relevant to the current task
+- **Session continuity** — Handoff documents so agents don't start cold
+- **Relationship traversal** — Follow edges: "Who owns this?" "What depends on this?"
+- **Mergeable knowledge** — Combine graphs from different sources
+
+### The Knowledge Cascade
+
+For complex work, the graph supports hierarchical decomposition:
+
+```
+Campaign (strategic, weeks-to-months)
+    └── Phase (logical grouping, human approval gates)
+            └── Mission (multi-session, specific goal)
+                    └── Objective (session-sized, executable)
+
+Each level narrows context:
+- Fewer tokens
+- Higher signal density
+- Relevant to the current task
+```
+
+An agent working on a specific objective doesn't need the entire company knowledge base. It needs the subgraph relevant to *this task, right now*.
+
+### Graph Operations
+
+| Operation | What It Does |
+|-----------|--------------|
+| **Traverse** | Follow relationships (who owns this? what depends on this?) |
+| **Extract** | Build context payload from subgraph for current session |
+| **Merge** | Combine graphs from different sources |
+| **Learn** | Graph structure improves based on usage (ties to self-learning!) |
+
+This is what separates "beyond RAG" from "slightly better RAG."
+
+---
+
 ## Architecture Overview
 
 ```
@@ -314,11 +383,20 @@ The Convergence makes (3), (4), and (5) the core. Because those are actually the
 │                           THE CONVERGENCE                                    │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
+│  KNOWLEDGE (The Substrate)                                                   │
+│  • Context graph (who/what/how triad)                                       │
+│  • Relationship traversal (follow edges, not just similarity)               │
+│  • Progressive disclosure (load only relevant context)                       │
+│  • Mergeable graphs (combine knowledge from multiple sources)                │
+│                                                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
 │  SAFETY (The Foundation)                                                     │
 │  • Input validation (jailbreak/injection detection)                         │
 │  • Execution control (tool authorization, budget limits)                     │
 │  • Output validation (schema enforcement, sensitive data)                    │
 │  • Audit logging (every decision traceable)                                  │
+│  • Graph-aware permissions (WHO can access WHAT via HOW)                    │
 │                                                                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
@@ -327,6 +405,7 @@ The Convergence makes (3), (4), and (5) the core. Because those are actually the
 │  • Calibration tracking (is "80% confident" actually 80% accurate?)         │
 │  • Cost tracking (per request, per user, per day)                           │
 │  • Drift detection (is behavior changing unexpectedly?)                      │
+│  • Graph usage (which knowledge is accessed? where are gaps?)               │
 │                                                                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
@@ -335,6 +414,7 @@ The Convergence makes (3), (4), and (5) the core. Because those are actually the
 │  • Semantic Caching (cost reduction)                                         │
 │  • Confidence Extraction (know when to escalate)                            │
 │  • Evolutionary Algorithms (breed better configurations)                     │
+│  • Graph learning (which traversals work best?)                             │
 │                                                                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
@@ -347,9 +427,9 @@ The Convergence makes (3), (4), and (5) the core. Because those are actually the
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  STORAGE (The Memory)                                                        │
-│  • SQLite (development)                                                      │
-│  • PostgreSQL (production)                                                   │
+│  • SQLite (development) / PostgreSQL (production)                           │
 │  • Redis (caching)                                                           │
+│  • Graph storage (nodes, edges, ontologies)                                 │
 │  • Same API for all backends                                                 │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -380,6 +460,7 @@ The Convergence is in active development. Here's what's production-ready vs. exp
 | Storage Backends | Production | SQLite, PostgreSQL, Memory |
 | Semantic Caching | Production | 70-80% cost reduction |
 | Confidence Extraction | Production | Gap detection for human escalation |
+| Context Graph | Beta | who/what/how triad, graph operations |
 | Safety Guardrails | Beta | NeMo + Guardrails AI integration |
 | Native Observability | Beta | Metrics, calibration, drift |
 | RLP (Think First) | Experimental | Needs 500+ interactions |
