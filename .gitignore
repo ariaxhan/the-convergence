@@ -20,6 +20,7 @@ wheels/
 .installed.cfg
 *.egg
 venv/
+.venv/
 ENV/
 env/
 
@@ -69,8 +70,11 @@ wandb/
 
 # Data
 data/
-*.db
 *.sqlite
+
+# AgentDB local state (keep schema, ignore data)
+_meta/agentdb/*.db-shm
+_meta/agentdb/*.db-wal
 
 # Example results (users should generate their own)
 examples/**/results/
