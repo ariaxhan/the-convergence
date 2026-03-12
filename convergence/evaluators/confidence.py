@@ -8,7 +8,7 @@ Extracts confidence scores from LLM response text using multiple methods:
 - Auto mode combining all methods
 """
 import re
-from typing import Optional
+from typing import Optional, Pattern
 
 # Hedging phrases that indicate uncertainty
 HEDGING_PHRASES = [
@@ -45,12 +45,35 @@ CERTAINTY_PHRASES = [
 ]
 
 # Phrases that negate hedging (e.g., "I am sure" is NOT hedging)
-NEGATION_PATTERNS = [
+# Precompiled with IGNORECASE for performance and case-insensitive matching
+_NEGATION_PATTERNS_RAW = [
     r"\bi am sure\b",
     r"\bi'm sure\b",
     r"\bam certain\b",
     r"\bam confident\b",
 ]
+NEGATION_PATTERNS: list[Pattern[str]] = [
+    re.compile(p, re.IGNORECASE) for p in _NEGATION_PATTERNS_RAW
+]
+
+# Precompiled patterns for hedging/certainty single-word matching
+# Uses (?:'s|'t|'d|'ll|'ve|'re)? to handle contractions after the word
+_HEDGING_SINGLE_WORD_PATTERNS: dict[str, Pattern[str]] = {
+    phrase: re.compile(rf"\b{re.escape(phrase)}(?:'[a-z]*)?\b", re.IGNORECASE)
+    for phrase in HEDGING_PHRASES
+    if " " not in phrase
+}
+
+_CERTAINTY_SINGLE_WORD_PATTERNS: dict[str, Pattern[str]] = {
+    phrase: re.compile(rf"\b{re.escape(phrase)}(?:'[a-z]*)?\b", re.IGNORECASE)
+    for phrase in CERTAINTY_PHRASES
+    if " " not in phrase and "%" not in phrase
+}
+
+# Pattern for explicit confidence markers
+_EXPLICIT_CONFIDENCE_PATTERN: Pattern[str] = re.compile(
+    r"confidence:\s*(-?\d+(?:\.\d+)?)\s*%?", re.IGNORECASE
+)
 
 VALID_METHODS = {"explicit", "hedging", "certainty", "auto"}
 
@@ -100,11 +123,8 @@ def _extract_explicit(text: str) -> Optional[float]:
     if not text or not text.strip():
         return None
 
-    # Pattern for "Confidence: X%" or "Confidence: 0.X"
-    # Case insensitive, handles spacing variations
-    pattern = r"confidence:\s*(-?\d+(?:\.\d+)?)\s*%?"
-
-    match = re.search(pattern, text, re.IGNORECASE)
+    # Use precompiled pattern for performance
+    match = _EXPLICIT_CONFIDENCE_PATTERN.search(text)
     if not match:
         return None
 
@@ -141,21 +161,21 @@ def _extract_hedging(text: str) -> float:
 
     # Check for negation patterns that cancel hedging
     # e.g., "I am sure" is NOT hedging
+    # Uses precompiled patterns with IGNORECASE
     negated_text = text_lower
     for pattern in NEGATION_PATTERNS:
-        negated_text = re.sub(pattern, "", negated_text)
+        negated_text = pattern.sub("", negated_text)
 
-    # Count hedging phrases
+    # Count hedging phrases using precompiled patterns
     hedging_count = 0
     for phrase in HEDGING_PHRASES:
-        # Use word boundary matching for single words
         if " " in phrase:
-            # Multi-word phrase: direct substring match
+            # Multi-word phrase: direct substring match (already lowercased)
             if phrase in negated_text:
                 hedging_count += 1
         else:
-            # Single word: use word boundary
-            if re.search(rf"\b{re.escape(phrase)}\b", negated_text):
+            # Single word: use precompiled pattern with contraction support
+            if _HEDGING_SINGLE_WORD_PATTERNS[phrase].search(negated_text):
                 hedging_count += 1
 
     # No hedging = high confidence
@@ -181,20 +201,20 @@ def _extract_certainty(text: str) -> float:
 
     text_lower = text.lower()
 
-    # Count certainty phrases
+    # Count certainty phrases using precompiled patterns
     certainty_count = 0
     for phrase in CERTAINTY_PHRASES:
         # For phrases with special characters (like "100%"), use direct match
-        if any(c in phrase for c in "%"):
+        if "%" in phrase:
             if phrase in text_lower:
                 certainty_count += 1
         elif " " in phrase:
-            # Multi-word phrase: direct substring match
+            # Multi-word phrase: direct substring match (already lowercased)
             if phrase in text_lower:
                 certainty_count += 1
         else:
-            # Single word: use word boundary
-            if re.search(rf"\b{re.escape(phrase)}\b", text_lower):
+            # Single word: use precompiled pattern with contraction support
+            if _CERTAINTY_SINGLE_WORD_PATTERNS[phrase].search(text_lower):
                 certainty_count += 1
 
     # No certainty markers = neutral confidence

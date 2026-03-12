@@ -3,7 +3,7 @@
 **Date:** 2026-03-12
 **Session:** Pattern matching redesign, native observability, self-evolving patterns
 **Branch:** main (clean)
-**Status:** Research complete, contracts ready, implementation pending
+**Status:** CR-004 complete, remaining contracts ready for implementation
 
 ---
 
@@ -44,16 +44,17 @@ All infrastructure should live IN Convergence. Company-specific code should be m
 
 ## Contracts Ready for Implementation
 
-### CR-004: Fix Confidence Bugs (Tier 1)
+### CR-004: Fix Confidence Bugs (Tier 1) ✓ COMPLETE
 ```json
 {
   "goal": "Fix 3 bugs in confidence.py",
   "files": ["convergence/evaluators/confidence.py"],
   "tier": 1,
-  "bugs": [
-    "NEGATION_PATTERNS missing re.IGNORECASE",
-    "Patterns recompile every call (precompile at module level)",
-    "Word boundary fails with contractions"
+  "status": "complete",
+  "fixes": [
+    "Added re.IGNORECASE to NEGATION_PATTERNS (now precompiled)",
+    "Precompiled all patterns at module level (_HEDGING_SINGLE_WORD_PATTERNS, etc.)",
+    "Added contraction support: (?:'[a-z]*)? suffix for word boundary patterns"
   ]
 }
 ```
@@ -135,14 +136,14 @@ All infrastructure should live IN Convergence. Company-specific code should be m
 
 ## Implementation Order
 
-| Phase | Contract | Scope | Dependencies |
-|-------|----------|-------|--------------|
-| 0 | CR-004 | Fix confidence bugs | None |
-| 1 | CR-005 | Native observability | None |
-| 2 | CR-006 | YAML patterns | None |
-| 3 | CR-007 | Multi-mode classifier | CR-006 |
-| 4 | CR-008 | Pattern evolution | CR-006, CR-007 |
-| 5 | CR-009 | README update | All above |
+| Phase | Contract | Scope | Dependencies | Status |
+|-------|----------|-------|--------------|--------|
+| 0 | CR-004 | Fix confidence bugs | None | ✓ DONE |
+| 1 | CR-005 | Native observability | None | Ready |
+| 2 | CR-006 | YAML patterns | None | Ready |
+| 3 | CR-007 | Multi-mode classifier | CR-006 | Blocked |
+| 4 | CR-008 | Pattern evolution | CR-006, CR-007 | Blocked |
+| 5 | CR-009 | README update | All above | Blocked |
 
 ---
 
@@ -185,7 +186,7 @@ await runtime_update("funjoin_sales", decision_id=selection.decision_id, reward=
 
 - `convergence/clients/claude.py` - Added user_id to record_outcome
 - `convergence/cache/semantic.py` - Fixed get_running_loop
-- `convergence/evaluators/confidence.py` - Sorted VALID_METHODS
+- `convergence/evaluators/confidence.py` - Sorted VALID_METHODS, **CR-004: precompiled patterns, IGNORECASE, contraction support**
 - `convergence/storage/postgresql.py` - Scoped UPDATE by user_id
 - `convergence/generator/natural_language_processor.py` - Fixed JSON handling
 - `.claude/rules/project.md` - Added known tech debt section
@@ -194,10 +195,12 @@ await runtime_update("funjoin_sales", decision_id=selection.decision_id, reward=
 
 ## Next Steps
 
-1. **Run CR-004** (bug fix) - Can do immediately
-2. **Review CR-005 design** with user - Native observability scope
-3. **Start CR-006** - YAML patterns foundation
-4. **Test with FunJoin** - Real consumer validation
+1. ~~**Run CR-004** (bug fix)~~ ✓ DONE
+2. **Start CR-005** - Native observability protocol (Tier 2, no deps)
+3. **Start CR-006** - YAML patterns foundation (Tier 2, no deps)
+4. **CR-007** - Multi-mode classifier (depends on CR-006)
+5. **CR-008** - Pattern evolution via MAB (depends on CR-006, CR-007)
+6. **Test with FunJoin** - Real consumer validation
 
 ---
 
