@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 if TYPE_CHECKING:
     from convergence.runtime.reward_evaluator import RewardEvaluatorConfig
@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 class SelectionStrategyConfig(BaseModel):
     """Configuration for MAB selection strategy."""
-    
+
     exploration_bonus: float = Field(
         0.0, ge=0.0, le=1.0,
         description="Bonus added to under-explored arms (0-1)"

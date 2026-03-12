@@ -9,11 +9,12 @@ Provides comprehensive tracing and metrics tracking for:
 - Evolution and fitness tracking
 """
 
-import os
-import weave
-from typing import Any, Dict, List, Optional
-from datetime import datetime
 import logging
+import os
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import weave
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 class WeaveLogger:
     """
     Weave-based observability for The Convergence civilizations.
-    
+
     Tracks:
     - Agent actions and thoughts (RLP)
     - Strategy selection and rewards (MAB)
@@ -29,21 +30,21 @@ class WeaveLogger:
     - Evolution events and fitness scores
     - LLM token usage and costs
     """
-    
+
     def __init__(
-        self, 
+        self,
         organization: Optional[str] = None,
         project: Optional[str] = None,
         enabled: bool = True
     ):
         """
         Initialize Weave logger.
-        
+
         Args:
             organization: Weave organization/entity (reads from WANDB_ENTITY or WEAVE_ORGANIZATION env var)
             project: Weave project name (reads from WANDB_PROJECT or WEAVE_PROJECT env var)
             enabled: Whether to enable Weave logging
-        
+
         Environment Variables:
             WANDB_ENTITY or WEAVE_ORGANIZATION: Organization name (REQUIRED)
             WANDB_PROJECT or WEAVE_PROJECT: Project name (default: "learning-society")
@@ -51,7 +52,7 @@ class WeaveLogger:
         # Read organization from environment variables
         self.organization = organization or os.getenv("WEAVE_ORGANIZATION") or os.getenv("WANDB_ENTITY")
         self.project_name = project or os.getenv("WEAVE_PROJECT") or os.getenv("WANDB_PROJECT", "learning-society")
-        
+
         # Check if organization is set
         if not self.organization:
             logger.warning("[Weave] No organization specified. Set WANDB_ENTITY or WEAVE_ORGANIZATION environment variable.")
@@ -60,13 +61,13 @@ class WeaveLogger:
             self.project = None
             self.run_start_time = datetime.now()
             return
-        
+
         # Construct full project path: organization/project
         self.project = f"{self.organization}/{self.project_name}"
-        
+
         self.enabled = enabled
         self.run_start_time = datetime.now()
-        
+
         if self.enabled:
             try:
                 # Initialize Weave for this project
@@ -77,7 +78,7 @@ class WeaveLogger:
                 logger.warning(f"[Weave] Make sure '{self.organization}' is a valid W&B entity/organization")
                 logger.warning("[Weave] Continuing without tracing")
                 self.enabled = False
-    
+
     @weave.op()
     def log_agent_action(
         self,
@@ -91,7 +92,7 @@ class WeaveLogger:
     ):
         """
         Log a complete agent action cycle.
-        
+
         Args:
             agent_id: Agent identifier
             iteration: Current iteration number
@@ -103,7 +104,7 @@ class WeaveLogger:
         """
         if not self.enabled:
             return
-        
+
         try:
             # Return structured data for Weave to track
             return {
@@ -123,7 +124,7 @@ class WeaveLogger:
         except Exception as e:
             logger.error(f"[Weave] Error logging agent action: {e}")
             return {}
-    
+
     @weave.op()
     def log_agent_learning(
         self,
@@ -135,7 +136,7 @@ class WeaveLogger:
     ):
         """
         Log agent learning update.
-        
+
         Args:
             agent_id: Agent identifier
             iteration: Current iteration
@@ -145,7 +146,7 @@ class WeaveLogger:
         """
         if not self.enabled:
             return
-        
+
         try:
             return {
                 'agent_id': agent_id,
@@ -158,7 +159,7 @@ class WeaveLogger:
         except Exception as e:
             logger.error(f"[Weave] Error logging learning: {e}")
             return {}
-    
+
     @weave.op()
     def log_mab_selection(
         self,
@@ -170,7 +171,7 @@ class WeaveLogger:
     ):
         """
         Log MAB arm selection.
-        
+
         Args:
             agent_id: Agent identifier
             iteration: Current iteration
@@ -180,7 +181,7 @@ class WeaveLogger:
         """
         if not self.enabled:
             return
-        
+
         try:
             return {
                 'agent_id': agent_id,
@@ -194,7 +195,7 @@ class WeaveLogger:
         except Exception as e:
             logger.error(f"[Weave] Error logging MAB selection: {e}")
             return {}
-    
+
     @weave.op()
     def log_evolution_event(
         self,
@@ -205,7 +206,7 @@ class WeaveLogger:
     ):
         """
         Log evolution/selection event.
-        
+
         Args:
             iteration: Current iteration
             generation: Generation number
@@ -214,7 +215,7 @@ class WeaveLogger:
         """
         if not self.enabled:
             return
-        
+
         try:
             return {
                 'iteration': iteration,
@@ -228,7 +229,7 @@ class WeaveLogger:
         except Exception as e:
             logger.error(f"[Weave] Error logging evolution: {e}")
             return {}
-    
+
     @weave.op()
     def log_llm_usage(
         self,
@@ -242,7 +243,7 @@ class WeaveLogger:
     ):
         """
         Log LLM API usage.
-        
+
         Args:
             agent_id: Agent that made the call
             operation: Type of operation (reasoning, prompt_gen, etc.)
@@ -254,7 +255,7 @@ class WeaveLogger:
         """
         if not self.enabled:
             return
-        
+
         try:
             return {
                 'agent_id': agent_id,
@@ -271,7 +272,7 @@ class WeaveLogger:
         except Exception as e:
             logger.error(f"[Weave] Error logging LLM usage: {e}")
             return {}
-    
+
     @weave.op()
     def log_civilization_metrics(
         self,
@@ -283,7 +284,7 @@ class WeaveLogger:
     ):
         """
         Log overall civilization metrics.
-        
+
         Args:
             iteration: Current iteration
             total_actions: Total actions taken across all agents
@@ -293,7 +294,7 @@ class WeaveLogger:
         """
         if not self.enabled:
             return
-        
+
         try:
             return {
                 'iteration': iteration,
@@ -308,17 +309,17 @@ class WeaveLogger:
         except Exception as e:
             logger.error(f"[Weave] Error logging civilization metrics: {e}")
             return {}
-    
+
     def get_dashboard_url(self) -> Optional[str]:
         """
         Get Weave dashboard URL for this run.
-        
+
         Returns:
             Dashboard URL or None if not available
         """
         if not self.enabled:
             return None
-        
+
         try:
             # Construct Weave UI URL
             # Format: https://wandb.ai/entity/project/weave
@@ -344,12 +345,12 @@ def init_weave_logger(
 ) -> WeaveLogger:
     """
     Initialize global Weave logger.
-    
+
     Args:
         organization: Weave organization/entity (reads from env if not provided)
         project: Weave project name (reads from env if not provided)
         enabled: Whether to enable Weave logging
-    
+
     Environment Variables:
         WANDB_ENTITY or WEAVE_ORGANIZATION: Organization name (default: "the-convergence")
         WANDB_PROJECT or WEAVE_PROJECT: Project name (default: "learning-society")

@@ -6,11 +6,12 @@ Supports 100+ LLM providers through litellm: OpenAI, Anthropic, Cohere, etc.
 
 import os
 from typing import Any, Dict, Optional
-from pydantic import BaseModel, Field
-import weave
 
+import weave
+from pydantic import BaseModel, Field
+
+from convergence.core.env_loader import get_api_key
 from convergence.generator.constants import DEFAULT_LLM_MODEL
-from convergence.core.env_loader import ensure_api_key, get_api_key
 
 try:
     import litellm
@@ -42,42 +43,42 @@ class LiteLLMConfig(BaseModel):
 class LiteLLMProvider:
     """
     Universal LLM provider using litellm.
-    
+
     Supports:
     - Google Gemini (gemini-2.5-flash, gemini-2.5-pro, etc.) - Default
     - OpenAI (gpt-4o, gpt-4-turbo, etc.)
     - Anthropic (claude-3-opus, claude-3-sonnet, etc.)
     - Cohere, Replicate, Hugging Face, and 100+ more
-    
+
     Environment Variables (Optional):
         LLM_MODEL: Model name (imported from convergence.generator.constants.DEFAULT_LLM_MODEL)
         GEMINI_API_KEY: API key for Gemini models
         OPENAI_API_KEY: API key for OpenAI models
         ANTHROPIC_API_KEY: API key for Anthropic models
-    
+
     Usage:
         # Use default (from constants.DEFAULT_LLM_MODEL)
         provider = LiteLLMProvider()
-        
+
         # Or specify a model
         provider = LiteLLMProvider(model="openai/gpt-4o")
-        
+
         # Or use env vars
         os.environ["LLM_MODEL"] = "gemini/gemini-2.5-pro"
         os.environ["GEMINI_API_KEY"] = "your-key"
         provider = LiteLLMProvider()
-        
+
         response = await provider.generate("Hello, world!")
     """
-    
+
     def __init__(self, config: Optional[LiteLLMConfig] = None, **kwargs):
         """
         Initialize LiteLLM provider.
-        
+
         Reads from environment variables if not specified:
         - LLM_MODEL: Override default model
         - <PROVIDER>_API_KEY: API key for the provider
-        
+
         Args:
             config: LiteLLM configuration
             **kwargs: Override config values
@@ -86,9 +87,9 @@ class LiteLLMProvider:
             raise ImportError(
                 "litellm is not installed. Install with: pip install litellm"
             )
-        
+
         self.config = config or LiteLLMConfig()
-        
+
         # Allow environment variable to override model
         if "LLM_MODEL" in os.environ and not config:
             self.config.model = os.environ["LLM_MODEL"]
@@ -97,19 +98,19 @@ class LiteLLMProvider:
             model = os.environ.get("LLM_MODEL")
             if model:
                 self.config.model = model
-                
+
         # Auto-load API key if not provided
         if not self.config.api_key:
             provider = self.config.model.split('/')[0] if '/' in self.config.model else 'unknown'
             api_key = get_api_key(provider)
             if api_key:
                 self.config.api_key = api_key
-        
+
         # Allow kwargs to override config
         for key, value in kwargs.items():
             if hasattr(self.config, key):
                 setattr(self.config, key, value)
-    
+
     @weave.op()
     async def generate(
         self,
@@ -120,21 +121,21 @@ class LiteLLMProvider:
     ) -> Dict[str, Any]:
         """
         Generate text from prompt.
-        
+
         Args:
             prompt: Input prompt
             temperature: Sampling temperature (overrides config)
             max_tokens: Max tokens to generate (overrides config)
             **kwargs: Additional litellm parameters
-            
+
         Returns:
             Dict with 'content' and optional 'metadata'
         """
-        
+
         # Use config defaults if not specified
         temperature = temperature if temperature is not None else self.config.temperature
         max_tokens = max_tokens if max_tokens is not None else self.config.max_tokens
-        
+
         try:
             # Prepare litellm parameters
             litellm_params = {
@@ -144,24 +145,24 @@ class LiteLLMProvider:
                 "max_tokens": max_tokens,
                 "timeout": self.config.timeout,
             }
-            
+
             # Add API key if provided in config
             if self.config.api_key:
                 litellm_params["api_key"] = self.config.api_key
-            
+
             # Add custom API base if provided
             if self.config.api_base:
                 litellm_params["api_base"] = self.config.api_base
-            
+
             # Merge any additional kwargs
             litellm_params.update(kwargs)
-            
+
             # Call litellm (supports async)
             response = await litellm.acompletion(**litellm_params)
-            
+
             # Extract response (handle None content)
             content = response.choices[0].message.content or ""
-            
+
             # Extract usage safely (different providers return different formats)
             usage = {}
             if response.usage:
@@ -178,7 +179,7 @@ class LiteLLMProvider:
                         'completion_tokens': getattr(response.usage, 'completion_tokens', 0),
                         'total_tokens': getattr(response.usage, 'total_tokens', 0),
                     }
-            
+
             return {
                 'content': content,
                 'metadata': {
@@ -187,13 +188,13 @@ class LiteLLMProvider:
                     'finish_reason': response.choices[0].finish_reason
                 }
             }
-        
+
         except Exception as e:
             # Log error clearly with helpful context
             import logging
             logger = logging.getLogger(__name__)
             logger.error(f"LLM generation failed: {e}")
-            
+
             # Provide helpful error message based on error type
             error_msg = str(e)
             if "AuthenticationError" in error_msg or "api_key" in error_msg.lower():
@@ -203,13 +204,13 @@ class LiteLLMProvider:
                     f"API key not set. Please set {env_var} environment variable "
                     f"or pass api_key in config. Model: {self.config.model}"
                 )
-            
+
             # Return error in expected format
             return {
                 'content': '',
                 'metadata': {'error': str(e), 'model': self.config.model}
             }
-    
+
     @weave.op()
     async def generate_structured(
         self,
@@ -219,18 +220,18 @@ class LiteLLMProvider:
     ) -> BaseModel:
         """
         Generate structured output matching Pydantic schema.
-        
+
         Uses function calling or JSON mode depending on model support.
-        
+
         Args:
             prompt: Input prompt
             schema: Pydantic model class
             **kwargs: Additional parameters
-            
+
         Returns:
             Instance of schema with generated data
         """
-        
+
         # Add JSON instruction to prompt
         json_prompt = f"""{prompt}
 
@@ -238,20 +239,20 @@ Respond with valid JSON matching this schema:
 {schema.model_json_schema()}
 
 JSON:"""
-        
+
         response = await self.generate(
             prompt=json_prompt,
             **kwargs
         )
-        
+
         content = response.get('content', '{}')
-        
+
         # Try to parse as JSON and validate with schema
         try:
             import json
             data = json.loads(content)
             return schema(**data)
-        except Exception as e:
+        except Exception:
             # Fallback: return empty instance
             return schema()
 
@@ -259,14 +260,14 @@ JSON:"""
 class MockLLMProvider:
     """
     Mock LLM provider for testing without API calls.
-    
+
     Returns simple mock responses based on prompt patterns.
     """
-    
+
     def __init__(self, **kwargs):
         """Initialize mock provider."""
         pass
-    
+
     @weave.op()
     async def generate(
         self,
@@ -274,10 +275,10 @@ class MockLLMProvider:
         **kwargs: Any
     ) -> Dict[str, Any]:
         """Generate mock response."""
-        
+
         # Simple pattern-based responses
         prompt_lower = prompt.lower()
-        
+
         if 'reasoning' in prompt_lower or 'think' in prompt_lower:
             content = "Let me think through this step by step: First, I'll analyze the situation. Second, I'll consider the options. Third, I'll choose the best approach."
         elif 'question' in prompt_lower or 'request' in prompt_lower:
@@ -288,12 +289,12 @@ class MockLLMProvider:
             content = "A is better because it provides more comprehensive information and addresses the question directly."
         else:
             content = f"Mock response to prompt: {prompt[:50]}..."
-        
+
         return {
             'content': content,
             'metadata': {'model': 'mock', 'mock': True}
         }
-    
+
     @weave.op()
     async def generate_structured(
         self,
@@ -314,28 +315,28 @@ def get_llm_provider(
 ) -> LiteLLMProvider | MockLLMProvider:
     """
     Get LLM provider instance.
-    
+
     Reads model from (in order of priority):
     1. model parameter
     2. LLM_MODEL environment variable
     3. DEFAULT_LLM_MODEL from constants
-    
+
     Args:
         model: Model name (e.g., "gemini/gemini-2.5-flash", "openai/gpt-4o")
                If None, uses LLM_MODEL env var or DEFAULT_LLM_MODEL constant
         mock: If True, return mock provider for testing
         **kwargs: Additional config parameters
-        
+
     Returns:
         LLM provider instance
     """
     if mock:
         return MockLLMProvider(**kwargs)
-    
+
     # Allow env var to override default, but explicit model param takes precedence
     if model is None:
         model = os.environ.get("LLM_MODEL", DEFAULT_LLM_MODEL)
-    
+
     config = LiteLLMConfig(model=model, **kwargs)
     return LiteLLMProvider(config=config)
 

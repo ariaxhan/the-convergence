@@ -4,9 +4,10 @@ AI-Powered Setup for The Convergence
 Provides natural language interface for generating optimization configurations.
 """
 import json
-import yaml
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
+import yaml
 from rich.console import Console
 from rich.prompt import Prompt
 
@@ -16,23 +17,23 @@ from .natural_language_processor import NaturalLanguageProcessor
 async def run_ai_powered_setup(project_dir: Path, output_dir: Path) -> Dict[str, Any]:
     """
     Run AI-powered natural language setup.
-    
+
     Args:
         project_dir: Project directory
         output_dir: Output directory for generated files
-        
+
     Returns:
         Dict with paths to generated files
     """
     console = Console()
-    
+
     console.print("")
     console.print("╔" + "═" * 58 + "╗")
     console.print("║" + " " * 10 + "🤖 AI-POWERED SETUP" + " " * 25 + "║")
     console.print("║" + " " * 10 + "Natural Language Interface" + " " * 20 + "║")
     console.print("╚" + "═" * 58 + "╝")
     console.print("")
-    
+
     # Explain what The Convergence does
     console.print("[bold cyan]What is The Convergence?[/bold cyan]")
     console.print("")
@@ -51,7 +52,7 @@ async def run_ai_powered_setup(project_dir: Path, output_dir: Path) -> Dict[str,
     console.print("")
     console.print("─" * 60)
     console.print("")
-    
+
     # Get user input with more detailed questions
     console.print("[bold cyan]Tell us about your API optimization needs[/bold cyan]")
     console.print("")
@@ -64,35 +65,35 @@ async def run_ai_powered_setup(project_dir: Path, output_dir: Path) -> Dict[str,
     console.print("[dim]Example:[/dim]")
     console.print("[dim]\"I'm using OpenAI's GPT-4 API for creative writing tasks. I want to optimize for quality over speed, but keep costs reasonable. I need responses that are creative and engaging, around 200-500 words. I'm willing to pay more for better quality but want to avoid unnecessary token usage.\"[/dim]")
     console.print("")
-    
+
     user_input = Prompt.ask("Describe your optimization needs")
-    
+
     if not user_input.strip():
         console.print("[yellow]No input provided, falling back to guided setup...[/yellow]")
         from .interactive_setup import run_guided_setup
         return await run_guided_setup(project_dir, output_dir)
-    
+
     console.print("")
     console.print("─" * 60)
     console.print("")
     console.print("[bold cyan]🤖 Processing Your Request...[/bold cyan]")
     console.print("")
-    
+
     try:
         # Initialize processor
         processor = NaturalLanguageProcessor()
-        
+
         # Process user intent
         result = await processor.process_user_intent(user_input)
-        
+
         console.print("[green]✅ Successfully processed your request![/green]")
         console.print("")
-        
+
         # Save generated files
         saved_files = await _save_generated_files(
             result, output_dir, console
         )
-        
+
         console.print("")
         console.print("─" * 60)
         console.print("")
@@ -107,9 +108,9 @@ async def run_ai_powered_setup(project_dir: Path, output_dir: Path) -> Dict[str,
         console.print(f"  1. Set your API key: export {saved_files['config']['api']['auth']['token_env']}='your-key'")
         console.print("  2. Run optimization: convergence optimize optimization.yaml")
         console.print("")
-        
+
         return saved_files
-        
+
     except Exception as e:
         console.print(f"[red]❌ Error in AI-powered setup: {e}[/red]")
         console.print(f"[yellow]Error type: {type(e).__name__}[/yellow]")
@@ -121,24 +122,24 @@ async def run_ai_powered_setup(project_dir: Path, output_dir: Path) -> Dict[str,
 
 
 async def _save_generated_files(
-    result: Dict[str, Any], 
-    output_dir: Path, 
+    result: Dict[str, Any],
+    output_dir: Path,
     console: Console
 ) -> Dict[str, Any]:
     """Save the generated files to disk."""
-    
+
     # Ensure output directory exists
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Generate file contents
     config = result['config']  # This is now a raw YAML string
     test_cases = result['test_cases']  # This is now a raw JSON string
     evaluator_code = result['evaluator_code']
-    
+
     # Use raw strings directly (they already contain comments)
     yaml_content = config
     json_content = test_cases
-    
+
     # Generate README content (parse config for README generation)
     try:
         parsed_config = yaml.safe_load(config) if isinstance(config, str) else config
@@ -152,18 +153,18 @@ async def _save_generated_files(
         if isinstance(test_cases, str):
             console.print(f"[yellow]Test cases preview: {test_cases[:200]}...[/yellow]")
         raise e
-    
+
     # Save files
     config_path = output_dir / "optimization.yaml"
     test_cases_path = output_dir / "test_cases.json"
     evaluator_path = output_dir / "evaluator.py"
     readme_path = output_dir / "README.md"
-    
+
     config_path.write_text(yaml_content)
     test_cases_path.write_text(json_content)
     evaluator_path.write_text(evaluator_code)
     readme_path.write_text(readme_content)
-    
+
     return {
         'spec_path': str(config_path),
         'config_path': str(config_path),
@@ -178,28 +179,28 @@ async def _save_generated_files(
 
 def _generate_readme_content(config: Dict[str, Any], extracted_info: Dict[str, Any]) -> str:
     """Generate README content for the generated configuration."""
-    
+
     api_name = config['api']['name']
     endpoint = config['api']['endpoint']
     api_key_env = config['api']['auth']['token_env']
     provider = extracted_info.get('provider', 'api')
     use_case = extracted_info.get('use_case', 'API optimization')
-    
+
     # Provider-specific instructions
     provider_instructions = {
         "openai": "Get your key from: https://platform.openai.com/api-keys",
-        "groq": "Get your key from: https://console.groq.com/keys", 
+        "groq": "Get your key from: https://console.groq.com/keys",
         "azure": "Get your key from: https://portal.azure.com",
         "anthropic": "Get your key from: https://console.anthropic.com/keys",
         "custom": "Set up your custom API key environment variable"
     }
-    
+
     api_instructions = provider_instructions.get(provider, provider_instructions["custom"])
-    
+
     # Get search space parameters
     search_params = config.get('search_space', {}).get('parameters', {})
     param_descriptions = []
-    
+
     for param_name, param_config in search_params.items():
         if param_config.get('type') == 'continuous':
             min_val = param_config.get('min', 0)
@@ -212,16 +213,16 @@ def _generate_readme_content(config: Dict[str, Any], extracted_info: Dict[str, A
         elif param_config.get('type') == 'categorical':
             values = param_config.get('values', [])
             param_descriptions.append(f"- **{param_name}**: {', '.join(map(str, values))}")
-    
+
     # Get metrics
     metrics = config.get('evaluation', {}).get('metrics', {})
     metric_descriptions = []
-    
+
     for metric_name, metric_config in metrics.items():
         weight = metric_config.get('weight', 0)
         metric_type = metric_config.get('type', 'higher_is_better')
         metric_descriptions.append(f"- **{metric_name.replace('_', ' ').title()}** ({weight*100:.0f}%): {metric_type}")
-    
+
     return f"""# {provider.title()} API Optimization
 
 This configuration optimizes API calls to **{api_name}** at `{endpoint}`.
@@ -236,7 +237,7 @@ This configuration optimizes API calls to **{api_name}** at `{endpoint}`.
    ```bash
    export {api_key_env}='your-actual-api-key-value'
    ```
-   
+
    **Important:** Replace `your-actual-api-key-value` with your real API key, not the variable name.
    {api_instructions}
 

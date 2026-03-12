@@ -2,7 +2,8 @@
 Configuration models for Convergence SDK.
 """
 
-from typing import Dict, Any, Optional, Union, Callable
+from typing import Any, Callable, Dict, Optional, Union
+
 from pydantic import BaseModel, Field
 
 

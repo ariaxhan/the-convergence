@@ -11,16 +11,16 @@ Future trackers:
 """
 
 # TODO: Implement in future release
-# 
+#
 # class MLflowTracker:
 #     """MLflow integration (free, self-hosted)."""
-#     
+#
 #     def __init__(self, config: dict):
 #         import mlflow
 #         self.mlflow = mlflow
 #         mlflow.set_tracking_uri(config.get("tracking_uri", "sqlite:///data/mlruns.db"))
 #         mlflow.set_experiment(config.get("experiment_name", "convergence"))
-#     
+#
 #     async def log_run(self, run: OptimizationRun):
 #         """Log run to MLflow."""
 #         with self.mlflow.start_run(run_name=run.run_id):
@@ -33,13 +33,13 @@ Future trackers:
 #
 # class AimTracker:
 #     """Aim integration (free, lightweight)."""
-#     
+#
 #     def __init__(self, config: dict):
 #         from aim import Run
 #         self.Run = Run
 #         self.repo = config.get("repo", "./data/aim_repo")
 #         self.run = None
-#     
+#
 #     async def log_run(self, run: OptimizationRun):
 #         """Log run to Aim."""
 #         aim_run = self.Run(repo=self.repo, experiment=run.session_id)
@@ -49,12 +49,12 @@ Future trackers:
 #
 # class WeaveTracker:
 #     """Weave integration (optional, paid)."""
-#     
+#
 #     def __init__(self, config: dict):
 #         import weave
 #         self.weave = weave
 #         weave.init(config.get("project"))
-#     
+#
 #     async def log_run(self, run: OptimizationRun):
 #         """Log run to Weave."""
 #         self.weave.log({"run": run.dict()})

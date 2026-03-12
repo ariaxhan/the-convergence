@@ -7,7 +7,6 @@ reducing redundant API calls for similar questions.
 from __future__ import annotations
 
 import asyncio
-import inspect
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Union
 
 from .backends import (
@@ -18,7 +17,6 @@ from .backends import (
     SQLiteCacheBackend,
     cosine_similarity,
 )
-
 
 # Type alias for embedding functions
 EmbeddingFn = Union[

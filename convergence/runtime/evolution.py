@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
-from convergence.types.runtime import RuntimeArm, RuntimeArmTemplate
 from convergence.optimization.evolution import EvolutionEngine
 from convergence.optimization.models import SearchSpaceConfig, SearchSpaceParameter
+from convergence.types.runtime import RuntimeArm, RuntimeArmTemplate
 
 logger = logging.getLogger(__name__)
 
@@ -20,23 +20,23 @@ logger = logging.getLogger(__name__)
 def infer_search_space_from_arms(arms: List[RuntimeArm]) -> Optional[SearchSpaceConfig]:
     """
     Infer search space from arm parameters (helper for convenience).
-    
+
     Automatically detects parameter types and ranges from existing arm params.
     Less precise than explicit definition but useful for quick setup.
-    
+
     Args:
         arms: List of arms to infer search space from
-        
+
     Returns:
         SearchSpaceConfig if inference successful, None otherwise
     """
     if not arms or not arms[0].params:
         return None
-    
+
     # Sample first arm's params to infer structure
     sample_params = arms[0].params
     parameters: Dict[str, SearchSpaceParameter] = {}
-    
+
     # Collect all unique values for each param across all arms
     param_values: Dict[str, List[Any]] = {}
     for arm in arms:
@@ -45,11 +45,11 @@ def infer_search_space_from_arms(arms: List[RuntimeArm]) -> Optional[SearchSpace
                 param_values[param_name] = []
             if param_value not in param_values[param_name]:
                 param_values[param_name].append(param_value)
-    
+
     # Infer type and range for each parameter
     for param_name, param_value in sample_params.items():
         unique_values = param_values.get(param_name, [param_value])
-        
+
         # Determine parameter type
         if isinstance(param_value, bool):
             # Categorical: True/False
@@ -76,10 +76,10 @@ def infer_search_space_from_arms(arms: List[RuntimeArm]) -> Optional[SearchSpace
             numeric_values = [v for v in unique_values if isinstance(v, (int, float))]
             if not numeric_values:
                 continue
-            
+
             min_val = min(numeric_values)
             max_val = max(numeric_values)
-            
+
             # If values look like discrete steps, use discrete
             if len(numeric_values) <= 10 and all(isinstance(v, int) for v in numeric_values):
                 # Discrete: infer step size
@@ -90,11 +90,11 @@ def infer_search_space_from_arms(arms: List[RuntimeArm]) -> Optional[SearchSpace
                     step = min(diffs) if diffs else 1
                 else:
                     step = 1
-                
+
                 # Expand range slightly for mutation
                 expanded_min = max(0, min_val - 2 * step)
                 expanded_max = max_val + 2 * step
-                
+
                 parameters[param_name] = SearchSpaceParameter(
                     type="discrete",
                     min=expanded_min,
@@ -106,7 +106,7 @@ def infer_search_space_from_arms(arms: List[RuntimeArm]) -> Optional[SearchSpace
                 expanded_min = min_val * 0.5  # Allow 50% reduction
                 expanded_max = max_val * 2.0  # Allow 100% increase
                 step = (expanded_max - expanded_min) / 100  # 100 steps
-                
+
                 parameters[param_name] = SearchSpaceParameter(
                     type="continuous",
                     min=expanded_min,
@@ -120,11 +120,11 @@ def infer_search_space_from_arms(arms: List[RuntimeArm]) -> Optional[SearchSpace
                 f"unknown type {type(param_value)}"
             )
             continue
-    
+
     if not parameters:
         logger.warning("[Evolution] Could not infer any parameters from arms")
         return None
-    
+
     return SearchSpaceConfig(parameters=parameters)
 
 
@@ -140,10 +140,10 @@ async def evolve_arms(
 ) -> List[RuntimeArmTemplate]:
     """
     Evolve top-performing arms into new configurations.
-    
+
     Uses Convergence EvolutionEngine to mutate/crossover best arms, creating
     new arm templates that can be initialized in the MAB system.
-    
+
     Args:
         system: System name (e.g., "chat_model_selection")
         user_id: User ID
@@ -152,23 +152,23 @@ async def evolve_arms(
         search_space: Explicit search space definition (recommended)
         evolution_config: Evolution parameters (mutation_rate, crossover_rate, elite_size)
         storage: Storage adapter to load arms (optional, will use manager's storage if not provided)
-    
+
     Returns:
         List of evolved arm templates ready for initialization
     """
     from convergence.runtime.online import _get_manager
-    
+
     # Get manager to access arms
     manager = await _get_manager(system)
     arms_storage = storage or manager.storage
-    
+
     # Load arms for user/agent
     arms = await arms_storage.get_arms(user_id=user_id, agent_type=agent_type)
-    
+
     if not arms:
         logger.warning(f"[Evolution] No arms found for user {user_id}, agent {agent_type}")
         return []
-    
+
     # Convert to RuntimeArm objects if needed
     runtime_arms = []
     for arm_data in arms:
@@ -176,7 +176,7 @@ async def evolve_arms(
             runtime_arms.append(arm_data)
         else:
             runtime_arms.append(RuntimeArm(**arm_data))
-    
+
     # Sort by performance (mean_estimate)
     sorted_arms = sorted(
         runtime_arms,
@@ -184,11 +184,11 @@ async def evolve_arms(
         reverse=True
     )
     top_arms = sorted_arms[:top_n]
-    
+
     if not top_arms:
         logger.warning("[Evolution] No arms to evolve")
         return []
-    
+
     # Infer search space if not provided
     if not search_space:
         logger.info("[Evolution] Inferring search space from arm parameters")
@@ -198,26 +198,26 @@ async def evolve_arms(
             return []
     else:
         logger.debug("[Evolution] Using explicit search space definition")
-    
+
     # Create evolution engine
     mutation_rate = evolution_config.get("mutation_rate", 0.2) if evolution_config else 0.2
     crossover_rate = evolution_config.get("crossover_rate", 0.7) if evolution_config else 0.7
     elite_size = evolution_config.get("elite_size", 1) if evolution_config else 1
-    
+
     evolution_engine = EvolutionEngine(
         search_space=search_space,
         mutation_rate=mutation_rate,
         crossover_rate=crossover_rate,
         elite_size=elite_size,
     )
-    
+
     # Prepare configs and fitness scores
     top_configs = [arm.params for arm in top_arms]
     fitness_scores = [arm.mean_estimate or 0.0 for arm in top_arms]
-    
+
     # Evolve
     evolved_configs = evolution_engine.evolve_population(top_configs, fitness_scores)
-    
+
     # Create new arm templates (skip elite - first config)
     new_arms = []
     for i, evolved_config in enumerate(evolved_configs[elite_size:], 1):
@@ -228,11 +228,11 @@ async def evolve_arms(
             description=f"Evolved from top performer (mean_estimate: {fitness_scores[0]:.3f})"
         )
         new_arms.append(new_arm)
-    
+
     logger.info(
         f"[Evolution] Evolved {len(new_arms)} new arms from top {top_n} performers "
         f"(system={system}, user={user_id}, agent={agent_type})"
     )
-    
+
     return new_arms
 

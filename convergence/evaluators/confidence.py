@@ -10,7 +10,6 @@ Extracts confidence scores from LLM response text using multiple methods:
 import re
 from typing import Optional
 
-
 # Hedging phrases that indicate uncertainty
 HEDGING_PHRASES = [
     "i'm not entirely sure",

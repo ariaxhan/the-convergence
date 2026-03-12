@@ -14,10 +14,10 @@ Available Built-in Evaluators:
 """
 
 from .base import BaseEvaluator, score_wrapper
-from .text_quality import score_text_quality
-from .json_structure import score_json_structure, score_json_validity
 from .code_quality import score_code_quality, score_python_syntax
 from .confidence import extract_confidence
+from .json_structure import score_json_structure, score_json_validity
+from .text_quality import score_text_quality
 
 # Optional imports (may not be available)
 try:

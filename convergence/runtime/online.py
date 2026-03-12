@@ -13,18 +13,16 @@ try:  # Optional dependency for reproducible sampling
 except Exception:  # pragma: no cover
     _np = None
 
+from convergence.runtime.bayesian_update import compute_bayesian_update
 from convergence.storage.runtime_protocol import RuntimeStorageProtocol
 from convergence.storage.runtime_stub import UnconfiguredRuntimeStorage
 from convergence.types import (
     RuntimeArm,
     RuntimeArmState,
-    RuntimeArmTemplate,
     RuntimeConfig,
     RuntimeDecision,
     RuntimeSelection,
-    SelectionStrategyConfig,
 )
-from convergence.runtime.bayesian_update import compute_bayesian_update
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +58,7 @@ class RuntimeManager:
                 return self._fallback_selection()
 
             samples = self._sample(arms)
-            
+
             # Apply stability check if configured
             strategy = self.config.selection_strategy
             if strategy and strategy.use_stability:
@@ -70,19 +68,19 @@ class RuntimeManager:
                     if arm.total_pulls >= strategy.stability_min_pulls:
                         if current_best is None or (arm.mean_estimate or 0.0) > (current_best.mean_estimate or 0.0):
                             current_best = arm
-                
+
                 # If we have a stable current best, check if we should stick with it
                 if current_best:
                     # Get CI width from metadata or compute it
                     ci_width = self._get_confidence_interval_width(current_best)
-                    
+
                     if ci_width < strategy.stability_confidence_threshold:
                         # High confidence in current arm, check if candidate is significantly better
                         candidate_id = max(samples.items(), key=lambda item: item[1])[0]
                         candidate_arm = next(arm for arm in arms if arm.arm_id == candidate_id)
-                        
+
                         improvement = (candidate_arm.mean_estimate or 0.0) - (current_best.mean_estimate or 0.0)
-                        
+
                         if improvement < strategy.stability_improvement_threshold:
                             # Stick with current best (stability)
                             logger.debug(
@@ -156,10 +154,10 @@ class RuntimeManager:
         metadata: Optional[Dict[str, object]] = None,
     ) -> Dict[str, object]:
         agent = agent_type or self.config.agent_type or "default"
-        
+
         # Compute reward using evaluator if configured, otherwise use raw reward
         computed_reward = None
-        
+
         # If reward_evaluator configured and signals provided, use evaluator
         if self.config.reward_evaluator and signals:
             from convergence.runtime.reward_evaluator import RuntimeRewardEvaluator
@@ -172,7 +170,7 @@ class RuntimeManager:
             computed_reward = engagement_score
         else:
             computed_reward = 0.5  # Default neutral reward
-        
+
         reward_clamped = _clamp(computed_reward)
         engagement = _clamp(engagement_score) if engagement_score is not None else reward_clamped
         grading = _clamp(grading_score) if grading_score is not None else None
@@ -336,7 +334,7 @@ class RuntimeManager:
         """Sample from arms with optional exploration bonus."""
         samples: Dict[str, float] = {}
         strategy = self.config.selection_strategy
-        
+
         for arm in arms:
             # Thompson Sampling: sample from Beta(alpha, beta)
             alpha = max(arm.alpha, 1e-6)
@@ -345,20 +343,20 @@ class RuntimeManager:
                 sample = float(_np.random.beta(alpha, beta))  # type: ignore[attr-defined]
             else:
                 sample = random.betavariate(alpha, beta)
-            
+
             # Apply exploration bonus if configured
             if strategy and strategy.exploration_bonus > 0:
                 if arm.total_pulls < strategy.exploration_min_pulls:
                     sample += strategy.exploration_bonus
                     # Clamp to [0, 1] after bonus
                     sample = min(1.0, sample)
-            
+
             samples[arm.arm_id] = sample
         return samples
 
     def _invalidate_cache(self, *, user_id: str, agent_type: str) -> None:
         self._arms_cache.pop((user_id, agent_type), None)
-    
+
     def _get_confidence_interval_width(self, arm: RuntimeArm) -> float:
         """Get confidence interval width for an arm."""
         # Try to get from metadata first
@@ -366,14 +364,14 @@ class RuntimeManager:
             ci = arm.metadata["confidence_interval"]
             if isinstance(ci, dict) and "lower" in ci and "upper" in ci:
                 return ci["upper"] - ci["lower"]
-        
+
         # Compute from alpha/beta if mean_estimate exists
         if arm.mean_estimate is not None and arm.alpha > 0 and arm.beta > 0:
             import math
             variance = (arm.alpha * arm.beta) / ((arm.alpha + arm.beta) ** 2 * (arm.alpha + arm.beta + 1))
             std_dev = math.sqrt(variance)
             return 2 * 1.96 * std_dev  # 95% CI width
-        
+
         # Fallback: return large width (no confidence)
         return 1.0
 

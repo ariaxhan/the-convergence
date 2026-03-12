@@ -3,17 +3,18 @@ Type definitions for Convergence SDK.
 """
 
 from .config import (
-    ConvergenceConfig,
-    ApiConfig,
-    SearchSpaceConfig,
-    RunnerConfig,
-    EvaluationConfig,
-    StorageConfig,
     AdaptersConfig,
     AgentConfig,
+    ApiConfig,
+    ConvergenceConfig,
+    EvaluationConfig,
+    RunnerConfig,
+    SearchSpaceConfig,
+    StorageConfig,
 )
-from .results import OptimizationRunResult
 from .evaluator import Evaluator
+from .response import LLMResponse, detect_gap
+from .results import OptimizationRunResult
 from .runtime import (
     RuntimeArm,
     RuntimeArmState,
@@ -23,7 +24,6 @@ from .runtime import (
     RuntimeSelection,
     SelectionStrategyConfig,
 )
-from .response import LLMResponse, detect_gap
 
 # Rebuild RuntimeConfig to resolve RewardEvaluatorConfig forward reference (Pydantic v2)
 try:

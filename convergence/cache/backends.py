@@ -13,7 +13,7 @@ import math
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Protocol, TYPE_CHECKING
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
