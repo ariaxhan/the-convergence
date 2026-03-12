@@ -26,12 +26,21 @@
 │                     "Safe, Observable, Self-Improving"                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
+│  LAYER 0: KNOWLEDGE (The Foundation)                                        │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  Context Graph (who/what/how triad)                                 │    │
+│  │  + Progressive disclosure (narrow context to current task)         │    │
+│  │  + Session continuity (handoff documents, state persistence)        │    │
+│  │  + Relationship traversal (who owns what, what depends on what)     │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                    │                                         │
 │  LAYER 1: SAFETY & GUARDRAILS (The Real Core)                               │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  NeMo Guardrails (input/output/execution rails)                     │    │
 │  │  + Guardrails AI (schema validation)                                │    │
 │  │  + Budget enforcement (cost caps, rate limiting)                    │    │
 │  │  + Audit logging (every decision traceable)                         │    │
+│  │  ← Graph-informed: WHO has access to WHAT via HOW                   │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                    │                                         │
 │  LAYER 2: OBSERVABILITY                                                      │
@@ -41,6 +50,7 @@
 │  │  Cost tracking (per-request, per-user, per-system)                  │    │
 │  │  Drift detection (are patterns changing?)                           │    │
 │  │  Native backend | Weave adapter | Custom adapters                   │    │
+│  │  ← Tracks which parts of the graph are accessed                     │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                    │                                         │
 │  LAYER 3: OPTIMIZATION LOOP (Production-Ready)                              │
@@ -49,6 +59,7 @@
 │  │  Semantic Caching (70-80% cost reduction)                           │    │
 │  │  Confidence Extraction (gap detection → human escalation)           │    │
 │  │  Arm Evolution (genetic operators for configuration space)          │    │
+│  │  ← Learns which graph traversals work best                          │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                    │                                         │
 │  LAYER 4: EXPERIMENTAL METHODS (Labeled, Opt-In, Data-Gated)                │
@@ -64,6 +75,7 @@
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │  SQLite (dev) | PostgreSQL (prod) | Memory (test)                   │    │
 │  │  Redis (semantic cache) | Qdrant/Chroma (vectors, optional)         │    │
+│  │  + Graph storage (nodes, edges, session context)                    │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -92,6 +104,69 @@
 **Effort:** ~24 hours total
 **Files:** 5-8 modifications to existing code
 **Dependencies:** None
+
+**Teardown Critical Issue:** CRITICAL-2 (Thompson state not persisted)
+- [ ] Add save_state() / load_state() methods
+- [ ] Integrate with existing storage backends
+
+---
+
+### Phase 0.5: Context Graph MVP (Knowledge Foundation)
+
+**Goal:** Add the KNOWLEDGE layer that everything else operates on.
+
+**Teardown Critical Issue:** CRITICAL-1 (Context Graph missing from plan)
+
+**Why:** The context graph is not a feature — it's the substrate. Safety checks WHO has access to WHAT. Observability tracks which graph parts are used. Optimization learns which traversals work.
+
+**Files (5):**
+```
+convergence/knowledge/__init__.py        — Package exports
+convergence/knowledge/graph.py           — ContextGraph class
+convergence/knowledge/schema.py          — Node/Edge Pydantic models
+convergence/knowledge/storage.py         — SQLite/PostgreSQL tables
+tests/knowledge/test_graph.py            — Basic operations
+```
+
+**Schema:**
+```sql
+CREATE TABLE graph_nodes (
+    id TEXT PRIMARY KEY,
+    ontology_type TEXT NOT NULL,  -- 'who', 'what', 'how'
+    entity_type TEXT NOT NULL,    -- 'person', 'decision', 'process', etc.
+    content TEXT,
+    metadata TEXT,                -- JSON
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE graph_edges (
+    id TEXT PRIMARY KEY,
+    source_id TEXT REFERENCES graph_nodes(id),
+    target_id TEXT REFERENCES graph_nodes(id),
+    relationship_type TEXT,       -- 'owns', 'depends_on', 'created', etc.
+    weight REAL DEFAULT 1.0,
+    metadata TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**MVP Operations:**
+```python
+class ContextGraph:
+    async def add_node(self, ontology_type: str, entity_type: str, content: str) -> str: ...
+    async def add_edge(self, source_id: str, target_id: str, relationship: str) -> str: ...
+    async def traverse(self, start_node: str, relationship_types: list[str], max_depth: int = 3) -> Subgraph: ...
+    async def extract_context(self, focus_nodes: list[str], token_budget: int = 8000) -> ContextPayload: ...
+```
+
+**NOT in MVP:**
+- Embeddings (future enhancement)
+- Merge operations (future)
+- Graph learning (future)
+
+**Effort:** 2-3 days
+**Files:** 5 new files
+**Dependencies:** Phase 0 complete
 
 ---
 
@@ -240,6 +315,11 @@ tests/observability/test_native.py
 ### Phase 3: Semantic Cache (FunJoin Killer Feature)
 
 **Goal:** 70-80% cost reduction via semantic caching.
+
+**Teardown Critical Issue:** CRITICAL-3 (Current implementation has O(n) lookup)
+- [ ] Add approximate nearest neighbor (ANN) search
+- [ ] Options: SQLite FTS5, Qdrant, FAISS
+- [ ] Threshold validation utility needed
 
 **Implementation:**
 ```python
