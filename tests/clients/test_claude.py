@@ -7,7 +7,10 @@ Tests requiring API key skip gracefully.
 import pytest
 import os
 
-from tests.conftest import requires_anthropic
+from tests.conftest import requires_anthropic, requires_anthropic_package
+
+# Skip all tests in this module if anthropic package is not installed
+pytestmark = requires_anthropic_package
 
 
 class TestClaudeClientInitialization:

@@ -36,6 +36,15 @@ def has_redis() -> bool:
         return False
 
 
+def has_anthropic_package() -> bool:
+    """Check if anthropic package is installed."""
+    try:
+        import anthropic  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
 def has_anthropic_key() -> bool:
     """Check if Anthropic API key is available."""
     return bool(os.environ.get("ANTHROPIC_API_KEY"))
@@ -60,9 +69,14 @@ requires_redis = pytest.mark.skipif(
     reason="Redis not available"
 )
 
+requires_anthropic_package = pytest.mark.skipif(
+    not has_anthropic_package(),
+    reason="anthropic package not installed"
+)
+
 requires_anthropic = pytest.mark.skipif(
-    not has_anthropic_key(),
-    reason="ANTHROPIC_API_KEY not set"
+    not (has_anthropic_package() and has_anthropic_key()),
+    reason="anthropic package not installed or ANTHROPIC_API_KEY not set"
 )
 
 requires_openai = pytest.mark.skipif(
