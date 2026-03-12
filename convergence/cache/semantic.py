@@ -114,7 +114,7 @@ class SemanticCache:
             return await self._embedding_fn(text)  # type: ignore
         else:
             # Run sync function in executor to avoid blocking
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             return await loop.run_in_executor(None, self._embedding_fn, text)  # type: ignore
 
     async def get(self, query: str) -> Optional[Dict[str, Any]]:

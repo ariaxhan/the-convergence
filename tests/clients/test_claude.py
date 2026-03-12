@@ -276,7 +276,7 @@ class TestRecordOutcome:
         assert inspect.iscoroutinefunction(client.record_outcome)
 
     def test_record_outcome_accepts_params(self):
-        """record_outcome should accept decision_id and reward."""
+        """record_outcome should accept decision_id, user_id, and reward."""
         from convergence.clients import ClaudeClient
         import inspect
 
@@ -289,6 +289,7 @@ class TestRecordOutcome:
         params = sig.parameters
 
         assert "decision_id" in params
+        assert "user_id" in params
         assert "reward" in params or "converted" in params
 
 
@@ -350,6 +351,7 @@ class TestRuntimeIntegration:
         # Record positive outcome
         await client.record_outcome(
             decision_id=response.decision_id,
+            user_id="test_user",
             reward=1.0,
         )
 

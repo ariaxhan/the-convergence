@@ -396,10 +396,11 @@ class PostgreSQLRuntimeStorage:
                 """
                 UPDATE runtime_decisions
                 SET reward = $1
-                WHERE decision_id = $2
+                WHERE decision_id = $2 AND user_id = $3
                 """,
                 reward,
                 decision_id,
+                user_id,
             )
 
             # Update arm statistics

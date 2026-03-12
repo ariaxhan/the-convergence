@@ -82,7 +82,7 @@ def extract_confidence(text: str, method: str = "auto") -> Optional[float]:
     """
     if method not in VALID_METHODS:
         raise ValueError(
-            f"Invalid method '{method}'. Must be one of: {', '.join(VALID_METHODS)}"
+            f"Invalid method '{method}'. Must be one of: {', '.join(sorted(VALID_METHODS))}"
         )
 
     if method == "explicit":

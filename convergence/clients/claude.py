@@ -86,6 +86,7 @@ class ClaudeClient:
         if response.decision_id:
             await client.record_outcome(
                 decision_id=response.decision_id,
+                user_id="user_123",
                 reward=1.0,  # User converted
             )
     """
@@ -287,6 +288,7 @@ class ClaudeClient:
         self,
         *,
         decision_id: str,
+        user_id: str,
         reward: float,
     ) -> None:
         """
@@ -296,6 +298,7 @@ class ClaudeClient:
 
         Args:
             decision_id: Decision ID from a previous chat response.
+            user_id: User ID that was used for the original chat call.
             reward: Reward signal (0.0 to 1.0).
         """
         try:
@@ -303,7 +306,7 @@ class ClaudeClient:
 
             await runtime_update(
                 self._system,
-                user_id="",  # User ID tracked via decision
+                user_id=user_id,
                 decision_id=decision_id,
                 reward=reward,
             )

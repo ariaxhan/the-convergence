@@ -43,6 +43,11 @@ Use correct RL terms in code and docs:
 - Integration tests for optimization loop changes
 - All tests pass before merge
 
+## Known Technical Debt
+
+- **Regex patterns scattered** - ~20 regex patterns across 8 files (confidence.py, code_quality.py, text_quality.py, natural_language_processor.py). Should centralize into `convergence/patterns/` module.
+- **Pydantic V1 config syntax** - Using deprecated `class Config` instead of `ConfigDict`. See rl_models.py, runtime.py.
+
 ## Never Do
 
 - Never commit secrets or .env files
@@ -50,3 +55,4 @@ Use correct RL terms in code and docs:
 - Never break the optimization loop invariant
 - Never use "API optimization" as primary framing in docs
 - Never block the async event loop with sync I/O
+- Never use `asyncio.get_event_loop()` inside async functions - use `get_running_loop()`
