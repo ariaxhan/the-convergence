@@ -51,6 +51,14 @@ except ImportError:
     _CONVEX_AVAILABLE = False
     ConvexStorage = None
 
+# Optional PostgreSQL runtime storage (requires asyncpg)
+try:
+    from convergence.storage.postgresql import PostgreSQLRuntimeStorage
+    _POSTGRESQL_AVAILABLE = True
+except ImportError:
+    _POSTGRESQL_AVAILABLE = False
+    PostgreSQLRuntimeStorage = None  # type: ignore[misc, assignment]
+
 __all__ = [
     # Protocol and base classes
     "StorageProtocol",
@@ -75,6 +83,9 @@ __all__ = [
     
     # Convex backend (optional, requires backend)
     "ConvexStorage",
+
+    # PostgreSQL runtime storage (optional, requires asyncpg)
+    "PostgreSQLRuntimeStorage",
     
     # Legacy management
     "LegacyManager",

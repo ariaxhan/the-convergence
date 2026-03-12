@@ -23,6 +23,7 @@ from .runtime import (
     RuntimeSelection,
     SelectionStrategyConfig,
 )
+from .response import LLMResponse, detect_gap
 
 # Rebuild RuntimeConfig to resolve RewardEvaluatorConfig forward reference (Pydantic v2)
 try:
@@ -49,5 +50,8 @@ __all__ = [
     "RuntimeDecision",
     "RuntimeSelection",
     "SelectionStrategyConfig",
+    # Response types
+    "LLMResponse",
+    "detect_gap",
 ]
 
