@@ -87,11 +87,17 @@ SECRET_PATTERNS = [
     (re.compile(r"postgresql://[^:]+:[^@]+@"), "postgres_connection"),
     (re.compile(r"mongodb\+srv://[^:]+:[^@]+@"), "mongodb_connection"),
     (re.compile(r"redis://:[^@]+@"), "redis_connection"),
-    # Generic password patterns - actual values not placeholders
+    # Generic password patterns - multiple formats
     (re.compile(r"password\s+is[:\s]+\S+", re.IGNORECASE), "password"),
     (re.compile(r"your\s+password\s+is[:\s]+\S+", re.IGNORECASE), "password"),
+    (re.compile(r"password\s*[=:]\s*['\"]?[A-Za-z0-9!@#$%^&*]{6,}['\"]?", re.IGNORECASE), "password"),
+    # Generic key:value patterns for API keys (key=value, api_key:value)
+    (re.compile(r"api[_-]?key\s*[=:]\s*['\"]?[A-Za-z0-9_-]{16,}['\"]?", re.IGNORECASE), "api_key"),
+    (re.compile(r"secret[_-]?key\s*[=:]\s*['\"]?[A-Za-z0-9_-]{16,}['\"]?", re.IGNORECASE), "secret_key"),
+    (re.compile(r"access[_-]?token\s*[=:]\s*['\"]?[A-Za-z0-9_-]{16,}['\"]?", re.IGNORECASE), "access_token"),
     # AWS
     (re.compile(r"AKIA[0-9A-Z]{16}"), "aws_access_key"),
+    (re.compile(r"aws[_-]?secret[_-]?access[_-]?key\s*[=:]\s*['\"]?[A-Za-z0-9/+=]{30,}['\"]?", re.IGNORECASE), "aws_secret"),
 ]
 
 # Placeholder patterns (should NOT be flagged as secrets)

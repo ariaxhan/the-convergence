@@ -135,8 +135,16 @@ SEMANTIC_KEYWORDS = {
 
 
 def _normalize_unicode(text: str) -> str:
-    """Normalize unicode to detect obfuscation attacks."""
+    """Normalize unicode to detect obfuscation attacks.
+
+    Handles:
+    - Zero-width characters
+    - Combining diacritical marks
+    - Character lookalikes (Greek, Cyrillic, Roman numerals)
+    - NFKC normalization (fullwidth -> ASCII)
+    """
     # Normalize to NFKC (compatibility decomposition then composition)
+    # This handles fullwidth chars like Ｉｇｎｏｒｅ -> Ignore
     normalized = unicodedata.normalize("NFKC", text)
 
     # Remove zero-width characters
@@ -149,6 +157,52 @@ def _normalize_unicode(text: str) -> str:
     ]
     for char in zero_width_chars:
         normalized = normalized.replace(char, "")
+
+    # Remove combining diacritical marks (Unicode category 'Mn')
+    # This handles things like Ign͡ore, ignoré, etc.
+    result = []
+    for char in normalized:
+        if unicodedata.category(char) != "Mn":  # Mn = Mark, Nonspacing
+            result.append(char)
+    normalized = "".join(result)
+
+    # Handle character lookalikes (homoglyphs)
+    # Greek, Cyrillic, and Roman numerals that look like Latin
+    lookalike_map = {
+        # Greek lookalikes
+        "α": "a", "Α": "A",
+        "β": "b", "Β": "B",
+        "ε": "e", "Ε": "E",
+        "η": "n",
+        "ι": "i", "Ι": "I",
+        "κ": "k", "Κ": "K",
+        "ν": "v",
+        "ο": "o", "Ο": "O",  # omicron
+        "ρ": "p", "Ρ": "P",
+        "τ": "t", "Τ": "T",
+        "υ": "u", "Υ": "Y",
+        "χ": "x", "Χ": "X",
+        # Cyrillic lookalikes
+        "а": "a", "А": "A",
+        "с": "c", "С": "C",
+        "е": "e", "Е": "E",
+        "о": "o", "О": "O",
+        "р": "p", "Р": "P",
+        "х": "x", "Х": "X",
+        # Roman numerals
+        "Ⅰ": "I", "ⅰ": "i",
+        "Ⅱ": "II", "ⅱ": "ii",
+        "Ⅲ": "III", "ⅲ": "iii",
+        "Ⅳ": "IV", "ⅳ": "iv",
+        "Ⅴ": "V", "ⅴ": "v",
+        "Ⅵ": "VI", "ⅵ": "vi",
+        "Ⅶ": "VII", "ⅶ": "vii",
+        "Ⅷ": "VIII", "ⅷ": "viii",
+        "Ⅸ": "IX", "ⅸ": "ix",
+        "Ⅹ": "X", "ⅹ": "x",
+    }
+    for lookalike, replacement in lookalike_map.items():
+        normalized = normalized.replace(lookalike, replacement)
 
     return normalized
 
