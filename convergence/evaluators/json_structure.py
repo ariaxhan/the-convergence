@@ -5,7 +5,7 @@ Validates JSON structure, required fields, and data consistency.
 Useful for evaluating structured API responses and data validation.
 """
 import json
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, Optional
 
 
 def score_json_structure(
@@ -16,7 +16,7 @@ def score_json_structure(
 ) -> float:
     """
     Score JSON structure quality.
-    
+
     Args:
         result: JSON result (string or dict)
         expected: Expected criteria:
@@ -26,10 +26,10 @@ def score_json_structure(
             - max_fields: Maximum number of fields
         params: API parameters (unused)
         metric: Specific metric name (unused)
-    
+
     Returns:
         Structure score 0.0-1.0
-    
+
     Example:
         result = {"name": "Alice", "age": 30, "active": true}
         expected = {
@@ -55,12 +55,12 @@ def score_json_structure(
         data = result
     else:
         return 0.3  # Unknown structure
-    
+
     scores = {}
-    
+
     # 1. JSON validity (already passed if we got here)
     scores['valid'] = 1.0
-    
+
     # 2. Required fields
     required_fields = expected.get('required_fields', [])
     if required_fields and isinstance(data, dict):
@@ -68,7 +68,7 @@ def score_json_structure(
         scores['required'] = present / len(required_fields)
     else:
         scores['required'] = 1.0
-    
+
     # 3. Field types
     field_types = expected.get('field_types', {})
     if field_types and isinstance(data, dict):
@@ -85,26 +85,26 @@ def score_json_structure(
             'object': dict,
             'dict': dict
         }
-        
+
         correct = 0
         for field, expected_type in field_types.items():
             if field not in data:
                 continue
-            
+
             python_type = type_map.get(expected_type.lower(), str)
             if isinstance(data[field], python_type):
                 correct += 1
-        
+
         scores['types'] = correct / len(field_types) if field_types else 1.0
     else:
         scores['types'] = 1.0
-    
+
     # 4. Field count
     if isinstance(data, dict):
         field_count = len(data)
         min_fields = expected.get('min_fields', 0)
         max_fields = expected.get('max_fields', float('inf'))
-        
+
         if min_fields <= field_count <= max_fields:
             scores['count'] = 1.0
         elif field_count < min_fields:
@@ -113,7 +113,7 @@ def score_json_structure(
             scores['count'] = max_fields / field_count if field_count > 0 else 0.5
     else:
         scores['count'] = 0.7  # Not a dict
-    
+
     # 5. Completeness (no null/empty values)
     if isinstance(data, dict):
         total_fields = len(data)
@@ -124,7 +124,7 @@ def score_json_structure(
             scores['complete'] = 0.5
     else:
         scores['complete'] = 1.0
-    
+
     # Weighted average
     weights = {
         'valid': 0.25,
@@ -133,7 +133,7 @@ def score_json_structure(
         'count': 0.10,
         'complete': 0.15
     }
-    
+
     final_score = sum(scores[k] * weights[k] for k in scores)
     return round(min(1.0, max(0.0, final_score)), 3)
 
@@ -146,18 +146,18 @@ def score_json_validity(
 ) -> float:
     """
     Simple check: is it valid JSON?
-    
+
     Returns 1.0 if valid, 0.0 if invalid.
     """
     if isinstance(result, (dict, list)):
         return 1.0
-    
+
     if isinstance(result, str):
         try:
             json.loads(result)
             return 1.0
         except json.JSONDecodeError:
             return 0.0
-    
+
     return 0.0
 

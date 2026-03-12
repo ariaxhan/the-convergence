@@ -5,64 +5,63 @@ Uses LiteLLM to process user natural language input and generate
 optimization.yaml, test_cases.json, and evaluator.py files.
 """
 import json
-import yaml
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List
+
 from rich.console import Console
 
-from convergence.core.llm_provider import LiteLLMProvider, LiteLLMConfig
+from convergence.core.llm_provider import LiteLLMProvider
 from convergence.generator.constants import DEFAULT_LLM_MODEL
 
 
 class NaturalLanguageProcessor:
     """Uses LiteLLM to process user intent and extract configuration."""
-    
+
     def __init__(self):
         self.console = Console()
         self.llm_provider = LiteLLMProvider()
-        
+
         # Default model for AI-powered setup
         self.model = DEFAULT_LLM_MODEL or "gemini/gemini-2.0-flash-exp"
-        
+
     async def process_user_intent(self, user_input: str) -> Dict[str, Any]:
         """
         Extract all necessary information from natural language.
-        
+
         Args:
             user_input: User's natural language description
-            
+
         Returns:
             Dict containing extracted configuration information
         """
         self.console.print(f"[dim]Processing user intent: {user_input}[/dim]")
-        
+
         # Extract information using LLM
         extracted_info = await self._extract_information(user_input)
-        
+
         # Check if extraction was successful
         if extracted_info is None:
             self.console.print("[red]❌ Failed to extract information from user input[/red]")
             raise ValueError("Could not extract configuration information from user input")
-        
+
         # Generate configuration
         config = await self._generate_configuration(extracted_info)
-        
+
         # Generate test cases
         test_cases = await self._generate_test_cases(extracted_info)
-        
+
         # Generate evaluator
         evaluator_code = await self._generate_evaluator(extracted_info)
-        
+
         return {
             'extracted_info': extracted_info,
             'config': config,
             'test_cases': test_cases,
             'evaluator_code': evaluator_code
         }
-    
+
     async def _extract_information(self, user_input: str) -> Dict[str, Any]:
         """Extract configuration information from user input."""
-        
+
         extraction_prompt = f"""
 Extract API configuration from: "{user_input}"
 
@@ -173,10 +172,10 @@ Return JSON with EXACT user specifications:
                 temperature=0.3,  # Lower temperature for more consistent extraction
                 max_tokens=32000  # Maximum token limit for Gemini 2.5 Flash
             )
-            
+
             # Parse JSON response - handle markdown code blocks
             content = response['content'].strip()
-            
+
             # Extract JSON from markdown code blocks if present
             if content.startswith('```json'):
                 # Remove ```json marker
@@ -194,20 +193,20 @@ Return JSON with EXACT user specifications:
                 json_end = content.rfind('```')
                 if json_end > 0:
                     content = content[:json_end].strip()
-            
+
             # If content doesn't start with {, try to find the JSON object
             if not content.startswith('{'):
                 json_start = content.find('{')
                 if json_start >= 0:
                     content = content[json_start:]
-            
+
             # Try to parse JSON, but handle truncation gracefully
             try:
                 extracted_info = json.loads(content)
-            except json.JSONDecodeError as e:
+            except json.JSONDecodeError:
                 # If JSON is malformed due to truncation, try to extract valid parts
-                self.console.print(f"[yellow]⚠️ JSON truncated, attempting to extract valid information...[/yellow]")
-                
+                self.console.print("[yellow]⚠️ JSON truncated, attempting to extract valid information...[/yellow]")
+
                 # Find the last complete property
                 last_complete_prop = content.rfind('",')
                 if last_complete_prop > 0:
@@ -217,11 +216,11 @@ Return JSON with EXACT user specifications:
                     reconstructed = partial_content + '}}'
                     try:
                         extracted_info = json.loads(reconstructed)
-                    except:
+                    except json.JSONDecodeError:
                         # Fallback: create a basic extraction based on user input
                         # Try to extract provider and models from user input for fallback
                         user_lower = user_input.lower()
-                        
+
                         # Extract exact model names mentioned by user
                         import re
                         model_patterns = [
@@ -230,13 +229,13 @@ Return JSON with EXACT user specifications:
                             r'claude[-\s]?3', r'claude[-\s]?2', r'claude[-\s]?haiku', r'claude[-\s]?sonnet',
                             r'llama[-\s]?3', r'llama[-\s]?2', r'mistral[-\s]?7b', r'mistral[-\s]?8b'
                         ]
-                        
+
                         extracted_models = []
                         for pattern in model_patterns:
                             matches = re.findall(pattern, user_lower)
                             if matches:
                                 extracted_models.extend(matches)
-                        
+
                         if 'gemini' in user_lower or 'google' in user_lower:
                             fallback_provider = "gemini"
                             if extracted_models:
@@ -284,7 +283,7 @@ Return JSON with EXACT user specifications:
                                 fallback_models = [extracted_models[0].replace(' ', '-').replace('_', '-')]
                             else:
                                 fallback_models = ["model1"]
-                        
+
                         extracted_info = {
                             "api_type": "llm_chat",
                             "provider": fallback_provider,
@@ -307,7 +306,7 @@ Return JSON with EXACT user specifications:
                 else:
                     # Complete fallback - try to extract provider and models from user input
                     user_lower = user_input.lower()
-                    
+
                     # Extract exact model names mentioned by user
                     import re
                     model_patterns = [
@@ -316,13 +315,13 @@ Return JSON with EXACT user specifications:
                         r'claude[-\s]?3', r'claude[-\s]?2', r'claude[-\s]?haiku', r'claude[-\s]?sonnet',
                         r'llama[-\s]?3', r'llama[-\s]?2', r'mistral[-\s]?7b', r'mistral[-\s]?8b'
                     ]
-                    
+
                     extracted_models = []
                     for pattern in model_patterns:
                         matches = re.findall(pattern, user_lower)
                         if matches:
                             extracted_models.extend(matches)
-                    
+
                     if 'gemini' in user_lower or 'google' in user_lower:
                         fallback_provider = "gemini"
                         if extracted_models:
@@ -370,7 +369,7 @@ Return JSON with EXACT user specifications:
                             fallback_models = [extracted_models[0].replace(' ', '-').replace('_', '-')]
                         else:
                             fallback_models = ["model1"]
-                    
+
                     extracted_info = {
                         "api_type": "llm_chat",
                         "provider": fallback_provider,
@@ -390,20 +389,20 @@ Return JSON with EXACT user specifications:
                         },
                         "requirements": {"response_length": "200-500 words", "creativity_level": "high", "cost_budget": "moderate", "speed_requirement": "not critical"}
                     }
-            
+
             self.console.print("[green]✅ Successfully extracted configuration information[/green]")
             return extracted_info
-            
+
         except Exception as e:
             self.console.print(f"[red]❌ Error extracting information: {e}[/red]")
             self.console.print(f"[yellow]Error type: {type(e).__name__}[/yellow]")
             import traceback
             self.console.print(f"[yellow]Traceback: {traceback.format_exc()}[/yellow]")
             raise e
-    
+
     async def _generate_configuration(self, extracted_info: Dict[str, Any]) -> Dict[str, Any]:
         """Generate optimization.yaml configuration."""
-        
+
         config_prompt = f"""Generate optimization.yaml for {extracted_info.get('provider', 'api')} API:
 
 Based on user requirements:
@@ -507,10 +506,10 @@ legacy:
                 temperature=0.2,  # Very low temperature for consistent YAML
                 max_tokens=32000  # Maximum token limit for Gemini 2.5 Flash
             )
-            
+
             # Get raw YAML content - handle markdown code blocks
             content = response['content'].strip()
-            
+
             # Extract YAML from markdown code blocks if present
             if content.startswith('```yaml'):
                 # Remove ```yaml and ``` markers
@@ -524,18 +523,18 @@ legacy:
                 yaml_end = content.rfind('```')
                 if yaml_end > yaml_start:
                     content = content[yaml_start:yaml_end].strip()
-            
+
             # Return raw YAML string to preserve comments
             self.console.print("[green]✅ Successfully generated optimization configuration[/green]")
             return content
-            
+
         except Exception as e:
             self.console.print(f"[red]❌ Error generating configuration: {e}[/red]")
             raise e
-    
+
     async def _generate_test_cases(self, extracted_info: Dict[str, Any]) -> List[Dict]:
         """Generate test_cases.json content."""
-        
+
         test_cases_prompt = f"""Generate test cases for {extracted_info.get('provider', 'api')} API:
 
 Based on user requirements:
@@ -596,10 +595,10 @@ Generate JSON with MANDATORY detailed descriptions (no // comments):
                 temperature=0.4,  # Slightly higher for creative test cases
                 max_tokens=32000  # Maximum token limit for Gemini 2.5 Flash
             )
-            
+
             # Parse JSON response - handle markdown code blocks
             content = response['content'].strip()
-            
+
             # Extract JSON from markdown code blocks if present
             if content.startswith('```json'):
                 # Remove ```json marker
@@ -617,20 +616,20 @@ Generate JSON with MANDATORY detailed descriptions (no // comments):
                 json_end = content.rfind('```')
                 if json_end > 0:
                     content = content[:json_end].strip()
-            
+
             # If content doesn't start with {, try to find the JSON object
             if not content.startswith('{'):
                 json_start = content.find('{')
                 if json_start >= 0:
                     content = content[json_start:]
-            
+
             # Try to parse JSON, but handle truncation gracefully
             try:
-                test_cases_data = json.loads(content)
-            except json.JSONDecodeError as e:
+                json.loads(content)
+            except json.JSONDecodeError:
                 # If JSON is malformed due to truncation, try to extract valid parts
-                self.console.print(f"[yellow]⚠️ JSON truncated, attempting to extract valid test cases...[/yellow]")
-                
+                self.console.print("[yellow]⚠️ JSON truncated, attempting to extract valid test cases...[/yellow]")
+
                 # Find the last complete test case
                 last_complete_case = content.rfind('}')
                 if last_complete_case > 0:
@@ -642,50 +641,30 @@ Generate JSON with MANDATORY detailed descriptions (no // comments):
                         # Try to reconstruct valid JSON
                         reconstructed = '{"test_cases": [' + partial_content.split('"test_cases": [', 1)[1]
                         try:
-                            test_cases_data = json.loads(reconstructed)
-                        except:
+                            json.loads(reconstructed)
+                        except json.JSONDecodeError:
                             # Fallback: create a simple test case
-                            test_cases_data = {
-                                "test_cases": [
-                                    {
-                                        "id": "creative_writing",
-                                        "description": "Creative text generation",
-                                        "input": {"messages": [{"role": "user", "content": "Write a short story about a robot"}]},
-                                        "expected": {"contains": ["robot"], "min_length": 20, "min_quality_score": 0.8},
-                                        "metadata": {"category": "creative", "difficulty": "easy", "weight": 1.0}
-                                    }
-                                ]
-                            }
+                            pass
                 else:
                     # Complete fallback
-                    test_cases_data = {
-                        "test_cases": [
-                            {
-                                "id": "creative_writing",
-                                "description": "Creative text generation",
-                                "input": {"messages": [{"role": "user", "content": "Write a short story about a robot"}]},
-                                "expected": {"contains": ["robot"], "min_length": 20, "min_quality_score": 0.8},
-                                "metadata": {"category": "creative", "difficulty": "easy", "weight": 1.0}
-                            }
-                        ]
-                    }
-            
+                    pass
+
             # Return raw JSON string to preserve comments
-            self.console.print(f"[green]✅ Successfully generated test cases[/green]")
+            self.console.print("[green]✅ Successfully generated test cases[/green]")
             return content
-            
+
         except Exception as e:
             self.console.print(f"[red]❌ Error generating test cases: {e}[/red]")
             raise e
-    
+
     async def _generate_evaluator(self, extracted_info: Dict[str, Any]) -> str:
         """Generate evaluator.py code with detailed comments based on user requirements."""
-        
+
         # Generate evaluator with detailed comments explaining the reasoning
         use_case = extracted_info.get('use_case', 'general')
         requirements = extracted_info.get('requirements', {})
         optimization_goal = extracted_info.get('optimization_goal', 'balanced')
-        
+
         return f'''"""
 Custom API Evaluator
 Generated by Convergence AI-Powered Setup
@@ -709,18 +688,18 @@ def score_custom_response(
 ) -> float:
     """
     Score API response based on user requirements.
-    
+
     This function implements scoring logic specifically designed for:
     - Use case: {use_case}
     - Optimization goal: {optimization_goal}
     - User requirements: {requirements}
-    
+
     Args:
         result: API response
         expected: Expected criteria
         params: Configuration parameters
         metric: Specific metric to return
-    
+
     Returns:
         Score between 0.0 and 1.0
     """
@@ -728,25 +707,25 @@ def score_custom_response(
     text = _extract_text(result)
     if not text:
         return 0.0
-    
+
     # Calculate individual scores based on user's stated priorities
     scores = {{}}
-    
+
     # Quality scoring - emphasized because user mentioned quality as priority
     scores['quality'] = _score_quality(text, expected)
-    
+
     # Length scoring - based on user's response length requirements: {requirements.get('response_length', 'not specified')}
     scores['length'] = _score_length(text, expected)
-    
+
     # Completeness scoring - checks for required keywords/content
     scores['completeness'] = _score_completeness(text, expected)
-    
+
     # Latency scoring - based on user's speed requirements: {requirements.get('speed_requirement', 'not specified')}
     scores['latency'] = _score_latency(result, expected)
-    
+
     # Cost scoring - based on user's cost budget: {requirements.get('cost_budget', 'not specified')}
     scores['cost'] = _score_cost(result, expected)
-    
+
     # Return specific metric if requested
     if metric:
         metric_lower = metric.lower()
@@ -755,7 +734,7 @@ def score_custom_response(
         elif metric_lower == 'response_quality':
             # Combined quality score weighted by user's priorities
             return (scores['quality'] * 0.4 + scores['completeness'] * 0.3 + scores['length'] * 0.3)
-    
+
     # Overall score weighted by user's optimization goal: {optimization_goal}
     # These weights reflect the user's stated priorities
     overall_score = (
@@ -765,7 +744,7 @@ def score_custom_response(
         scores['latency'] * 0.10 +       # Lower weight for speed (user said not critical)
         scores['cost'] * 0.10           # Lower weight for cost (user wants efficiency)
     )
-    
+
     return min(1.0, max(0.0, overall_score))
 
 def _extract_text(result: Any) -> str:
@@ -776,149 +755,149 @@ def _extract_text(result: Any) -> str:
             choice = result['choices'][0]
             if 'message' in choice and 'content' in choice['message']:
                 return choice['message']['content']
-        
+
         # Handle other common response formats
         for field in ['text', 'content', 'output', 'response', 'result']:
             if field in result:
                 return str(result[field])
-    
+
     elif isinstance(result, str):
         return result
-    
+
     return ""
 
 def _score_quality(text: str, expected: Dict[str, Any]) -> float:
     """
     Score text quality based on user's quality requirements.
-    
+
     This scoring emphasizes quality because the user stated: {requirements.get('creativity_level', 'not specified')} creativity level
     and optimization goal: {optimization_goal}
     """
     if not text or len(text.strip()) < 3:
         return 0.0
-    
+
     score = 0.5  # Base score
-    
+
     # Length appropriateness - based on user's length requirements
     text_length = len(text)
     if 50 <= text_length <= 1000:  # Reasonable range for most use cases
         score += 0.2
     elif text_length > 1000:  # Very long responses might be excessive
         score += 0.1
-    
+
     # Sentence structure and coherence
     sentences = text.split('.')
     if len(sentences) > 1:
         score += 0.1
-    
+
     # Word variety (basic measure of sophistication)
     words = text.split()
     if len(words) > 0 and len(set(words)) / len(words) > 0.5:
         score += 0.1
-    
+
     # Avoid obvious errors or low-quality indicators
     error_patterns = [r'\b(error|fail|wrong|incorrect|sorry|unable)\b']
     has_errors = any(re.search(pattern, text.lower()) for pattern in error_patterns)
     if not has_errors:
         score += 0.1
-    
+
     return min(1.0, score)
 
 def _score_length(text: str, expected: Dict[str, Any]) -> float:
     """
     Score based on response length requirements.
-    
+
     User specified length requirements: {requirements.get('response_length', 'not specified')}
     """
     length = len(text)
     min_length = expected.get('min_length', 0)
     max_length = expected.get('max_length', float('inf'))
-    
+
     if length < min_length:
         return 0.0
-    
+
     if length > max_length:
         # Gradual penalty for being too long
         excess = length - max_length
         penalty = min(0.5, excess / max_length)
         return max(0.0, 1.0 - penalty)
-    
+
     return 1.0
 
 def _score_completeness(text: str, expected: Dict[str, Any]) -> float:
     """Score based on required keywords/content completeness."""
     if 'contains' not in expected:
         return 1.0
-    
+
     required_keywords = expected['contains']
     if not required_keywords:
         return 1.0
-    
+
     text_lower = text.lower()
     found_keywords = sum(1 for keyword in required_keywords if keyword.lower() in text_lower)
-    
+
     return found_keywords / len(required_keywords)
 
 def _score_latency(result: Any, expected: Dict[str, Any]) -> float:
     """
     Score based on response latency.
-    
+
     User's speed requirement: {requirements.get('speed_requirement', 'not specified')}
     """
     if isinstance(result, dict) and 'latency_ms' in result:
         latency = result['latency_ms']
         max_latency = expected.get('max_latency_ms', 2000)
-        
+
         if latency <= max_latency:
             return 1.0
         else:
             # Gradual penalty for slow responses
             penalty = min(0.8, (latency - max_latency) / max_latency)
             return max(0.0, 1.0 - penalty)
-    
+
     return 0.5  # Default score if no latency data
 
 def _score_cost(result: Any, expected: Dict[str, Any]) -> float:
     """
     Score based on cost efficiency.
-    
+
     User's cost budget: {requirements.get('cost_budget', 'not specified')}
     """
     if isinstance(result, dict) and 'cost_usd' in result:
         cost = result['cost_usd']
         max_cost = expected.get('max_cost_usd', 0.01)
-        
+
         if cost <= max_cost:
             return 1.0
         else:
             # Gradual penalty for expensive calls
             penalty = min(0.8, (cost - max_cost) / max_cost)
             return max(0.0, 1.0 - penalty)
-    
+
     return 0.5  # Default score if no cost data
 '''
-    
+
     def _get_fallback_extraction(self, user_input: str) -> Dict[str, Any]:
         """Fallback extraction when LLM fails."""
         # Try to extract provider and models from user input for fallback
         user_lower = user_input.lower()
-        
+
         # Extract exact model names mentioned by user
         import re
         model_patterns = [
             r'gemini[-\s]?2\.5', r'gemini[-\s]?2\.0', r'gemini[-\s]?1\.5', r'gemini[-\s]?pro',
             r'gpt[-\s]?4', r'gpt[-\s]?3\.5', r'gpt[-\s]?4o',
             r'claude[-\s]?3', r'claude[-\s]?2', r'claude[-\s]?haiku', r'claude[-\s]?sonnet',
-            r'llama[-\s]?3\.3[-\s]?70b[-\s]?versatile', r'llama[-\s]?3\.3', r'llama[-\s]?3', r'llama[-\s]?2', 
+            r'llama[-\s]?3\.3[-\s]?70b[-\s]?versatile', r'llama[-\s]?3\.3', r'llama[-\s]?3', r'llama[-\s]?2',
             r'mistral[-\s]?7b', r'mistral[-\s]?8b'
         ]
-        
+
         extracted_models = []
         for pattern in model_patterns:
             matches = re.findall(pattern, user_lower)
             if matches:
                 extracted_models.extend(matches)
-        
+
         if 'gemini' in user_lower or 'google' in user_lower:
             fallback_provider = "gemini"
             if extracted_models:
@@ -966,7 +945,7 @@ def _score_cost(result: Any, expected: Dict[str, Any]) -> float:
                 fallback_models = [extracted_models[0].replace(' ', '-').replace('_', '-')]
             else:
                 fallback_models = ["model1"]
-        
+
         return {
             "api_type": "llm_chat",
             "provider": fallback_provider,
@@ -997,7 +976,7 @@ def _score_cost(result: Any, expected: Dict[str, Any]) -> float:
                 }
             }
         }
-    
+
     def _get_fallback_config(self, extracted_info: Dict[str, Any]) -> Dict[str, Any]:
         """Fallback configuration when LLM fails."""
         return {
@@ -1064,11 +1043,11 @@ def _score_cost(result: Any, expected: Dict[str, Any]) -> float:
                 'warm_start': True
             }
         }
-    
+
     def _get_fallback_test_cases(self, extracted_info: Dict[str, Any]) -> List[Dict]:
         """Fallback test cases when LLM fails."""
         api_type = extracted_info.get('api_type', 'llm_chat')
-        
+
         if api_type == 'llm_chat':
             return [
                 {
@@ -1113,7 +1092,7 @@ def _score_cost(result: Any, expected: Dict[str, Any]) -> float:
                     "metadata": {"category": "automation", "difficulty": "easy", "weight": 1.0}
                 }
             ]
-    
+
     def _get_fallback_evaluator(self, extracted_info: Dict[str, Any]) -> str:
         """Fallback evaluator when LLM fails."""
         return '''"""
@@ -1134,13 +1113,13 @@ def score_custom_response(
 ) -> float:
     """
     Score API response based on user requirements.
-    
+
     Args:
         result: API response
         expected: Expected criteria
         params: Configuration parameters
         metric: Specific metric to return
-    
+
     Returns:
         Score between 0.0 and 1.0
     """
@@ -1148,24 +1127,24 @@ def score_custom_response(
     text = _extract_text(result)
     if not text:
         return 0.0
-    
+
     # Calculate scores
     scores = {}
     scores['quality'] = _score_quality(text, expected)
     scores['latency'] = _score_latency(result, expected)
     scores['cost'] = _score_cost(result, expected)
-    
+
     # Return specific metric if requested
     if metric:
         return scores.get(metric.lower(), 0.0)
-    
+
     # Weighted overall score
     overall_score = (
         scores['quality'] * 0.4 +
         scores['latency'] * 0.3 +
         scores['cost'] * 0.3
     )
-    
+
     return min(1.0, max(0.0, overall_score))
 
 def _extract_text(result):
@@ -1187,27 +1166,27 @@ def _score_quality(text, expected):
     """Score based on response quality."""
     if not text or len(text.strip()) < 3:
         return 0.0
-    
+
     score = 0.5  # Base score
-    
+
     # Length appropriateness
     if 10 <= len(text) <= 1000:
         score += 0.2
-    
+
     # Sentence structure
     sentences = text.split('.')
     if len(sentences) > 1:
         score += 0.1
-    
+
     # Word variety (basic)
     words = text.split()
     if len(set(words)) / len(words) > 0.5:
         score += 0.1
-    
+
     # No obvious errors
     if not re.search(r'\\b(error|fail|wrong|incorrect)\\b', text.lower()):
         score += 0.1
-    
+
     return min(1.0, score)
 
 def _score_latency(result, expected):
@@ -1215,13 +1194,13 @@ def _score_latency(result, expected):
     if isinstance(result, dict) and 'latency_ms' in result:
         latency = result['latency_ms']
         max_latency = expected.get('max_latency_ms', 2000)
-        
+
         if latency <= max_latency:
             return 1.0
         else:
             penalty = min(0.8, (latency - max_latency) / max_latency)
             return max(0.0, 1.0 - penalty)
-    
+
     return 0.5  # Default score if no latency data
 
 def _score_cost(result, expected):
@@ -1229,12 +1208,12 @@ def _score_cost(result, expected):
     if isinstance(result, dict) and 'cost_usd' in result:
         cost = result['cost_usd']
         max_cost = expected.get('max_cost_usd', 0.01)
-        
+
         if cost <= max_cost:
             return 1.0
         else:
             penalty = min(0.8, (cost - max_cost) / max_cost)
             return max(0.0, 1.0 - penalty)
-    
+
     return 0.5  # Default score if no cost data
 '''

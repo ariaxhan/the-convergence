@@ -10,24 +10,20 @@ This module handles:
 Default backend is SQLite (no external dependencies).
 Optional external trackers can be added (MLflow, Aim, Weave).
 """
-import json
-import hashlib
-import uuid
 import csv
-from pathlib import Path
-from typing import Dict, Any, List, Optional
+import json
+import uuid
 from datetime import datetime
+from pathlib import Path
+from typing import List, Optional
 
 import aiosqlite
 
 from convergence.legacy.models import (
     LegacyConfig,
-    Session,
     OptimizationRun,
-    TestCaseResult,
+    Session,
     TestCaseWinner,
-    RunLineage,
-    DecisionLog,
     TrackingBackend,
 )
 
@@ -35,57 +31,57 @@ from convergence.legacy.models import (
 class LegacyStore:
     """
     Storage layer for optimization legacy.
-    
+
     Uses SQLite for structured queries + CSV for simple exports.
     Completely RL-agnostic and works with any API type.
     """
-    
+
     def __init__(self, config: LegacyConfig):
         """
         Initialize legacy store.
-        
+
         Args:
             config: Legacy configuration
         """
         self.config = config
         self.db_path = Path(config.sqlite_path)
         self.export_dir = Path(config.export_dir)
-        
+
         # Ensure database directory exists (needed for SQLite)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         # Export directory created lazily when needed (no unnecessary folders)
-        
+
         # Optional external tracker (Future: MLflow, Aim, Weave)
         self.tracker = None
         if config.tracking_backend != TrackingBackend.BUILTIN:
             print(f"📝 Note: {config.tracking_backend} tracker will be implemented in future release")
-            print(f"   Using builtin (SQLite + CSV) for now")
-        
+            print("   Using builtin (SQLite + CSV) for now")
+
         self._conn: Optional[aiosqlite.Connection] = None
-    
+
     async def __aenter__(self):
         """Async context manager entry."""
         await self._connect()
         return self
-    
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         await self.close()
-    
+
     async def _connect(self) -> None:
         """Establish database connection and create tables."""
         if self._conn is not None:
             return
-        
+
         self._conn = await aiosqlite.connect(self.db_path)
         await self._create_tables()
-    
+
     async def close(self) -> None:
         """Close database connection."""
         if self._conn:
             await self._conn.close()
             self._conn = None
-    
+
     async def _create_tables(self) -> None:
         """Create all required tables if they don't exist."""
         # Sessions table
@@ -101,7 +97,7 @@ class LegacyStore:
                 metadata JSON
             )
         """)
-        
+
         # Runs table
         await self._conn.execute("""
             CREATE TABLE IF NOT EXISTS runs (
@@ -121,7 +117,7 @@ class LegacyStore:
                 FOREIGN KEY (session_id) REFERENCES sessions(session_id)
             )
         """)
-        
+
         # Test case results table
         await self._conn.execute("""
             CREATE TABLE IF NOT EXISTS test_case_results (
@@ -140,7 +136,7 @@ class LegacyStore:
                 FOREIGN KEY (run_id) REFERENCES runs(run_id)
             )
         """)
-        
+
         # Winners table
         await self._conn.execute("""
             CREATE TABLE IF NOT EXISTS test_case_winners (
@@ -157,7 +153,7 @@ class LegacyStore:
                 UNIQUE(test_case_id, api_name)
             )
         """)
-        
+
         # Lineage table
         await self._conn.execute("""
             CREATE TABLE IF NOT EXISTS run_lineage (
@@ -171,7 +167,7 @@ class LegacyStore:
                 FOREIGN KEY (child_run_id) REFERENCES runs(run_id)
             )
         """)
-        
+
         # Decision log table
         await self._conn.execute("""
             CREATE TABLE IF NOT EXISTS decision_log (
@@ -184,16 +180,16 @@ class LegacyStore:
                 FOREIGN KEY (run_id) REFERENCES runs(run_id)
             )
         """)
-        
+
         # Create indexes for fast queries
         await self._conn.execute("CREATE INDEX IF NOT EXISTS idx_runs_session ON runs(session_id)")
         await self._conn.execute("CREATE INDEX IF NOT EXISTS idx_runs_api ON runs(api_name)")
         await self._conn.execute("CREATE INDEX IF NOT EXISTS idx_results_run ON test_case_results(run_id)")
         await self._conn.execute("CREATE INDEX IF NOT EXISTS idx_results_test_case ON test_case_results(test_case_id)")
         await self._conn.execute("CREATE INDEX IF NOT EXISTS idx_winners_api_test ON test_case_winners(api_name, test_case_id)")
-        
+
         await self._conn.commit()
-    
+
     async def create_or_get_session(
         self,
         session_id: Optional[str],
@@ -204,27 +200,27 @@ class LegacyStore:
     ) -> Session:
         """
         Create new session or get existing one.
-        
+
         Args:
             session_id: Optional session ID (auto-generated if None)
             api_name: API name (e.g., "openai", "apify")
             api_endpoint: API endpoint URL
             config_fingerprint: Hash of search space + evaluation config
             name: Optional human-readable name
-        
+
         Returns:
             Session object
         """
         if not session_id:
             session_id = f"session_{uuid.uuid4().hex[:12]}"
-        
+
         # Check if session exists
         cursor = await self._conn.execute(
             "SELECT * FROM sessions WHERE session_id = ?",
             (session_id,)
         )
         row = await cursor.fetchone()
-        
+
         if row:
             # Session exists, return it
             return Session(
@@ -237,7 +233,7 @@ class LegacyStore:
                 config_fingerprint=row[6],
                 metadata=json.loads(row[7]) if row[7] else {}
             )
-        
+
         # Create new session
         session = Session(
             session_id=session_id,
@@ -246,7 +242,7 @@ class LegacyStore:
             api_endpoint=api_endpoint,
             config_fingerprint=config_fingerprint
         )
-        
+
         await self._conn.execute("""
             INSERT INTO sessions (session_id, name, api_name, api_endpoint, created_at, updated_at, config_fingerprint, metadata)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -261,13 +257,13 @@ class LegacyStore:
             json.dumps(session.metadata)
         ))
         await self._conn.commit()
-        
+
         return session
-    
+
     async def record_run(self, run: OptimizationRun) -> None:
         """
         Record an optimization run and its test case results.
-        
+
         Args:
             run: OptimizationRun object with all data
         """
@@ -293,7 +289,7 @@ class LegacyStore:
             run.generation,
             json.dumps(run.metadata)
         ))
-        
+
         # Insert test case results
         for result in run.test_results:
             await self._conn.execute("""
@@ -315,12 +311,12 @@ class LegacyStore:
                 result.success,
                 result.error
             ))
-        
+
         await self._conn.commit()
-        
+
         # Update winners
         await self._update_winners(run)
-    
+
     async def _update_winners(self, run: OptimizationRun) -> None:
         """Update winners if this run has better results."""
         for result in run.test_results:
@@ -330,11 +326,11 @@ class LegacyStore:
                 WHERE test_case_id = ? AND api_name = ?
             """, (result.test_case_id, run.api_name))
             row = await cursor.fetchone()
-            
+
             should_update = False
             previous_winner_id = None
             improvement = 0.0
-            
+
             if not row:
                 # No previous winner
                 should_update = True
@@ -344,7 +340,7 @@ class LegacyStore:
                 should_update = True
                 previous_winner_id = row[0]
                 improvement = result.score - row[1]
-            
+
             if should_update:
                 winner = TestCaseWinner(
                     winner_id=f"winner_{uuid.uuid4().hex[:12]}",
@@ -356,7 +352,7 @@ class LegacyStore:
                     previous_winner_id=previous_winner_id,
                     improvement=improvement
                 )
-                
+
                 # Upsert winner
                 await self._conn.execute("""
                     INSERT OR REPLACE INTO test_case_winners (
@@ -375,15 +371,15 @@ class LegacyStore:
                     winner.improvement
                 ))
                 await self._conn.commit()
-    
+
     async def get_winner(self, test_case_id: str, api_name: str) -> Optional[TestCaseWinner]:
         """
         Get current best configuration for a test case.
-        
+
         Args:
             test_case_id: Test case identifier
             api_name: API name
-        
+
         Returns:
             TestCaseWinner if exists, None otherwise
         """
@@ -392,10 +388,10 @@ class LegacyStore:
             WHERE test_case_id = ? AND api_name = ?
         """, (test_case_id, api_name))
         row = await cursor.fetchone()
-        
+
         if not row:
             return None
-        
+
         return TestCaseWinner(
             winner_id=row[0],
             test_case_id=row[1],
@@ -407,7 +403,7 @@ class LegacyStore:
             updated_at=datetime.fromisoformat(row[7]),
             improvement=row[8]
         )
-    
+
     async def get_top_winners(
         self,
         session_id: str,
@@ -415,15 +411,15 @@ class LegacyStore:
     ) -> List[TestCaseWinner]:
         """
         Get top N winners from a session for warm-start.
-        
+
         Returns the best performing configs across all test cases in this session,
         ordered by score descending. Useful for initializing next optimization run
         with proven configurations.
-        
+
         Args:
             session_id: Session identifier
             limit: Maximum number of winners to return
-            
+
         Returns:
             List of TestCaseWinner objects, ordered by best_score descending
         """
@@ -444,9 +440,9 @@ class LegacyStore:
             ORDER BY w.best_score DESC
             LIMIT ?
         """, (session_id, limit))
-        
+
         rows = await cursor.fetchall()
-        
+
         winners = []
         for row in rows:
             winners.append(TestCaseWinner(
@@ -460,19 +456,19 @@ class LegacyStore:
                 updated_at=datetime.fromisoformat(row[7]),
                 improvement=row[8]
             ))
-        
+
         return winners
-    
+
     async def get_max_generation(self, session_id: str) -> Optional[int]:
         """
         Get the maximum generation number for a session.
-        
+
         This allows subsequent optimization runs to continue numbering
         from where the previous run left off.
-        
+
         Args:
             session_id: Session identifier
-            
+
         Returns:
             Maximum generation number, or None if no runs exist
         """
@@ -481,18 +477,18 @@ class LegacyStore:
             WHERE session_id = ?
         """, (session_id,))
         row = await cursor.fetchone()
-        
+
         if row and row[0] is not None:
             return row[0]
         return None
-    
+
     async def get_experiment_count(self, session_id: str) -> int:
         """
         Get the total number of experiments (runs) for a session.
-        
+
         Args:
             session_id: Session identifier
-            
+
         Returns:
             Total number of experiments/runs
         """
@@ -501,24 +497,24 @@ class LegacyStore:
             WHERE session_id = ?
         """, (session_id,))
         row = await cursor.fetchone()
-        
+
         return row[0] if row else 0
-    
+
     async def export_winners_csv(self, api_name: Optional[str] = None) -> Path:
         """
         Export winners to simple CSV format.
-        
+
         Args:
             api_name: Optional filter by API name
-        
+
         Returns:
             Path to exported CSV file
         """
         # Create export directory lazily when actually exporting
         self.export_dir.mkdir(parents=True, exist_ok=True)
-        
+
         output_path = self.export_dir / f"winners_{api_name or 'all'}.csv"
-        
+
         # Query winners
         if api_name:
             cursor = await self._conn.execute("""
@@ -533,14 +529,14 @@ class LegacyStore:
                 FROM test_case_winners
                 ORDER BY api_name, test_case_id
             """)
-        
+
         rows = await cursor.fetchall()
-        
+
         # Write CSV
         with open(output_path, 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(['test_case_id', 'api_name', 'best_config', 'best_score', 'updated_at'])
-            
+
             for row in rows:
                 writer.writerow([
                     row[0],  # test_case_id
@@ -549,28 +545,28 @@ class LegacyStore:
                     f"{row[3]:.4f}",  # best_score
                     row[4]  # updated_at
                 ])
-        
+
         return output_path
-    
+
     async def export_audit_csv(self, session_id: Optional[str] = None) -> Path:
         """
         Export full audit trail to CSV.
-        
+
         Args:
             session_id: Optional filter by session
-        
+
         Returns:
             Path to exported CSV file
         """
         # Create export directory lazily when actually exporting
         self.export_dir.mkdir(parents=True, exist_ok=True)
-        
+
         output_path = self.export_dir / f"audit_{session_id or 'all'}.csv"
-        
+
         # Query test case results with run info
         if session_id:
             cursor = await self._conn.execute("""
-                SELECT 
+                SELECT
                     r.timestamp, r.session_id, r.run_id, r.api_name,
                     tcr.test_case_id, tcr.config, tcr.score, tcr.success
                 FROM test_case_results tcr
@@ -580,23 +576,23 @@ class LegacyStore:
             """, (session_id,))
         else:
             cursor = await self._conn.execute("""
-                SELECT 
+                SELECT
                     r.timestamp, r.session_id, r.run_id, r.api_name,
                     tcr.test_case_id, tcr.config, tcr.score, tcr.success
                 FROM test_case_results tcr
                 JOIN runs r ON tcr.run_id = r.run_id
                 ORDER BY r.timestamp
             """)
-        
+
         rows = await cursor.fetchall()
-        
+
         # Write CSV
         with open(output_path, 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(['timestamp', 'session_id', 'run_id', 'api_name', 'test_case_id', 'config', 'score', 'success'])
-            
+
             for row in rows:
                 writer.writerow(row)
-        
+
         return output_path
 

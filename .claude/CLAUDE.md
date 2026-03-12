@@ -92,3 +92,30 @@ When writing docs, README, or user-facing content:
 - vs manual tuning: "Systems that learn vs. systems you tune"
 - vs grid search: "Intelligent exploration vs. brute force"
 - vs hyperopt: "Continuous learning vs. one-shot optimization"
+
+---
+
+## KERNEL Integration
+
+**Always start with `/ingest`** (or `/kernel:ingest` in terminal)
+
+| Tier | Files | Approach |
+|------|-------|----------|
+| 1 | 1-2 | Execute directly |
+| 2 | 3-5 | Spawn surgeon agent |
+| 3 | 6+ | Surgeon + adversary |
+
+**Run `/handoff` before closing** to save progress.
+
+### Commands
+
+| Command | What It Does |
+|---------|--------------|
+| `/ingest` | Start any task (classify, scope, route) |
+| `/validate` | Pre-commit checks (types, lint, tests) |
+| `/handoff` | Save progress for session continuity |
+| `/review` | Code review for PRs |
+
+### AgentDB Location
+
+`_meta/agentdb/agent.db` - SQLite with learnings, context, errors

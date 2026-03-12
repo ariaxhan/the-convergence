@@ -14,22 +14,22 @@ Key Features:
 
 Usage:
     from convergence.legacy import LegacyStore, LegacyConfig
-    
+
     config = LegacyConfig(enabled=True, tracking_backend="builtin")
     store = LegacyStore(config)
-    
+
     await store.record_run(run_data)
     winner = await store.get_winner("bedtime_story", "openai")
 """
 
 from convergence.legacy.models import (
+    DecisionLog,
     LegacyConfig,
-    Session,
     OptimizationRun,
+    RunLineage,
+    Session,
     TestCaseResult,
     TestCaseWinner,
-    RunLineage,
-    DecisionLog,
     TrackingBackend,
 )
 from convergence.legacy.store import LegacyStore

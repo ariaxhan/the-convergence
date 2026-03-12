@@ -4,10 +4,10 @@ Data models for API optimization.
 These Pydantic models define the complete structure of optimization.yaml
 and all related data structures for the optimization engine.
 """
-from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
 from datetime import datetime
-from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, model_validator
 
 
 class APIResponse(BaseModel):
@@ -35,7 +35,7 @@ class AuthConfig(BaseModel):
     header_name: Optional[str] = None  # For api_key type (e.g., "x-goog-api-key", "X-API-Key")
     username: Optional[str] = None  # For basic auth
     password_env: Optional[str] = None  # For basic auth
-    
+
     @model_validator(mode='before')
     @classmethod
     def normalize_header_name(cls, values: Any) -> Any:
@@ -47,11 +47,11 @@ class AuthConfig(BaseModel):
             # If api_key_header is provided but header_name is not, use it
             if 'api_key_header' in values and not values.get('header_name'):
                 values['header_name'] = values['api_key_header']
-            
+
             # Ensure we have a default if type is api_key and header_name is None
             if values.get('type') == 'api_key' and not values.get('header_name'):
                 values['header_name'] = 'x-api-key'
-        
+
         return values
 
 
@@ -85,7 +85,7 @@ class APIConfig(BaseModel):
     response: ResponseConfig = Field(default_factory=ResponseConfig)
     adapter_enabled: bool = False  # Enable API-specific adapter if available
     mock_mode: bool = False  # Skip real API calls, use mock responses
-    
+
     @model_validator(mode='after')
     def validate_endpoint_or_models(self):
         """Ensure either endpoint or models is provided."""
@@ -281,7 +281,7 @@ class LegacyTrackingConfig(BaseModel):
     sqlite_path: str = "./data/legacy.db"
     export_dir: str = "./legacy"
     export_formats: List[str] = Field(default_factory=lambda: ["winners_only", "full_audit"])
-    
+
     # Future: External tracker configs
     mlflow_config: Dict[str, Any] = Field(default_factory=dict)
     aim_config: Dict[str, Any] = Field(default_factory=dict)
@@ -290,10 +290,10 @@ class LegacyTrackingConfig(BaseModel):
 
 class ModelConfig(BaseModel):
     """Configuration for a single model in the agent models registry.
-    
+
     Uses the simplified format where endpoint is the complete URL (including deployment name and API version).
     This is the recommended format for all new configurations.
-    
+
     Example:
         models:
           gpt-4.1:
@@ -328,7 +328,7 @@ class AgentConfig(BaseModel):
 class OptimizationSchema(BaseModel):
     """
     Complete optimization schema - this is the root model for optimization.yaml.
-    
+
     This represents everything the user can configure in their YAML file.
     """
     api: APIConfig

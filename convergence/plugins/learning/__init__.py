@@ -1,7 +1,7 @@
 """Learning plugins for The Convergence framework."""
 
-from convergence.plugins.learning.rlp import RLPMixin, RLPLearnerPlugin, RLPConfig
-from convergence.plugins.learning.sao import SAOMixin, SAOGeneratorPlugin, SAOConfig
+from convergence.plugins.learning.rlp import RLPConfig, RLPLearnerPlugin, RLPMixin
+from convergence.plugins.learning.sao import SAOConfig, SAOGeneratorPlugin, SAOMixin
 
 __all__ = [
     'RLPMixin',

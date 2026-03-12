@@ -4,17 +4,18 @@ Azure Chat API Template
 Based on proven patterns from examples/ai/azure/azure_multi_model_optimization.yaml
 Handles Azure's multi-endpoint architecture with model registry support.
 """
-from typing import Dict, List, Any
-import yaml
 import json
+from typing import Any, Dict, List
+
+import yaml
 
 
 class AzureChatTemplate:
     """Template for Azure OpenAI chat APIs with multi-endpoint support."""
-    
+
     def generate_config(self, models_with_endpoints: Dict[str, str], api_key_env: str, description: str) -> Dict[str, Any]:
         """Generate Azure OpenAI configuration with model registry.
-        
+
         Args:
             models_with_endpoints: Dict mapping model names to full endpoint URLs
                 e.g., {"gpt-4": "https://resource.openai.azure.com/...", "o4-mini": "https://..."}
@@ -22,25 +23,25 @@ class AzureChatTemplate:
             description: Description of the API functionality
         """
         model_names = list(models_with_endpoints.keys())
-        
+
         return {
             'api': {
                 'name': 'azure_multi_model',
                 'description': f'Azure OpenAI with multiple models - {description}',
-                
+
                 # Single API key for all models in the same resource
                 'auth': {
                     'type': 'api_key',
                     'token_env': api_key_env,
                     'header_name': 'api-key'
                 },
-                
+
                 # Model registry - each model has its own endpoint
                 'models': {
                     model: {'endpoint': endpoint}
                     for model, endpoint in models_with_endpoints.items()
                 },
-                
+
                 'request': {
                     'method': 'POST',
                     'headers': {'Content-Type': 'application/json'},
@@ -55,14 +56,14 @@ class AzureChatTemplate:
                         'values': model_names,
                         'description': 'Model key from api.models registry'
                     },
-                    
+
                     # Temperature - affects response creativity
                     'temperature': {
                         'type': 'categorical',
                         'values': [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
                         'description': 'Sampling temperature'
                     },
-                    
+
                     # Max completion tokens
                     'max_completion_tokens': {
                         'type': 'discrete',
@@ -123,7 +124,7 @@ class AzureChatTemplate:
                 'export_dir': './legacy_exports'
             }
         }
-    
+
     def generate_test_cases(self, description: str) -> List[Dict]:
         """Generate Azure-specific test cases."""
         # Use existing augmentation system from LLMChatTemplate
@@ -149,7 +150,7 @@ class AzureChatTemplate:
                     "metadata": {"category": "creative", "difficulty": "medium", "weight": 1.2}
                 }
             ]
-    
+
     def generate_evaluator(self) -> str:
         """Generate Azure-specific evaluator."""
         return '''"""
@@ -171,13 +172,13 @@ def score_azure_response(
 ) -> float:
     """
     Score Azure OpenAI response based on proven patterns.
-    
+
     Args:
         result: Azure OpenAI API response
         expected: Expected criteria
         params: Configuration parameters
         metric: Specific metric to return
-    
+
     Returns:
         Score between 0.0 and 1.0
     """
@@ -185,18 +186,18 @@ def score_azure_response(
     text = _extract_azure_text(result)
     if not text:
         return 0.0
-    
+
     # Calculate scores
     scores = {}
     scores['response_quality'] = _score_response_quality(text, expected)
     scores['response_length'] = _score_response_length(text, expected)
     scores['latency_sec'] = _score_latency(result, expected)
     scores['cost_per_task'] = _score_cost(result, expected)
-    
+
     # Return specific metric if requested
     if metric:
         return scores.get(metric, 0.0)
-    
+
     # Weighted overall score
     overall_score = (
         scores['response_quality'] * 0.4 +
@@ -204,7 +205,7 @@ def score_azure_response(
         scores['latency_sec'] * 0.2 +
         scores['cost_per_task'] * 0.2
     )
-    
+
     return min(1.0, max(0.0, overall_score))
 
 
@@ -228,9 +229,9 @@ def _score_response_quality(text, expected):
     """Score based on response quality."""
     if not text or len(text.strip()) < 3:
         return 0.0
-    
+
     score = 0.5  # Base score
-    
+
     # Check for required keywords
     if 'contains' in expected:
         required_keywords = expected['contains']
@@ -238,11 +239,11 @@ def _score_response_quality(text, expected):
             text_lower = text.lower()
             found_keywords = sum(1 for keyword in required_keywords if keyword.lower() in text_lower)
             score += (found_keywords / len(required_keywords)) * 0.3
-    
+
     # Length appropriateness
     if 10 <= len(text) <= 1000:
         score += 0.2
-    
+
     return min(1.0, score)
 
 
@@ -250,10 +251,10 @@ def _score_response_length(text, expected):
     """Score based on response length."""
     length = len(text)
     min_length = expected.get('min_length', 0)
-    
+
     if length < min_length:
         return 0.0
-    
+
     # Gradual scoring based on length
     if length >= min_length * 2:
         return 1.0
@@ -270,13 +271,13 @@ def _score_latency(result, expected):
     if isinstance(result, dict) and 'latency_ms' in result:
         latency_ms = result['latency_ms']
         max_latency = expected.get('max_latency_ms', 5000)
-        
+
         if latency_ms <= max_latency:
             return 1.0
         else:
             penalty = min(0.8, (latency_ms - max_latency) / max_latency)
             return max(0.0, 1.0 - penalty)
-    
+
     return 0.5  # Default score if no latency data
 
 
@@ -285,23 +286,23 @@ def _score_cost(result, expected):
     if isinstance(result, dict) and 'cost_usd' in result:
         cost = result['cost_usd']
         max_cost = expected.get('max_cost_usd', 0.01)
-        
+
         if cost <= max_cost:
             return 1.0
         else:
             penalty = min(0.8, (cost - max_cost) / max_cost)
             return max(0.0, 1.0 - penalty)
-    
+
     return 0.5  # Default score if no cost data
 '''
-    
+
     def generate_yaml_content(self, config: Dict[str, Any]) -> str:
         """Generate YAML content from config."""
         model_list = ', '.join(config['api']['models'].keys())
-        
+
         yaml_content = f"""# Azure OpenAI Multi-Model Optimization Configuration
 # Generated by Convergence Azure Chat Template
-# 
+#
 # API: {config['api']['name']}
 # Description: {config['api']['description']}
 #
@@ -322,15 +323,15 @@ def _score_cost(result, expected):
 """
         yaml_content += yaml.dump(config, default_flow_style=False, sort_keys=False)
         return yaml_content
-    
+
     def generate_json_content(self, test_cases: List[Dict]) -> str:
         """Generate JSON content from test cases."""
         return json.dumps({"test_cases": test_cases}, indent=2)
-    
+
     def generate_readme_content(self, config: Dict[str, Any]) -> str:
         """Generate README content."""
         model_list = ', '.join(config['api']['models'].keys())
-        
+
         return f"""# Azure OpenAI Multi-Model Optimization
 
 This configuration optimizes Azure OpenAI API calls using **{config['api']['description']}**.

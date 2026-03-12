@@ -46,11 +46,11 @@ class RuntimeStorageProtocol(Protocol):
     ) -> Any:
         """
         Apply a reward update to the selected arm.
-        
+
         If `computed_update` is provided, use those pre-computed values instead of
         computing them. This allows the SDK to centralize all Bayesian update
         computation logic, while storage backends only handle persistence.
-        
+
         Args:
             computed_update: Optional pre-computed Bayesian update values from SDK.
                 If provided, should contain: alpha, beta, total_pulls, total_reward,
