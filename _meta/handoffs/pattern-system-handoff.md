@@ -1,9 +1,9 @@
 # Handoff: Pattern System + Convergence Vision
 
-**Date:** 2026-03-12
-**Session:** Pattern matching redesign, native observability, self-evolving patterns
+**Date:** 2026-03-12 (Updated)
+**Session:** Research synthesis complete, architecture v2 designed
 **Branch:** main (clean)
-**Status:** CR-004 complete, remaining contracts ready for implementation
+**Status:** CR-004 complete, v2 architecture ready for implementation
 
 ---
 
@@ -27,108 +27,140 @@ All infrastructure should live IN Convergence. Company-specific code should be m
 - JSON truncation handling
 - All CI checks passing
 
-### 2. Research Completed (3 docs in `_meta/research/`)
-- `regex-alternatives.md` - Stick with regex, but optimize
-- `observability-patterns.md` - Native observability design
-- `pattern-fragility.md` - YAML config + golden tests
+### 2. Research Completed (4 docs in `_meta/research/`)
+- `novel-approaches-2026.md` - EvolveR, MAE, Constitutional AI, Thompson Sampling validation
+- `funjoin-failure-patterns.md` - 5 failure categories, 95% pilot failure rate, antipatterns
+- `funjoin-integration-needs.md` - FunJoin's plug-and-play definition, priority features
+- `collabvault-learnings.md` - 47 patterns, decision traces, memory decay formula
 
-### 3. Tear-Down Review (REVISE verdict)
-- **File:** `_meta/reviews/pattern-system-teardown.md`
-- **4 Critical Issues:**
-  1. Patterns not connected to existing MAB
-  2. Weave vendor lock-in (no native observability)
-  3. 3 bugs in confidence.py
-  4. No classifier mode protocol
+### 3. CR-004: Fix Confidence Bugs ✓ COMPLETE
+- Added re.IGNORECASE to NEGATION_PATTERNS (precompiled)
+- Precompiled all patterns at module level
+- Added contraction support: `(?:'[a-z]*)?` suffix
+
+### 4. Architecture v2 Designed
+- **File:** `_meta/plans/pattern-system-v2.md`
+- **Key pivot:** Static patterns → EvolveR-style principle tracking
+- **6 phases, 27 files total**
 
 ---
 
-## Contracts Ready for Implementation
+## Key Research Findings
 
-### CR-004: Fix Confidence Bugs (Tier 1) ✓ COMPLETE
+### Novel Approaches (Applied)
+
+| Source | Insight | Application |
+|--------|---------|-------------|
+| EvolveR | Quality score = (success+1)/(usage+2) | Pattern tracking |
+| Constitutional AI | Principles over examples | YAML constitution |
+| Thompson Sampling | Validated for LLM alignment | Pattern selection |
+| Failure studies | 79% from spec/coordination | Explicit protocols |
+| Memory decay | 1/(1 + age/30) | Pattern freshness |
+
+### Critical Statistics
+
+- **95%** of AI pilots fail (MIT 2025)
+- **79%** of multi-agent failures from spec/coordination, not tech
+- **41-86.7%** production failure rate
+- **500+** interactions needed before self-learning calibration
+- **80%** cost reduction possible via semantic cache
+
+---
+
+## Revised Contract Architecture
+
+### Phase 0: CR-004 ✓ COMPLETE
+
+### Phase 1: CR-010 — Principle Tracking Foundation (NEW)
 ```json
 {
-  "goal": "Fix 3 bugs in confidence.py",
-  "files": ["convergence/evaluators/confidence.py"],
-  "tier": 1,
-  "status": "complete",
-  "fixes": [
-    "Added re.IGNORECASE to NEGATION_PATTERNS (now precompiled)",
-    "Precompiled all patterns at module level (_HEDGING_SINGLE_WORD_PATTERNS, etc.)",
-    "Added contraction support: (?:'[a-z]*)? suffix for word boundary patterns"
-  ]
+  "goal": "Add EvolveR-style quality tracking to patterns",
+  "files": [
+    "convergence/patterns/__init__.py",
+    "convergence/patterns/principle.py",
+    "convergence/patterns/tracker.py",
+    "convergence/storage/patterns.py"
+  ],
+  "tier": 2,
+  "novel": "Quality score = (success+1)/(usage+2)"
 }
 ```
 
-### CR-005: Native Observability (Tier 2)
+### Phase 2: CR-005-v2 — Learning Observability
 ```json
 {
-  "goal": "Create protocol-based observability without Weave dependency",
+  "goal": "Watch the learning process, not just outputs",
   "files": [
     "convergence/observability/__init__.py",
-    "convergence/observability/base.py",
+    "convergence/observability/protocol.py",
     "convergence/observability/native.py",
     "convergence/observability/metrics.py",
     "convergence/observability/weave.py"
   ],
   "tier": 2,
-  "design": "BaseObserver protocol + pluggable backends"
+  "metrics": ["principle_effectiveness", "calibration_drift", "cost_quality_pareto"]
 }
 ```
 
-### CR-006: Pattern YAML + Loader (Tier 2)
+### Phase 3: CR-006-v2 — Constitutional YAML
 ```json
 {
-  "goal": "Move patterns to YAML with hot-reload",
+  "goal": "YAML patterns with constitutional structure",
   "files": [
-    "convergence/patterns/__init__.py",
     "convergence/patterns/loader.py",
+    "convergence/patterns/constitution.py",
     "convergence/patterns/schemas/v1.yaml",
-    "convergence/evaluators/confidence.py (update to use loader)"
-  ],
-  "tier": 2
-}
-```
-
-### CR-007: Multi-Mode Classifier (Tier 2)
-```json
-{
-  "goal": "Create centralized classifier with mode switching",
-  "files": [
-    "convergence/classifier/__init__.py",
-    "convergence/classifier/base.py",
-    "convergence/classifier/confidence.py",
-    "convergence/classifier/matcher.py"
+    "convergence/patterns/schemas/confidence.yaml",
+    "convergence/patterns/schemas/code_quality.yaml"
   ],
   "tier": 2,
-  "modes": ["explicit", "hedging", "certainty", "code_quality", "custom"]
+  "novel": "Constitution + critique templates"
 }
 ```
 
-### CR-008: Pattern Evolution (Tier 3)
+### Phase 4: CR-007-v2 — Unified Classifier Protocol
 ```json
 {
-  "goal": "Connect patterns to Thompson Sampling for self-evolution",
+  "goal": "Protocol-based classifier with feedback integration",
+  "files": [
+    "convergence/classifier/__init__.py",
+    "convergence/classifier/protocol.py",
+    "convergence/classifier/confidence.py",
+    "convergence/classifier/code_quality.py",
+    "convergence/classifier/factory.py"
+  ],
+  "tier": 2,
+  "depends": ["CR-010", "CR-005-v2", "CR-006-v2"]
+}
+```
+
+### Phase 5: CR-008-v2 — Thompson Sampling for Patterns
+```json
+{
+  "goal": "Connect patterns to existing MAB infrastructure",
   "files": [
     "convergence/patterns/evolution.py",
-    "convergence/runtime/online.py (integrate pattern feedback)",
-    "convergence/plugins/mab/thompson_sampling.py (phrase arms)",
-    "convergence/storage/sqlite.py (pattern stats)"
+    "convergence/patterns/sampler.py",
+    "convergence/runtime/pattern_integration.py"
   ],
-  "tier": 3,
-  "design": "Each phrase = arm. Success/fail updates Beta distribution. Low performers pruned."
+  "tier": 2,
+  "depends": ["CR-010", "CR-007-v2"],
+  "novel": "Patterns ARE arms in the bandit"
 }
 ```
 
-### CR-009: README + Docs Update (Tier 1)
+### Phase 6: CR-009-v2 — Vision Documentation
 ```json
 {
-  "goal": "Update README for plug-and-play vision",
+  "goal": "README that sells the story + FunJoin example",
   "files": [
     "README.md",
-    "docs/QUICKSTART.md"
+    "docs/QUICKSTART.md",
+    "docs/PATTERNS.md",
+    "examples/funjoin_integration.py"
   ],
   "tier": 1,
-  "vision": "Install → provide data → run self-optimization"
+  "depends": ["ALL"]
 }
 ```
 
@@ -136,80 +168,81 @@ All infrastructure should live IN Convergence. Company-specific code should be m
 
 ## Implementation Order
 
-| Phase | Contract | Scope | Dependencies | Status |
-|-------|----------|-------|--------------|--------|
-| 0 | CR-004 | Fix confidence bugs | None | ✓ DONE |
-| 1 | CR-005 | Native observability | None | Ready |
-| 2 | CR-006 | YAML patterns | None | Ready |
-| 3 | CR-007 | Multi-mode classifier | CR-006 | Blocked |
-| 4 | CR-008 | Pattern evolution | CR-006, CR-007 | Blocked |
-| 5 | CR-009 | README update | All above | Blocked |
+| Phase | Contract | Scope | Status |
+|-------|----------|-------|--------|
+| 0 | CR-004 | Bug fixes | ✓ DONE |
+| 1 | CR-010 | Principle tracking | Ready |
+| 2 | CR-005-v2 | Learning observability | Ready |
+| 3 | CR-006-v2 | Constitutional YAML | Ready |
+| 4 | CR-007-v2 | Unified classifier | Blocked on 1,2,3 |
+| 5 | CR-008-v2 | Thompson on patterns | Blocked on 1,4 |
+| 6 | CR-009-v2 | Documentation | Blocked on ALL |
+
+**Phases 1, 2, 3 can run in parallel** (no dependencies).
 
 ---
 
-## Key Insight: Use Existing Infrastructure
+## Key Pivots from Original Design
 
-The Convergence ALREADY HAS:
-- `bayesian_update.py` - Beta distribution math
-- `thompson_sampling.py` - Arm selection
-- `runtime/evolution.py` - Mutation/crossover
-- `storage/` - Persistence layer
-
-**Just connect patterns to this loop.** Don't rebuild.
+1. **Static → Dynamic Patterns**: Quality tracking, Thompson Sampling selection, decay
+2. **Observe Outputs → Observe Learning**: Principle effectiveness, calibration drift
+3. **YAML Config → Constitutional YAML**: Principles, critique templates, weights
+4. **Separate MAB → Unified Loop**: Patterns ARE arms in the bandit
+5. **Arbitrary Thresholds → Calibrated**: Track actual success rates
 
 ---
 
-## FunJoin Integration Pattern
+## AgentDB Updated
 
-From `funjoin/_meta/docs/convergence-integration.md`:
-
-```python
-# Configure once
-await configure_runtime("funjoin_sales", config={
-    "arms": [...],  # Response variants
-    "storage": {"backend": "sqlite"}
-})
-
-# Select per request
-selection = await runtime_select("funjoin_sales", user_id=user_id)
-response = await claude.chat(message, **selection.params)
-
-# Update on outcome
-await runtime_update("funjoin_sales", decision_id=selection.decision_id, reward=1.0)
-```
-
-**Goal:** Same simplicity for pattern evolution. Patterns auto-improve based on success signals.
+9 key research insights persisted:
+- `evolver-principle-tracking`
+- `thompson-validated`
+- `constitutional-over-rlhf`
+- `14-failure-modes`
+- `41-86-failure-rate`
+- `memory-decay-formula`
+- `self-learning-phase-2`
+- `observe-learning-not-outputs`
+- `plug-and-play-means-3-calls`
 
 ---
 
 ## Files Modified This Session
 
-- `convergence/clients/claude.py` - Added user_id to record_outcome
-- `convergence/cache/semantic.py` - Fixed get_running_loop
-- `convergence/evaluators/confidence.py` - Sorted VALID_METHODS, **CR-004: precompiled patterns, IGNORECASE, contraction support**
-- `convergence/storage/postgresql.py` - Scoped UPDATE by user_id
-- `convergence/generator/natural_language_processor.py` - Fixed JSON handling
-- `.claude/rules/project.md` - Added known tech debt section
+- `convergence/evaluators/confidence.py` - CR-004 bug fixes
+- `_meta/plans/pattern-system-v2.md` - New architecture (created)
+- `_meta/research/novel-approaches-2026.md` - Research (created)
+- `_meta/research/funjoin-failure-patterns.md` - Research (created)
+- `_meta/research/funjoin-integration-needs.md` - Research (created)
+- `_meta/research/collabvault-learnings.md` - Research (created)
+- `_meta/handoffs/pattern-system-handoff.md` - Updated
 
 ---
 
 ## Next Steps
 
-1. ~~**Run CR-004** (bug fix)~~ ✓ DONE
-2. **Start CR-005** - Native observability protocol (Tier 2, no deps)
-3. **Start CR-006** - YAML patterns foundation (Tier 2, no deps)
-4. **CR-007** - Multi-mode classifier (depends on CR-006)
-5. **CR-008** - Pattern evolution via MAB (depends on CR-006, CR-007)
-6. **Test with FunJoin** - Real consumer validation
+1. **Choose parallelization strategy**:
+   - Option A: Run CR-010, CR-005-v2, CR-006-v2 in parallel (fastest)
+   - Option B: Sequential for easier review
+
+2. **Start with CR-010** (principle tracking) — foundation for everything else
+
+3. **Validate with FunJoin** after Phase 4 — real consumer test
 
 ---
 
-## Questions for Next Session
+## Questions Resolved
 
-1. Should patterns evolve **globally** or **per-user**?
-2. What's the canonical **feedback signal** for pattern success?
-3. How much of pattern config should be **user-facing** vs internal?
+1. **Should patterns evolve globally or per-user?**
+   → Global patterns with per-user weighting
+
+2. **What's the canonical feedback signal?**
+   → `(success+1)/(usage+2)` — EvolveR's smoothed success rate
+
+3. **Where do evolved patterns persist?**
+   → SQLite (existing storage), same RuntimeStorageProtocol
 
 ---
 
-*Handoff prepared: 2026-03-12*
+*Handoff updated: 2026-03-12*
+*Research complete, architecture v2 ready for implementation*
