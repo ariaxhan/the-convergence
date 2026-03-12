@@ -1,0 +1,198 @@
+{
+  "main": {
+    "id": "075ae5c54827bbad",
+    "type": "split",
+    "children": [
+      {
+        "id": "babc2925a2fe9d1f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e663c7a5c152899a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "CONVERGENCE-MEMO.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "CONVERGENCE-MEMO"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "c5228c63d227faf2",
+    "type": "split",
+    "children": [
+      {
+        "id": "069d97316b1afb30",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "11f1d8d2830e3366",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "d8f40f486b643471",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "5b8623d5938e4f47",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "891f901aa05e960f",
+    "type": "split",
+    "children": [
+      {
+        "id": "29d3be71006d1e3a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6a40e262911059f4",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "CONVERGENCE-MEMO.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for CONVERGENCE-MEMO"
+            }
+          },
+          {
+            "id": "f54819e96ad8a7ad",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "CONVERGENCE-MEMO.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from CONVERGENCE-MEMO"
+            }
+          },
+          {
+            "id": "bad3ca8838ecadf0",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "465dde69f402d836",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "a63f9f2a21d9cfc5",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "CONVERGENCE-MEMO.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of CONVERGENCE-MEMO"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "e663c7a5c152899a",
+  "lastOpenFiles": [
+    "handoffs/learning-system-2026-03-12.md",
+    "docs/RLP-SAO-DEEP-DIVE.md",
+    "docs",
+    "agents/main-25650.json",
+    "handoffs/pattern-system-handoff.md",
+    "CONVERGENCE-MEMO.md",
+    "reviews/pattern-system-teardown.md",
+    "research/novel-approaches-2026.md",
+    "research/funjoin-failure-patterns.md"
+  ]
+}
