@@ -171,6 +171,32 @@ class ThompsonSamplingStrategy:
             for arm in self.arm_stats.keys()
         ]
 
+    def get_state(self) -> Dict[str, Any]:
+        """
+        Export state as serializable dict.
+
+        Returns:
+            Dict containing arm_stats and config that can be JSON serialized.
+        """
+        return {
+            "arm_stats": self.arm_stats,
+            "config": {
+                "alpha_prior": self.config.alpha_prior,
+                "beta_prior": self.config.beta_prior,
+            }
+        }
+
+    def set_state(self, state: Dict[str, Any]) -> None:
+        """
+        Restore state from dict.
+
+        Args:
+            state: State dict from get_state()
+        """
+        self.arm_stats = state.get("arm_stats", {})
+        if "config" in state:
+            self.config = ThompsonSamplingConfig(**state["config"])
+
 
 class ThompsonSamplingPlugin:
     """

@@ -59,6 +59,14 @@ except ImportError:
     _POSTGRESQL_AVAILABLE = False
     PostgreSQLRuntimeStorage = None  # type: ignore[misc, assignment]
 
+# Optional generic PostgreSQL storage (requires asyncpg)
+try:
+    from convergence.storage.postgres import PostgreSQLStorage
+    _POSTGRES_STORAGE_AVAILABLE = True
+except ImportError:
+    _POSTGRES_STORAGE_AVAILABLE = False
+    PostgreSQLStorage = None  # type: ignore[misc, assignment]
+
 __all__ = [
     # Protocol and base classes
     "StorageProtocol",
@@ -86,6 +94,9 @@ __all__ = [
 
     # PostgreSQL runtime storage (optional, requires asyncpg)
     "PostgreSQLRuntimeStorage",
+
+    # Generic PostgreSQL storage (optional, requires asyncpg)
+    "PostgreSQLStorage",
 
     # Legacy management
     "LegacyManager",

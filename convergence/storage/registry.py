@@ -172,8 +172,8 @@ def _register_builtin_backends() -> None:
 
     # Try to register Postgres (optional dependency)
     try:
-        from convergence.storage.postgres import PostgresStorage
-        StorageRegistry.register("postgres", PostgresStorage)
+        from convergence.storage.postgres import PostgreSQLStorage
+        StorageRegistry.register("postgres", PostgreSQLStorage)
     except ImportError:
         pass  # Postgres is optional
 

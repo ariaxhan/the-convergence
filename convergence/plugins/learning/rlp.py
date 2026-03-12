@@ -635,6 +635,128 @@ Internal Reasoning:"""
             }
         }
 
+    # =========================================================================
+    # ENTROPY AND KL DIVERGENCE MONITORING
+    # =========================================================================
+
+    def compute_policy_entropy(self, policy: np.ndarray) -> float:
+        """
+        Compute entropy of policy distribution.
+
+        Entropy H = -sum(p * log(p)) measures exploration level.
+        High entropy = more exploration, low entropy = more deterministic.
+
+        Args:
+            policy: Probability distribution over actions (should sum to 1)
+
+        Returns:
+            Entropy value (>= 0)
+        """
+        # For true zeros, p*log(p) should contribute 0, not epsilon
+        # Only apply log where p > 0
+        entropy = 0.0
+        for p in policy:
+            if p > 0:
+                entropy -= p * np.log(p)
+        return float(entropy)
+
+    def is_entropy_below_threshold(self, policy: np.ndarray, threshold: float) -> bool:
+        """
+        Check if policy entropy is below threshold (indicating collapse).
+
+        Low entropy suggests the policy is becoming too deterministic,
+        which may indicate premature convergence or collapse.
+
+        Args:
+            policy: Probability distribution over actions
+            threshold: Minimum acceptable entropy
+
+        Returns:
+            True if entropy is below threshold (warning condition)
+        """
+        return self.compute_policy_entropy(policy) < threshold
+
+    def compute_kl_divergence(self, p: np.ndarray, q: np.ndarray) -> float:
+        """
+        Compute KL divergence KL(p||q).
+
+        KL divergence measures how different distribution p is from q.
+        Used to constrain policy updates in safe RL.
+
+        Args:
+            p: Reference distribution
+            q: Target distribution
+
+        Returns:
+            KL divergence (>= 0, asymmetric)
+        """
+        # Handle zeros with small epsilon
+        p = np.clip(p, 1e-10, 1.0)
+        q = np.clip(q, 1e-10, 1.0)
+        return float(np.sum(p * np.log(p / q)))
+
+    def is_kl_constraint_violated(
+        self,
+        old: np.ndarray,
+        new: np.ndarray,
+        threshold: float
+    ) -> bool:
+        """
+        Check if KL divergence between policies exceeds threshold.
+
+        Large KL divergence indicates the policy changed too much,
+        which can destabilize learning.
+
+        Args:
+            old: Previous policy distribution
+            new: Updated policy distribution
+            threshold: Maximum allowed KL divergence
+
+        Returns:
+            True if KL divergence exceeds threshold (constraint violated)
+        """
+        return self.compute_kl_divergence(old, new) > threshold
+
+    def get_policy_health_metrics(
+        self,
+        old_policy: np.ndarray,
+        new_policy: np.ndarray
+    ) -> Dict[str, Any]:
+        """
+        Get comprehensive policy health metrics.
+
+        Monitors both exploration (entropy) and stability (KL divergence)
+        to detect potential issues like policy collapse or excessive drift.
+
+        Args:
+            old_policy: Previous policy distribution
+            new_policy: Current policy distribution
+
+        Returns:
+            Dict with entropy, kl_divergence, is_healthy, and warnings
+        """
+        entropy = self.compute_policy_entropy(new_policy)
+        old_entropy = self.compute_policy_entropy(old_policy)
+        kl = self.compute_kl_divergence(old_policy, new_policy)
+
+        warnings = []
+
+        # Check for low entropy (policy collapse)
+        if entropy < 0.5:
+            warnings.append("low_entropy")
+
+        # Check for high KL divergence (excessive drift)
+        if kl > self.rlp_config.kl_target * 10:
+            warnings.append("high_kl_divergence")
+
+        return {
+            "entropy": entropy,
+            "kl_divergence": kl,
+            "entropy_ratio": entropy / (old_entropy + 1e-10),
+            "is_healthy": len(warnings) == 0,
+            "warnings": warnings,
+        }
+
 
 class RLPLearnerPlugin:
     """

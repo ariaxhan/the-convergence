@@ -84,6 +84,10 @@ class SAOConfig(BaseModel):
         default=10,
         description="Batch size for parallel generation"
     )
+    distribution_shift_threshold: float = Field(
+        default=0.05,
+        description="Threshold for distribution shift detection (0-1)"
+    )
 
 
 # PersonaHub templates (simplified subset)
@@ -154,6 +158,10 @@ class SAOMixin:
             'filtered_duplicates': 0,
             'rounds_completed': 0
         }
+
+        # Distribution shift detection
+        self._distribution_baseline: Optional[bool] = None
+        self._baseline_vocab: Optional[Dict[str, float]] = None
 
     def _generate_persona(self) -> str:
         """Generate a diverse persona using templates."""
@@ -635,6 +643,133 @@ Judgment:"""
             print(f"Error importing dataset: {e}")
             return False
 
+    # =========================================================================
+    # DISTRIBUTION SHIFT DETECTION
+    # =========================================================================
+
+    def establish_distribution_baseline(self) -> bool:
+        """
+        Establish baseline from current dataset.
+
+        Computes word frequency distribution from prompts to use
+        as reference for detecting distribution shift.
+
+        Returns:
+            True if baseline established, False if insufficient data (less than 10 samples)
+        """
+        # Need at least 10 samples for meaningful shift detection
+        if len(self.synthetic_dataset) < 10:
+            return False
+
+        # Compute word frequency distribution from prompts
+        # Filter out purely numeric tokens as they don't indicate topic shift
+        vocab: Dict[str, int] = {}
+        for item in self.synthetic_dataset:
+            for word in item.get("prompt", "").lower().split():
+                # Skip purely numeric tokens or very short tokens
+                cleaned = word.strip("?!.,")
+                if cleaned.isdigit() or len(cleaned) <= 1:
+                    continue
+                vocab[word] = vocab.get(word, 0) + 1
+
+        total = sum(vocab.values())
+        if total == 0:
+            return False
+
+        self._baseline_vocab = {k: v / total for k, v in vocab.items()}
+        self._distribution_baseline = True
+        return True
+
+    def has_distribution_baseline(self) -> bool:
+        """
+        Check if distribution baseline has been established.
+
+        Returns:
+            True if baseline exists, False otherwise
+        """
+        return self._distribution_baseline is not None
+
+    def reset_distribution_baseline(self) -> None:
+        """Reset distribution baseline to None."""
+        self._distribution_baseline = None
+        self._baseline_vocab = None
+
+    def detect_distribution_shift(
+        self,
+        threshold: Optional[float] = None
+    ) -> Dict[str, Any]:
+        """
+        Detect if current data distribution shifted from baseline.
+
+        Uses Jensen-Shannon divergence (symmetric, bounded) to measure
+        how much the word distribution has changed.
+
+        Args:
+            threshold: Custom threshold (uses config default if None)
+
+        Returns:
+            Dict with has_baseline, shift_detected, shift_magnitude, threshold_used
+        """
+        import numpy as np
+
+        threshold = threshold or self.sao_config.distribution_shift_threshold
+
+        if not self.has_distribution_baseline():
+            return {
+                "has_baseline": False,
+                "shift_detected": False,
+                "threshold_used": threshold
+            }
+
+        # Compute current distribution
+        # Filter out purely numeric tokens as they don't indicate topic shift
+        current_vocab: Dict[str, int] = {}
+        for item in self.synthetic_dataset:
+            for word in item.get("prompt", "").lower().split():
+                # Skip purely numeric tokens or very short tokens
+                cleaned = word.strip("?!.,")
+                if cleaned.isdigit() or len(cleaned) <= 1:
+                    continue
+                current_vocab[word] = current_vocab.get(word, 0) + 1
+
+        total = sum(current_vocab.values()) or 1
+        current_dist = {k: v / total for k, v in current_vocab.items()}
+
+        # Compute JS divergence (symmetric)
+        # Then scale by number of unique words to make it more sensitive to vocabulary changes
+        # Note: _baseline_vocab is guaranteed non-None here (checked by has_distribution_baseline)
+        baseline_vocab = self._baseline_vocab or {}
+        all_words = set(baseline_vocab.keys()) | set(current_dist.keys())
+        baseline_only = set(baseline_vocab.keys()) - set(current_dist.keys())
+        current_only = set(current_dist.keys()) - set(baseline_vocab.keys())
+
+        js_shift = 0.0
+        for word in all_words:
+            p = baseline_vocab.get(word, 0)
+            q = current_dist.get(word, 0)
+            m = (p + q) / 2
+
+            if m > 0:
+                if p > 0:
+                    js_shift += p * np.log(p / m) / 2
+                if q > 0:
+                    js_shift += q * np.log(q / m) / 2
+
+        # Add vocabulary shift component (new words in current that weren't in baseline)
+        # This boosts the shift when new topics are introduced
+        vocab_shift = len(current_only) / (len(all_words) + 1)
+
+        # Combined shift: JS divergence + vocabulary novelty (weighted)
+        # Weight vocabulary novelty higher to capture topic changes
+        shift = js_shift + (vocab_shift * 2.0)
+
+        return {
+            "has_baseline": True,
+            "shift_detected": bool(shift > threshold),
+            "shift_magnitude": float(shift),
+            "threshold_used": threshold,
+        }
+
     def get_generation_stats(self) -> Dict[str, Any]:
         """
         Get comprehensive generation statistics.
@@ -649,6 +784,7 @@ Judgment:"""
             'unique_prompts': len(self.seen_prompts),
             'generation_stats': self.generation_stats,
             'diversity_metrics': diversity_metrics,
+            'distribution_shift': self.detect_distribution_shift(),
             'config': {
                 'similarity_threshold': self.sao_config.similarity_threshold,
                 'quality_filter': self.sao_config.quality_filter,
