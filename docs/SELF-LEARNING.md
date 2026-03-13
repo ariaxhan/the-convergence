@@ -50,12 +50,40 @@ strategy.update(selected, reward=0.9, context={"task_type": "code"})
 | UCB | Deterministic | Complex tuning |
 | **Thompson Sampling** | Adaptive exploration | Slightly more compute |
 
+## Runtime API
+
+For production use, the runtime API handles Thompson Sampling automatically.
+
+```python
+from convergence.runtime.online import configure, select, update
+from convergence.types import RuntimeConfig, RuntimeArmTemplate
+from convergence.storage.sqlite import SQLiteStorage
+
+# Configure once
+storage = SQLiteStorage(db_path="./convergence.db")
+await storage.initialize()
+
+config = RuntimeConfig(
+    system="my-agent",
+    default_arms=[
+        RuntimeArmTemplate(arm_id="gpt-4", name="GPT-4", params={"model": "gpt-4"}),
+        RuntimeArmTemplate(arm_id="gpt-3.5", name="GPT-3.5", params={"model": "gpt-3.5-turbo"}),
+    ],
+)
+await configure("my-agent", config=config, storage=storage)
+
+# Use in your agent loop
+selection = await select("my-agent", user_id="user-123")
+# ... use selection.params["model"] to call LLM ...
+await update("my-agent", user_id="user-123", decision_id=selection.decision_id, reward=0.9)
+```
+
 ## Regret
 
 Regret measures how much worse we perform vs always picking the best arm.
 
 ```
-Cumulative Regret = Σ (optimal_reward - actual_reward)
+Cumulative Regret = Sum(optimal_reward - actual_reward)
 ```
 
 ### Interpretation
@@ -78,28 +106,30 @@ avg_regret = observer.get_average_regret(window=100)
 
 ## Arm Statistics
 
-Each arm tracks:
+The runtime tracks statistics for each arm:
 
 ```python
-stats = strategy.arm_stats["gpt-4"]
-# {
-#   "successes": 45,
-#   "failures": 5,
-#   "mean": 0.9,
-#   "variance": 0.008,
-#   "pulls": 50,
-# }
+# After many decisions, check arm performance
+selection = await select("my-agent", user_id="user-123")
+
+for arm_state in selection.arms_state:
+    print(f"Arm: {arm_state.arm_id}")
+    print(f"  Alpha: {arm_state.alpha}")
+    print(f"  Beta: {arm_state.beta}")
+    print(f"  Sampled Value: {arm_state.sampled_value}")
 ```
 
 ## Persistence
 
-State survives restarts:
+State survives restarts with storage backends:
 
 ```python
 from convergence.plugins.mab import ThompsonPersistence
-from convergence.storage import SQLiteStorage
+from convergence.storage.sqlite import SQLiteStorage
 
 storage = SQLiteStorage(db_path="./mab_state.db")
+await storage.initialize()
+
 persistence = ThompsonPersistence(storage)
 
 # Save state
@@ -181,27 +211,51 @@ Higher = more exploration, slower convergence
 Lower = less exploration, faster convergence but may miss better arms
 
 ```python
-strategy = ThompsonSamplingStrategy(
-    config=ThompsonSamplingConfig(
-        alpha_prior=1.0,   # Start optimistic
-        beta_prior=1.0,
-    )
+from convergence.types import RuntimeConfig, SelectionStrategyConfig
+
+config = RuntimeConfig(
+    system="my-agent",
+    selection_strategy=SelectionStrategyConfig(
+        exploration_bonus=0.1,       # Bonus for under-explored arms
+        exploration_min_pulls=5,     # Min pulls before bonus stops
+    ),
+    default_arms=[...],
+)
+```
+
+### Stability
+
+Avoid switching arms when one is clearly winning:
+
+```python
+config = RuntimeConfig(
+    system="my-agent",
+    selection_strategy=SelectionStrategyConfig(
+        use_stability=True,
+        stability_min_pulls=20,
+        stability_confidence_threshold=0.2,
+        stability_improvement_threshold=0.05,
+    ),
+    default_arms=[...],
 )
 ```
 
 ### Context-Aware Selection
 
-Different arms for different contexts:
+Different contexts can be tracked separately:
 
 ```python
-# Track separately by context
-strategy.select_arm(
-    arms=["gpt-4", "gpt-3.5"],
+# Track by context
+selection = await select(
+    "my-agent",
+    user_id="user-123",
     context={"task_type": "code"},
 )
 
-strategy.select_arm(
-    arms=["gpt-4", "claude-3"],
+# Later
+selection = await select(
+    "my-agent",
+    user_id="user-123",
     context={"task_type": "writing"},
 )
 ```

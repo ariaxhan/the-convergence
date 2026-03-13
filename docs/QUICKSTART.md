@@ -8,7 +8,7 @@ Get The Convergence running in 5 minutes.
 pip install convergence
 
 # With optional dependencies
-pip install convergence[safety]       # NeMo Guardrails, Guardrails AI
+pip install convergence[safety]       # Injection detection, budget enforcement
 pip install convergence[observability] # Weave integration
 pip install convergence[all]          # Everything
 ```
@@ -17,25 +17,44 @@ pip install convergence[all]          # Everything
 
 ```python
 import asyncio
-from convergence import ConvergenceAgent
-from convergence.plugins.mab import ThompsonSamplingStrategy
+from convergence.runtime.online import configure, select, update
+from convergence.types import RuntimeConfig, RuntimeArmTemplate
+from convergence.storage.sqlite import SQLiteStorage
 
 async def main():
-    # Create agent with self-learning optimization
-    agent = ConvergenceAgent(
-        models=["gpt-4", "gpt-3.5-turbo", "claude-3-sonnet"],
-        strategy=ThompsonSamplingStrategy(),
+    # Configure storage
+    storage = SQLiteStorage(db_path="./convergence.db")
+    await storage.initialize()
+
+    # Define arms (models to choose from)
+    config = RuntimeConfig(
+        system="my-agent",
+        default_arms=[
+            RuntimeArmTemplate(arm_id="gpt-4", name="GPT-4", params={"model": "gpt-4"}),
+            RuntimeArmTemplate(arm_id="gpt-3.5", name="GPT-3.5", params={"model": "gpt-3.5-turbo"}),
+            RuntimeArmTemplate(arm_id="claude-3", name="Claude 3", params={"model": "claude-3-sonnet"}),
+        ],
     )
 
-    # Agent learns which model works best for each task
-    response = await agent.complete(
-        prompt="Explain quantum computing",
-        context={"task_type": "explanation"},
-    )
+    # Register runtime
+    await configure("my-agent", config=config, storage=storage)
 
-    print(response.content)
-    print(f"Selected model: {response.model}")
-    print(f"Confidence: {response.confidence:.2f}")
+    # Select best arm (Thompson Sampling)
+    selection = await select("my-agent", user_id="user-123")
+    print(f"Selected: {selection.arm_id}")
+    print(f"Params: {selection.params}")
+
+    # Simulate using the model and getting feedback
+    # In reality, you'd call the LLM and evaluate the response
+    reward = 0.9  # 0-1 scale
+
+    # Update with reward (agent learns)
+    await update(
+        "my-agent",
+        user_id="user-123",
+        decision_id=selection.decision_id,
+        reward=reward,
+    )
 
 asyncio.run(main())
 ```
@@ -44,7 +63,7 @@ asyncio.run(main())
 
 1. **Thompson Sampling** selected the model with highest expected reward
 2. Agent tracked the response quality for future decisions
-3. Over time, agent learns which model works best for each task type
+3. Over time, agent learns which model works best
 
 ## Next Steps
 
@@ -58,111 +77,85 @@ asyncio.run(main())
 ### Environment Variables
 
 ```bash
-# Required
+# Required for LLM calls
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 
 # Optional
 CONVERGENCE_LOG_LEVEL=INFO
-CONVERGENCE_CACHE_PATH=./cache.db
 ```
 
-### Basic Config
+### Selection Strategy
 
 ```python
-from convergence import ConvergenceConfig
+from convergence.types import RuntimeConfig, SelectionStrategyConfig
 
-config = ConvergenceConfig(
-    # Model selection
-    default_models=["gpt-4", "gpt-3.5-turbo"],
-
-    # Learning
-    exploration_rate=0.1,  # 10% exploration
-
-    # Cache
-    semantic_cache_enabled=True,
-    cache_threshold=0.88,
-
-    # Safety (defaults)
-    budget_daily_limit=100.0,
-    injection_detection=True,
+config = RuntimeConfig(
+    system="my-agent",
+    selection_strategy=SelectionStrategyConfig(
+        exploration_bonus=0.1,       # Bonus for under-explored arms
+        exploration_min_pulls=5,     # Min pulls before bonus stops
+        use_stability=True,          # Avoid switching when converged
+        stability_min_pulls=20,      # Min pulls for stability check
+    ),
+    default_arms=[...],
 )
 ```
 
-## Common Patterns
-
-### With Semantic Cache
+### Reward Evaluation
 
 ```python
-from convergence.cache import SemanticCache
+from convergence.runtime.reward_evaluator import RewardEvaluatorConfig, RewardMetricConfig
 
-cache = SemanticCache(
-    embedding_fn=get_embedding,
-    backend="sqlite",
-    sqlite_path="./cache.db",
-    threshold=0.88,
+config = RuntimeConfig(
+    system="my-agent",
+    reward_evaluator=RewardEvaluatorConfig(
+        metrics=[
+            RewardMetricConfig(name="quality", weight=0.5),
+            RewardMetricConfig(name="latency", weight=0.3, invert=True),
+            RewardMetricConfig(name="cost", weight=0.2, invert=True),
+        ],
+    ),
+    default_arms=[...],
 )
 
-agent = ConvergenceAgent(
-    models=["gpt-4"],
-    cache=cache,
-)
-```
-
-### With Custom Reward Function
-
-```python
-def custom_reward(response, context):
-    """Define what 'good' means for your use case."""
-    # Example: prefer shorter responses for summaries
-    if context.get("task_type") == "summary":
-        return 1.0 if len(response.content) < 500 else 0.5
-    return response.quality_score
-
-agent = ConvergenceAgent(
-    models=["gpt-4", "claude-3"],
-    reward_fn=custom_reward,
-)
-```
-
-### Persisting Learning State
-
-```python
-from convergence.storage import SQLiteStorage
-
-storage = SQLiteStorage(db_path="./agent_state.db")
-
-agent = ConvergenceAgent(
-    models=["gpt-4"],
-    storage=storage,  # State persists across restarts
+# Then pass signals instead of raw reward
+await update(
+    "my-agent",
+    user_id="user-123",
+    decision_id=selection.decision_id,
+    signals={"quality": 0.9, "latency": 0.2, "cost": 0.05},
 )
 ```
 
 ## Troubleshooting
 
-### "No models configured"
+### "No arms found"
 
-Ensure you've set API keys:
-
-```bash
-export OPENAI_API_KEY=sk-...
-```
-
-### "Cache miss on similar queries"
-
-Lower the threshold:
+Make sure you've configured default arms:
 
 ```python
-cache = SemanticCache(threshold=0.85)  # Default is 0.88
+config = RuntimeConfig(
+    system="my-agent",
+    default_arms=[
+        RuntimeArmTemplate(arm_id="default", name="Default", params={}),
+    ],
+)
 ```
 
-### "Slow first request"
+### "Decision not found"
 
-First request loads models and builds cache index. Subsequent requests are faster.
+Ensure you're using the correct `decision_id` from the selection:
+
+```python
+selection = await select("my-agent", user_id="user-123")
+# Use selection.decision_id, not a made-up ID
+await update("my-agent", decision_id=selection.decision_id, ...)
+```
 
 ## Performance Tips
 
-1. **Use semantic cache** — 70-80% cost reduction on repeated queries
+1. **Use SQLite storage** — State persists across restarts
 2. **Enable observability** — Find and fix slow paths
-3. **Tune threshold** — Use `cache.validate_threshold()` to find optimal value
-4. **Persist state** — Don't lose learning progress on restart
+3. **Tune exploration** — Lower `exploration_bonus` after initial learning
+4. **Use stability** — Avoid thrashing between similar arms

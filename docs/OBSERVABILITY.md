@@ -14,17 +14,14 @@ The Convergence provides native observability for:
 ## Quick Setup
 
 ```python
-from convergence import ConvergenceAgent
 from convergence.observability import NativeObserver
 
 observer = NativeObserver()
 
-agent = ConvergenceAgent(
-    models=["gpt-4", "gpt-3.5-turbo"],
-    observer=observer,
-)
-
-# Make requests...
+# Track metrics as you make decisions
+observer.track_arm_selection("gpt-4")
+observer.track_regret(optimal_reward=1.0, actual_reward=0.8)
+observer.track_cost(0.05, model="gpt-4")
 
 # Export metrics
 print(observer.export_json())
@@ -123,7 +120,7 @@ observer.track_prediction(confidence=0.8, actual_success=False)
 
 # Expected Calibration Error (lower = better)
 ece = observer.get_calibration_error()
-# If 80% confidence predictions succeed 80% of the time, ECE ≈ 0
+# If 80% confidence predictions succeed 80% of the time, ECE ~ 0
 ```
 
 ## Cost Tracking
@@ -191,7 +188,7 @@ prometheus_str = observer.export_prometheus()
 
 Optional integration with Weights & Biases Weave.
 
-```python
+```bash
 pip install convergence[observability]
 ```
 

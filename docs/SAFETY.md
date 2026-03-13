@@ -4,40 +4,79 @@ Defense-in-depth security for production agent deployments.
 
 ## Overview
 
-The Convergence implements 5 layers of defense:
+The Convergence implements 4 layers of defense:
 
 | Layer | Component | What It Does |
 |-------|-----------|--------------|
-| 1 | **Structural Validation** | Pydantic models make bad states impossible |
-| 2 | **Input Validation** | Injection detection blocks attacks |
-| 3 | **Output Validation** | PII/secrets detection prevents leaks |
-| 4 | **Budget Enforcement** | Cost limits prevent runaway spending |
-| 5 | **Audit Logging** | Every decision is logged |
+| 1 | **Input Validation** | Injection detection blocks attacks |
+| 2 | **Output Validation** | PII/secrets detection prevents leaks |
+| 3 | **Budget Enforcement** | Cost limits prevent runaway spending |
+| 4 | **Audit Logging** | Every decision is logged |
 
 ## Quick Setup
 
 ```python
-from convergence import ConvergenceAgent
 from convergence.safety import (
     InjectionDetector,
     OutputValidator,
     BudgetManager,
+    BudgetConfig,
     AuditLogger,
 )
+from convergence.storage.sqlite import SQLiteStorage
 
-# Full safety configuration
-agent = ConvergenceAgent(
-    models=["gpt-4"],
-    injection_detector=InjectionDetector(),
-    output_validator=OutputValidator(detect_pii=True, detect_secrets=True),
-    budget_manager=BudgetManager(
-        config=BudgetConfig(
-            global_daily_limit=100.0,
-            per_session_limit=10.0,
-            per_request_limit=1.0,
-        )
+# Initialize components
+detector = InjectionDetector(sensitivity="high")
+validator = OutputValidator(detect_pii=True, detect_secrets=True)
+
+storage = SQLiteStorage(db_path="./budget.db")
+await storage.initialize()
+
+budget = BudgetManager(
+    storage=storage,
+    config=BudgetConfig(
+        global_daily_limit=100.0,
+        per_session_limit=10.0,
+        per_request_limit=1.0,
     ),
-    audit_logger=AuditLogger(log_path="./audit.jsonl"),
+)
+
+audit = AuditLogger(log_path="./audit.jsonl")
+
+# Use in your pipeline
+user_input = "..."
+
+# Check for injection
+result = detector.detect(user_input)
+if result.is_injection:
+    audit.log_injection_attempt(
+        input_text=user_input,
+        severity=result.severity.value,
+        detection_method=result.detection_method.value,
+        action_taken="blocked",
+    )
+    raise ValueError(f"Injection detected: {result.explanation}")
+
+# Check budget before calling LLM
+can_proceed, reason = await budget.check_budget(
+    estimated_cost=0.05,
+    session_id="session-123",
+)
+if not can_proceed:
+    raise ValueError(f"Budget exceeded: {reason}")
+
+# ... call LLM ...
+
+# Validate output
+validation = validator.validate(llm_output)
+if validation.contains_pii:
+    llm_output = validation.redacted_output
+
+# Record cost
+await budget.record_cost(
+    amount=actual_cost,
+    session_id="session-123",
+    model="gpt-4",
 )
 ```
 
@@ -52,7 +91,6 @@ Detects and blocks prompt injection attacks.
 - **Role hijacking**: "You are now DAN"
 - **Delimiter injection**: ```SYSTEM```, [INST], <|im_start|>
 - **Unicode obfuscation**: Fullwidth, zero-width, homoglyphs
-- **Encoded payloads**: Base64, leetspeak
 
 ### Usage
 
@@ -92,7 +130,6 @@ Validates LLM outputs before returning to users.
 - **PII**: Email, phone, SSN, credit card
 - **Secrets**: API keys, passwords, connection strings
 - **Toxicity**: Harmful content scoring
-- **Hallucination**: Fabricated citations, contradictions
 
 ### Usage
 
@@ -138,16 +175,18 @@ Prevents runaway costs with hierarchical limits.
 
 ```python
 from convergence.safety import BudgetManager, BudgetConfig
+from convergence.storage.sqlite import SQLiteStorage
+
+storage = SQLiteStorage(db_path="./budget.db")
+await storage.initialize()
 
 manager = BudgetManager(
-    storage=SQLiteStorage("./budget.db"),
+    storage=storage,
     config=BudgetConfig(
         global_daily_limit=100.0,
         per_session_limit=10.0,
         per_request_limit=1.0,
         warning_threshold=0.8,  # Warn at 80%
-        requests_per_minute=60,
-        max_iterations_per_session=100,
     ),
 )
 
@@ -159,26 +198,18 @@ can_proceed, reason = await manager.check_budget(
 
 if not can_proceed:
     print(f"Budget exceeded: {reason}")
-```
 
-### Team Budgets
-
-```python
-await manager.register_team(
-    "engineering",
-    member_ids=["alice", "bob", "charlie"],
-)
-
-# Team members share team budget
+# Record after request
 await manager.record_cost(
     amount=0.05,
-    session_id="s1",
-    user_id="alice",
+    session_id="session-123",
     model="gpt-4",
 )
 
-status = await manager.get_team_status("engineering")
-print(f"Team spent: ${status.total_spent:.2f}")
+# Check status
+status = await manager.get_status()
+print(f"Daily spent: ${status.daily_spent:.2f}")
+print(f"Daily remaining: ${status.daily_remaining:.2f}")
 ```
 
 ## Audit Logging
@@ -220,9 +251,6 @@ logger.log_injection_attempt(
     detection_method="rule_based",
     action_taken="blocked",
 )
-
-# Query logs
-events = logger.get_security_events()
 ```
 
 ## Defaults
@@ -231,11 +259,11 @@ Safe defaults are enabled by default:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| Injection detection | ON | Blocks known attack patterns |
-| PII detection | ON | Flags PII in outputs |
-| Secret detection | ON | Flags API keys, passwords |
-| Budget enforcement | OFF | Must configure limits |
-| Audit logging | OFF | Must configure path |
+| Injection detection | Available | Must instantiate InjectionDetector |
+| PII detection | Available | Must instantiate OutputValidator |
+| Secret detection | Available | Must instantiate OutputValidator |
+| Budget enforcement | Optional | Must configure BudgetManager |
+| Audit logging | Optional | Must configure AuditLogger |
 
 ## Best Practices
 
@@ -244,7 +272,7 @@ Safe defaults are enabled by default:
 3. **Review audit logs** regularly
 4. **Test with known attacks** using `detector.detect()`
 5. **Monitor false positives** and tune sensitivity
-6. **Use team budgets** for multi-user deployments
+6. **Use high sensitivity** for user-facing inputs
 
 ## Security Considerations
 
