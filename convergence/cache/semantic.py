@@ -11,12 +11,24 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional, Union
 
 from .backends import (
     CacheBackend,
-    CacheEntry,
     MemoryCacheBackend,
     RedisCacheBackend,
     SQLiteCacheBackend,
-    cosine_similarity,
 )
+
+# Protocol for observer to avoid circular imports
+try:
+    from typing import Protocol
+except ImportError:
+    from typing_extensions import Protocol
+
+
+class CacheObserver(Protocol):
+    """Protocol for cache observation."""
+
+    def track_cache_access(self, hit: bool) -> None:
+        """Track cache hit/miss."""
+        ...
 
 # Type alias for embedding functions
 EmbeddingFn = Union[
@@ -74,6 +86,7 @@ class SemanticCache:
         sqlite_path: Optional[str] = None,
         redis_url: Optional[str] = None,
         namespace: str = "convergence_cache",
+        observer: Optional[CacheObserver] = None,
     ) -> None:
         # Validate threshold
         if not 0.0 <= threshold <= 1.0:
@@ -90,6 +103,9 @@ class SemanticCache:
         self.threshold = threshold
         self._embedding_fn = embedding_fn
         self._is_async_embedding = asyncio.iscoroutinefunction(embedding_fn)
+        self._observer = observer
+        self._false_positives: List[Dict[str, Any]] = []
+        self._stats = {"hits": 0, "misses": 0, "false_positives": 0}
 
         # Initialize backend
         self._backend: CacheBackend
@@ -135,33 +151,42 @@ class SemanticCache:
         # Get embedding for query
         query_embedding = await self._get_embedding(query)
 
-        # Get all entries from backend
-        entries = await self._backend.get_all_entries()
+        # Ensure index is loaded (for SQLite backend)
+        if hasattr(self._backend, "_ensure_index_loaded"):
+            await self._backend._ensure_index_loaded()
 
-        if not entries:
+        # Use ANN index for fast lookup
+        index = self._backend.get_index()
+        candidates = index.search(query_embedding, k=10)
+
+        if not candidates:
+            self._stats["misses"] += 1
+            if self._observer:
+                self._observer.track_cache_access(hit=False)
             return None
 
-        # Find best match
-        best_match: Optional[CacheEntry] = None
-        best_similarity: float = 0.0
+        # Find best match above threshold
+        for entry_id, similarity in candidates:
+            if similarity >= self.threshold:
+                entry = await self._backend.get_by_id(entry_id)
+                if entry:
+                    # Track hit
+                    self._stats["hits"] += 1
+                    if self._observer:
+                        self._observer.track_cache_access(hit=True)
 
-        for entry in entries:
-            similarity = cosine_similarity(query_embedding, entry.embedding)
-            if similarity > best_similarity:
-                best_similarity = similarity
-                best_match = entry
+                    # Build result
+                    result = dict(entry.response)
+                    result["similarity"] = similarity
+                    result["original_query"] = entry.query
+                    result["created_at"] = entry.created_at
+                    return result
 
-        # Check threshold
-        if best_match is None or best_similarity < self.threshold:
-            return None
-
-        # Build result
-        result = dict(best_match.response)
-        result["similarity"] = best_similarity
-        result["original_query"] = best_match.query
-        result["created_at"] = best_match.created_at
-
-        return result
+        # No match above threshold
+        self._stats["misses"] += 1
+        if self._observer:
+            self._observer.track_cache_access(hit=False)
+        return None
 
     async def set(self, query: str, response: Dict[str, Any]) -> None:
         """Store a query-response pair in the cache.
@@ -179,3 +204,151 @@ class SemanticCache:
     async def clear(self) -> None:
         """Remove all entries from the cache."""
         await self._backend.clear()
+        self._stats = {"hits": 0, "misses": 0, "false_positives": 0}
+        self._false_positives = []
+
+    async def validate_threshold(
+        self, test_cases: List[tuple[str, bool]]
+    ) -> Dict[str, Any]:
+        """Validate threshold accuracy with test cases.
+
+        Args:
+            test_cases: List of (query, expected_hit) tuples.
+                expected_hit=True means we expect a cache hit.
+
+        Returns:
+            Dict with keys:
+                - accuracy: Overall accuracy (0.0-1.0)
+                - false_positives: Number of false positives
+                - false_negatives: Number of false negatives
+                - details: List of individual test results
+        """
+        results = []
+        false_positives = 0
+        false_negatives = 0
+        correct = 0
+
+        for query, expected_hit in test_cases:
+            result = await self.get(query)
+            actual_hit = result is not None
+
+            if actual_hit == expected_hit:
+                correct += 1
+            elif actual_hit and not expected_hit:
+                false_positives += 1
+            else:
+                false_negatives += 1
+
+            results.append({
+                "query": query,
+                "expected_hit": expected_hit,
+                "actual_hit": actual_hit,
+                "similarity": result["similarity"] if result else None,
+            })
+
+        total = len(test_cases)
+        return {
+            "accuracy": correct / total if total > 0 else 0.0,
+            "false_positives": false_positives,
+            "false_negatives": false_negatives,
+            "details": results,
+        }
+
+    async def recommend_threshold(
+        self, test_cases: List[tuple[str, bool]]
+    ) -> Dict[str, Any]:
+        """Recommend optimal threshold based on test cases.
+
+        Args:
+            test_cases: List of (query, expected_hit) tuples.
+
+        Returns:
+            Dict with keys:
+                - recommended_threshold: Optimal threshold value
+                - analysis: Details about the analysis
+        """
+        # Collect all similarities
+        similarities: List[Dict[str, Any]] = []
+
+        for query, expected_hit in test_cases:
+            query_embedding = await self._get_embedding(query)
+
+            # Ensure index is loaded
+            if hasattr(self._backend, "_ensure_index_loaded"):
+                await self._backend._ensure_index_loaded()
+
+            index = self._backend.get_index()
+            candidates = index.search(query_embedding, k=1)
+
+            if candidates:
+                entry_id, similarity = candidates[0]
+                similarities.append({
+                    "query": query,
+                    "expected_hit": expected_hit,
+                    "best_similarity": similarity,
+                })
+
+        if not similarities:
+            return {
+                "recommended_threshold": 0.85,
+                "analysis": "No data available for analysis",
+            }
+
+        # Find threshold that maximizes accuracy
+        best_threshold = 0.85
+        best_accuracy = 0.0
+
+        for threshold_candidate in [i / 100 for i in range(50, 100)]:
+            correct = 0
+            for s in similarities:
+                actual_hit = s["best_similarity"] >= threshold_candidate
+                if actual_hit == s["expected_hit"]:
+                    correct += 1
+
+            accuracy = correct / len(similarities)
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                best_threshold = threshold_candidate
+
+        return {
+            "recommended_threshold": best_threshold,
+            "analysis": {
+                "test_cases_analyzed": len(similarities),
+                "best_accuracy": best_accuracy,
+            },
+        }
+
+    async def report_false_positive(
+        self, query: str, matched_query: str
+    ) -> None:
+        """Report a false positive match.
+
+        Args:
+            query: The query that was made.
+            matched_query: The query it incorrectly matched to.
+        """
+        self._false_positives.append({
+            "query": query,
+            "matched_query": matched_query,
+        })
+        self._stats["false_positives"] += 1
+
+    async def get_stats(self) -> Dict[str, Any]:
+        """Get cache statistics.
+
+        Returns:
+            Dict with keys:
+                - hits: Number of cache hits
+                - misses: Number of cache misses
+                - hit_rate: Hit rate (0.0-1.0)
+                - false_positives: Number of reported false positives
+        """
+        total = self._stats["hits"] + self._stats["misses"]
+        hit_rate = self._stats["hits"] / total if total > 0 else 0.0
+
+        return {
+            "hits": self._stats["hits"],
+            "misses": self._stats["misses"],
+            "hit_rate": hit_rate,
+            "false_positives": self._stats["false_positives"],
+        }
