@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "CONVERGENCE-MEMO.md",
+                "file": "research/observability-patterns.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CONVERGENCE-MEMO"
+              "title": "observability-patterns"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "allen",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -74,7 +74,8 @@
               "title": "Bookmarks"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -94,7 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "CONVERGENCE-MEMO.md",
+                "file": "research/observability-patterns.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for CONVERGENCE-MEMO"
+              "title": "Backlinks for observability-patterns"
             }
           },
           {
@@ -113,12 +114,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "CONVERGENCE-MEMO.md",
+                "file": "research/observability-patterns.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from CONVERGENCE-MEMO"
+              "title": "Outgoing links from observability-patterns"
             }
           },
           {
@@ -156,13 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "CONVERGENCE-MEMO.md",
+                "file": "research/observability-patterns.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of CONVERGENCE-MEMO"
+              "title": "Outline of observability-patterns"
             }
           }
         ]
@@ -183,8 +184,21 @@
       "bases:Create new base": false
     }
   },
-  "active": "e663c7a5c152899a",
+  "active": "d8f40f486b643471",
   "lastOpenFiles": [
+    "research/funjoin-integration-needs.md",
+    "research/PATTERN-FRAGILITY-SUMMARY.md",
+    "CONVERGENCE-MEMO.md",
+    "agents/main-57307.json",
+    "agents/main-81079-snapshot.md",
+    "review/P2-001-adversary-review.md",
+    "review/ADVERSARY-FINDINGS-SUMMARY.txt",
+    "review/P1-001-adversary-review.md",
+    "review",
+    "research/SAFETY-GUARDRAILS-SUMMARY.md",
+    "research/safety-guardrails-research.md",
+    "agents/main-81079.json",
+    "agents/main-80688.json",
     "handoffs/dashboard-deferred-handoff.md",
     "agents/main-19821.json",
     "handoffs/implementation-ready-20260312.md",
@@ -205,16 +219,8 @@
     "research/README-DASHBOARD-HITL.md",
     "research/DASHBOARD-QUICK-START.md",
     "research/DASHBOARD-HITL-SUMMARY.md",
-    "research/dashboard-hitl-research.md",
     "agents/main-40201.json",
-    "agents/main-25650-snapshot.md",
-    "handoffs/learning-system-2026-03-12.md",
-    "docs/RLP-SAO-DEEP-DIVE.md",
     "docs",
-    "agents/main-25650.json",
-    "handoffs/pattern-system-handoff.md",
-    "CONVERGENCE-MEMO.md",
-    "reviews/pattern-system-teardown.md",
-    "research/novel-approaches-2026.md"
+    "agents/main-25650.json"
   ]
 }
