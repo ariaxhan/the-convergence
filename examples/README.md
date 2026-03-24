@@ -24,6 +24,14 @@ Runnable examples for self-evolving AI agents. Copy. Paste. Run.
 | [`04_safety/`](04_safety/) | Input validation, output guardrails, budget limits, PII detection |
 | [`05_observability/`](05_observability/) | Learning metrics, confidence calibration, drift detection, cost tracking |
 
+### Agent Patterns (production-grade, enterprise-ready)
+| Directory | What You'll Learn |
+|-----------|------------------|
+| [`10_agent_patterns/`](10_agent_patterns/) | Production runtime, secure client, resilient cache, observable pipeline, safe evolution |
+| [`11_vector_native/`](11_vector_native/) | Embedding strategies, similarity tuning, hybrid search, cache quality monitoring |
+
+> **AI Agents:** Start with [`AGENT.md`](../AGENT.md) for the complete implementation reference, then use these patterns.
+
 ### Integrations
 | Directory | What You'll Learn |
 |-----------|------------------|
