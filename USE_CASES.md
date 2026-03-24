@@ -23,6 +23,13 @@ Find the right Convergence modules for your goal.
 | **Build a self-evolving support bot** | All modules | [`01_apps/customer_support_bot/`](examples/01_apps/customer_support_bot/) | High |
 | **Build a research assistant** | Graph + Runtime | [`01_apps/research_assistant/`](examples/01_apps/research_assistant/) | High |
 | **Build a self-improving classifier** | Runtime + Confidence | [`01_apps/self_improving_classifier/`](examples/01_apps/self_improving_classifier/) | High |
+| **Run multi-agent teams** | CivilizationRuntime | [`06_teams/basic_team.py`](examples/06_teams/basic_team.py) | Medium |
+| **Build a multi-step pipeline** | Multiple Runtimes | [`07_workflows/sequential_pipeline.py`](examples/07_workflows/sequential_pipeline.py) | Medium |
+| **Add human-in-the-loop escalation** | Runtime + Confidence | [`07_workflows/human_in_the_loop.py`](examples/07_workflows/human_in_the_loop.py) | Medium |
+| **Persist cache across restarts** | SemanticCache (SQLite) | [`08_caching/sqlite_cache.py`](examples/08_caching/sqlite_cache.py) | Low |
+| **Run A/B tests** | Runtime + Statistics | [`09_production/ab_testing.py`](examples/09_production/ab_testing.py) | Medium |
+| **Deploy with canary rollout** | Runtime + SelectionStrategy | [`09_production/gradual_rollout.py`](examples/09_production/gradual_rollout.py) | Medium |
+| **Use YAML config (CLI workflow)** | ConfigLoader | [`94_yaml_configs/`](examples/94_yaml_configs/) | Low |
 
 ## When NOT to Use Convergence
 
