@@ -199,6 +199,18 @@ The key insight: safety checks happen at the *framework* level, not the *prompt*
 pip install the-convergence
 ```
 
+### Try It Now
+
+```bash
+# Clone and run an example in 30 seconds
+git clone https://github.com/ariaxhan/the-convergence.git
+cd the-convergence/examples/00_quickstart
+python 02_confidence_extraction.py  # No API key needed
+python 06_thompson_sampling_loop.py  # Watch Thompson Sampling converge
+```
+
+See the full **[Cookbook](examples/)** for 40+ runnable examples: progressive quickstart, sample apps, deep dives, and provider integrations.
+
 ### Minimal Example
 
 ```python

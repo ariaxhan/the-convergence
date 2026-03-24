@@ -6,12 +6,13 @@ Handles agent creation, Azure model configuration, and execution.
 
 """
 
+import logging
 import os
 import sys
-import logging
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 from agno.tools.reddit import RedditTools
+
 AGNO_AVAILABLE = True
 
 # Import base class from parent directory
@@ -44,7 +45,7 @@ class RedditAgentRunner(BaseAgentRunner):
     
     All other logic (model creation, test execution, response parsing) inherited from base class.
     """
-    
+
     INSTRUCTION_STYLES = {
         'minimal': [
             "You are a Reddit research assistant.",
@@ -72,7 +73,7 @@ class RedditAgentRunner(BaseAgentRunner):
             "- Format output as clear, complete JSON-like data structures"
         ]
     }
-    
+
     def __init__(self, config: Dict[str, Any]):
         """Initialize Reddit agent runner with configuration."""
         if not AGNO_AVAILABLE:
@@ -82,16 +83,16 @@ class RedditAgentRunner(BaseAgentRunner):
         if not _PRAW_AVAILABLE:
             raise ImportError("asyncpraw not installed. Install with: pip install asyncpraw")
         super().__init__(config)
-    
+
     def _get_service_config(self) -> Dict[str, Any]:
         """Get Reddit-specific configuration from agent_config."""
         return self.agent_config.get('reddit_auth', {})
-    
+
     def _validate_credentials(self) -> None:
         """Validate that Reddit API credentials are available."""
         client_id = os.getenv(self.service_config.get('client_id_env', 'REDDIT_CLIENT_ID'))
         client_secret = os.getenv(self.service_config.get('client_secret_env', 'REDDIT_CLIENT_SECRET'))
-        
+
         if not client_id or not client_secret:
             raise ValueError(
                 "Reddit API credentials not found. Set environment variables:\n"
@@ -99,20 +100,20 @@ class RedditAgentRunner(BaseAgentRunner):
                 f"  export {self.service_config.get('client_secret_env', 'REDDIT_CLIENT_SECRET')}='your_client_secret'\n"
                 "Get credentials from: https://www.reddit.com/prefs/apps"
             )
-    
+
     def _initialize_tools(self) -> RedditTools:
         """Initialize RedditTools with credentials."""
         client_id = os.getenv(self.service_config.get('client_id_env', 'REDDIT_CLIENT_ID'))
         client_secret = os.getenv(self.service_config.get('client_secret_env', 'REDDIT_CLIENT_SECRET'))
         user_agent = self.service_config.get('user_agent', 'agno-reddit-tester/1.0')
-        
+
         # Initialize Reddit tools
         reddit_tools_config = {
             'client_id': client_id,
             'client_secret': client_secret,
             'user_agent': user_agent
         }
-        
+
         # Optional: username/password for authenticated access
         username_env = self.service_config.get('username_env')
         password_env = self.service_config.get('password_env')
@@ -122,29 +123,29 @@ class RedditAgentRunner(BaseAgentRunner):
             if username and password:
                 reddit_tools_config['username'] = username
                 reddit_tools_config['password'] = password
-        
+
         # Create Reddit tools
         logger.info("Initializing Reddit tools...")
         reddit_tools = RedditTools(**reddit_tools_config)
-        
+
         return reddit_tools
-    
+
     def _select_tools(self, reddit_tools: Any, strategy: str, test_case: Dict[str, Any] = None) -> List:
         """Select Reddit tools based on strategy and test case restrictions."""
         # Check for tool restrictions in test case metadata
         if test_case and 'metadata' in test_case:
             tool_restriction = test_case['metadata'].get('tool_restriction')
-            
+
             if tool_restriction == 'get_subreddit_info_only':
                 # Only allow get_subreddit_info function
                 logger.info("🔧 Tool restriction: get_subreddit_info only")
                 return [reddit_tools.get_subreddit_info]
-            
+
             elif tool_restriction == 'all_tools_available':
                 # All tools available - agent must choose
                 logger.info("🔧 Tool restriction: all tools available - agent chooses")
                 return [reddit_tools]
-        
+
         # Fallback to strategy-based selection
         if strategy == 'include_all':
             return [reddit_tools]
@@ -152,18 +153,18 @@ class RedditAgentRunner(BaseAgentRunner):
             return [reddit_tools]
         else:
             return [reddit_tools]
-    
+
     def _build_query(self, test_case: Dict[str, Any]) -> str:
         """Build query string from test case input."""
         input_data = test_case.get('input', {})
         query = input_data.get('query', '')
         task = input_data.get('task', '')
-        
+
         # Combine query and task
         full_query = query
         if task:
             full_query += f"\n\nTask details: {task}"
-        
+
         return full_query
 
 
@@ -172,35 +173,36 @@ def test_reddit_connection():
     """Test Reddit API connection with credentials."""
     client_id = os.getenv('REDDIT_CLIENT_ID')
     client_secret = os.getenv('REDDIT_CLIENT_SECRET')
-    
+
     if not client_id or not client_secret:
         print("❌ Reddit credentials not found")
         print("Set environment variables:")
         print("  export REDDIT_CLIENT_ID='your_client_id'")
         print("  export REDDIT_CLIENT_SECRET='your_client_secret'")
         return False
-    
+
     try:
-        import asyncpraw
         import asyncio
-        
+
+        import asyncpraw
+
         async def test_async():
             reddit = asyncpraw.Reddit(
                 client_id=client_id,
                 client_secret=client_secret,
                 user_agent='test-connection/1.0'
             )
-            
+
             # Test by getting r/technology info
             subreddit = await reddit.subreddit('technology')
             info = await subreddit.load()
-            print(f"✅ Successfully connected to Reddit")
+            print("✅ Successfully connected to Reddit")
             print(f"   r/technology has {info.subscribers:,} subscribers")
             await reddit.close()
             return True
-        
+
         return asyncio.run(test_async())
-        
+
     except Exception as e:
         print(f"❌ Reddit connection failed: {e}")
         return False

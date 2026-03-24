@@ -312,6 +312,126 @@ class MemoryStorage:
         }
 
 
+class MemoryRuntimeStorage:
+    """
+    In-memory implementation of RuntimeStorageProtocol.
+
+    Stores arms, decisions, and performance updates in Python dicts.
+    Ideal for examples, testing, and development -- no external dependencies.
+
+    Usage:
+        storage = MemoryRuntimeStorage()
+        await configure_runtime("my_system", config=config, storage=storage)
+    """
+
+    def __init__(self) -> None:
+        # arms[(user_id, agent_type)] -> list of arm dicts
+        self._arms: Dict[tuple, List[Dict[str, Any]]] = {}
+        # decisions[decision_id] -> decision dict
+        self._decisions: Dict[str, Dict[str, Any]] = {}
+        self._counter = 0
+
+    async def get_arms(self, *, user_id: str, agent_type: str) -> List[Any]:
+        return list(self._arms.get((user_id, agent_type), []))
+
+    async def initialize_arms(
+        self,
+        *,
+        user_id: str,
+        agent_type: str,
+        arms: List[Dict[str, Any]],
+    ) -> Any:
+        key = (user_id, agent_type)
+        if key not in self._arms:
+            self._arms[key] = [
+                {
+                    "arm_id": a["arm_id"],
+                    "name": a.get("name"),
+                    "params": a.get("params", {}),
+                    "alpha": 1.0,
+                    "beta": 1.0,
+                    "total_pulls": 0,
+                    "total_reward": 0.0,
+                    "mean_estimate": None,
+                    "avg_reward": None,
+                    "metadata": a.get("metadata", {}),
+                }
+                for a in arms
+            ]
+
+    async def create_decision(
+        self,
+        *,
+        user_id: str,
+        agent_type: str,
+        arm_pulled: str,
+        strategy_params: Dict[str, Any],
+        arms_snapshot: List[Dict[str, Any]],
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> Optional[str]:
+        self._counter += 1
+        decision_id = f"dec_{self._counter}"
+        self._decisions[decision_id] = {
+            "decision_id": decision_id,
+            "user_id": user_id,
+            "agent_type": agent_type,
+            "arm_id": arm_pulled,
+            "params": strategy_params,
+            "arms_snapshot": arms_snapshot,
+            "metadata": metadata or {},
+        }
+        return decision_id
+
+    async def update_performance(
+        self,
+        *,
+        user_id: str,
+        agent_type: str,
+        decision_id: str,
+        reward: float,
+        engagement: Optional[float] = None,
+        grading: Optional[float] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        computed_update: Optional[Dict[str, Any]] = None,
+    ) -> Any:
+        decision = self._decisions.get(decision_id)
+        if not decision:
+            return {"success": False}
+        arm_id = decision["arm_id"]
+        key = (user_id, agent_type)
+        arms = self._arms.get(key, [])
+        for arm in arms:
+            if arm["arm_id"] == arm_id:
+                if computed_update:
+                    arm["alpha"] = computed_update.get("alpha", arm["alpha"])
+                    arm["beta"] = computed_update.get("beta", arm["beta"])
+                    arm["total_pulls"] = computed_update.get(
+                        "total_pulls", arm["total_pulls"]
+                    )
+                    arm["total_reward"] = computed_update.get(
+                        "total_reward", arm["total_reward"]
+                    )
+                    arm["mean_estimate"] = computed_update.get("mean_estimate")
+                    arm["avg_reward"] = computed_update.get("avg_reward")
+                else:
+                    arm["alpha"] += reward
+                    arm["beta"] += 1.0 - reward
+                    arm["total_pulls"] += 1
+                    arm["total_reward"] += reward
+                    pulls = arm["total_pulls"]
+                    arm["avg_reward"] = arm["total_reward"] / pulls if pulls else 0
+                    arm["mean_estimate"] = arm["alpha"] / (
+                        arm["alpha"] + arm["beta"]
+                    )
+                break
+        return {"success": True}
+
+    async def get_decision(
+        self, *, user_id: str, decision_id: str
+    ) -> Dict[str, Any]:
+        return self._decisions.get(decision_id, {})
+
+
 # Note: Protocol verification is done via type checking at runtime
 # MemoryStorage implements StorageProtocol via structural subtyping
 

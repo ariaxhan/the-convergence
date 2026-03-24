@@ -19,8 +19,7 @@ This evaluator scores based on:
 - Response quality (basic text quality checks)
 - Length appropriateness (within expected bounds)
 """
-import re
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 
 def score_openai_response(
@@ -69,31 +68,31 @@ def score_openai_response(
     """
     # Extract text from response
     text = _extract_text(result)
-    
+
     if not text or len(text.strip()) < 3:
         return 0.0
-    
+
     # Calculate component scores
     scores = {}
-    
+
     # 1. Response Quality Components (combined 50%)
     scores['completeness'] = _score_completeness(text, expected)
     scores['quality'] = _score_quality(text)
     scores['length'] = _score_length(text, expected)
-    
+
     # Combined quality score
     quality_score = (
         scores['completeness'] * 0.6 +
         scores['quality'] * 0.25 +
         scores['length'] * 0.15
     )
-    
+
     # 2. Latency Score (25%)
     scores['latency'] = _score_latency(result, expected)
-    
+
     # 3. Cost/Efficiency Score (25%)
     scores['cost'] = _score_cost(result, expected)
-    
+
     # If specific metric requested, return it
     if metric:
         metric_lower = metric.lower()
@@ -101,14 +100,14 @@ def score_openai_response(
             return round(min(1.0, max(0.0, scores[metric_lower])), 3)
         if metric_lower in ['response_quality', 'quality_score']:
             return round(min(1.0, max(0.0, quality_score)), 3)
-    
+
     # Final weighted score
     final_score = (
         quality_score * 0.50 +
         scores['latency'] * 0.25 +
         scores['cost'] * 0.25
     )
-    
+
     return round(min(1.0, max(0.0, final_score)), 3)
 
 
@@ -116,12 +115,12 @@ def _extract_text(result: Any) -> str:
     """Extract text from OpenAI Responses API output."""
     if isinstance(result, str):
         return result
-    
+
     if isinstance(result, dict):
         # Try output_text first (convenience property)
         if 'output_text' in result:
             return str(result['output_text'])
-        
+
         # Fall back to parsing output array
         if 'output' in result and isinstance(result['output'], list):
             texts = []
@@ -136,7 +135,7 @@ def _extract_text(result: Any) -> str:
                     elif isinstance(content, str):
                         texts.append(content)
             return '\n'.join(texts)
-        
+
         # Try old Chat Completions format
         if 'choices' in result and isinstance(result['choices'], list):
             if len(result['choices']) > 0:
@@ -145,13 +144,13 @@ def _extract_text(result: Any) -> str:
                     return choice['message'].get('content', '')
                 elif 'text' in choice:
                     return choice['text']
-        
+
         # Generic fallback
         if 'text' in result:
             return str(result['text'])
         if 'content' in result:
             return str(result['content'])
-    
+
     return str(result)
 
 
@@ -163,10 +162,10 @@ def _score_completeness(text: str, expected: Dict[str, Any]) -> float:
     required = expected.get('contains', [])
     if not required:
         return 1.0  # No requirements = perfect score
-    
+
     text_lower = text.lower()
     found = sum(1 for keyword in required if keyword.lower() in text_lower)
-    
+
     return found / len(required)
 
 
@@ -179,15 +178,15 @@ def _score_quality(text: str) -> float:
     """
     if len(text) < 5:
         return 0.2
-    
+
     score = 0.0
-    
+
     # Check 1: Starts with capital letter (basic grammar)
     if text[0].isupper():
         score += 0.3
     else:
         score += 0.1
-    
+
     # Check 2: Has reasonable word variety (not super repetitive)
     words = text.lower().split()
     if words:
@@ -195,7 +194,7 @@ def _score_quality(text: str) -> float:
         score += 0.4 * min(1.0, unique_ratio * 1.5)
     else:
         score += 0.2
-    
+
     # Check 3: Not too short, not ridiculously long
     if 10 <= len(text) <= 1000:
         score += 0.3
@@ -203,7 +202,7 @@ def _score_quality(text: str) -> float:
         score += 0.1
     else:
         score += 0.2
-    
+
     return min(1.0, score)
 
 
@@ -213,24 +212,24 @@ def _score_length(text: str, expected: Dict[str, Any]) -> float:
     """
     min_length = expected.get('min_length', 0)
     max_length = expected.get('max_length', float('inf'))
-    
+
     actual_length = len(text)
-    
+
     # Perfect if within bounds
     if min_length <= actual_length <= max_length:
         return 1.0
-    
+
     # Too short: scale proportionally
     if actual_length < min_length:
         if min_length > 0:
             return max(0.3, actual_length / min_length)  # At least 0.3
         return 0.8
-    
+
     # Too long: small penalty
     if actual_length > max_length and max_length < float('inf'):
         overage = (actual_length - max_length) / max_length
         return max(0.5, 1.0 - overage * 0.5)  # Max 50% penalty
-    
+
     return 0.9  # Default for edge cases
 
 
@@ -251,14 +250,14 @@ def _score_latency(result: Any, expected: Dict[str, Any]) -> float:
     latency_ms = None
     if isinstance(result, dict):
         latency_ms = result.get('latency_ms')
-    
+
     # If no latency provided, return neutral score
     if latency_ms is None:
         return 0.8
-    
+
     # Get target latency (default 2000ms = 2 seconds)
     target_latency = expected.get('max_latency_ms', 2000)
-    
+
     # Score based on how close to target
     if latency_ms <= target_latency:
         # Perfect if under target
@@ -297,24 +296,24 @@ def _score_cost(result: Any, expected: Dict[str, Any]) -> float:
     # Extract cost and usage from result
     cost_usd = None
     total_tokens = None
-    
+
     if isinstance(result, dict):
         cost_usd = result.get('cost_usd')
-        
+
         # Try to extract token usage
         if 'usage' in result and isinstance(result['usage'], dict):
             usage = result['usage']
             total_tokens = usage.get('total_tokens')
-    
+
     # If no cost/usage info, return neutral score
     if cost_usd is None and total_tokens is None:
         return 0.8
-    
+
     # Get target cost (default $0.01 = 1 cent)
     target_cost = expected.get('max_cost_usd', 0.01)
-    
+
     scores = []
-    
+
     # Score based on cost if available
     if cost_usd is not None:
         if cost_usd <= target_cost:
@@ -332,13 +331,13 @@ def _score_cost(result: Any, expected: Dict[str, Any]) -> float:
                 scores.append(max(0.5, 0.85 - (overage_ratio - 1.0) * 0.35))
             else:
                 scores.append(max(0.2, 0.5 - (overage_ratio - 2.0) * 0.1))
-    
+
     # Score based on token efficiency if available
     if total_tokens is not None:
         # Reward efficient token usage (fewer tokens = better)
         # Target: ~100 tokens for simple responses, ~500 for complex
         target_tokens = expected.get('target_tokens', 200)
-        
+
         if total_tokens <= target_tokens:
             # Good efficiency
             scores.append(1.0)
@@ -349,7 +348,7 @@ def _score_cost(result: Any, expected: Dict[str, Any]) -> float:
         else:
             # Poor efficiency (too verbose)
             scores.append(0.6)
-    
+
     # Return average of available scores, or neutral if none
     if scores:
         return sum(scores) / len(scores)
@@ -385,17 +384,17 @@ def score_reasoning_response(
         Score 0.0-1.0
     """
     text = _extract_text(result)
-    
+
     if not text:
         return 0.0
-    
+
     # Calculate component scores
     completeness = _score_completeness(text, expected)
     quality = _score_quality(text)
     length = _score_length(text, expected)
     latency = _score_latency(result, expected)
     cost = _score_cost(result, expected)
-    
+
     # Return specific metric if requested
     if metric:
         metric_map = {
@@ -407,7 +406,7 @@ def score_reasoning_response(
         }
         if metric.lower() in metric_map:
             return round(min(1.0, max(0.0, metric_map[metric.lower()])), 3)
-    
+
     # For reasoning models: prioritize correctness over speed
     # Reasoning takes time, so be more lenient on latency
     final_score = (
@@ -416,6 +415,6 @@ def score_reasoning_response(
         cost * 0.20 +
         latency * 0.10
     )
-    
+
     return round(min(1.0, max(0.0, final_score)), 3)
 

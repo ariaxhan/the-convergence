@@ -1,0 +1,76 @@
+# The Convergence Documentation Index
+
+> Enterprise framework for self-evolving AI agents.
+
+## Getting Started
+- README.md: Project overview, architecture, and quick start
+- QUICKSTART.md: Quick start guide for first-time users
+- GETTING_STARTED.md: Detailed setup and first project walkthrough
+- INSTALLATION.md: Installation methods and requirements
+
+## SDK Reference
+- SDK_USAGE.md: SDK API reference and usage patterns
+- SDK_MIGRATION.md: Migration guide between versions
+- YAML_CONFIGURATION_REFERENCE.md: All YAML configuration options
+
+## Guides
+- TROUBLESHOOTING.md: Common issues and solutions
+- SECURITY.md: Security model and practices
+- CONTRIBUTING.md: Contribution guidelines
+- CHANGELOG.md: Version history and changes
+
+## Examples (Cookbook)
+- examples/README.md: Cookbook navigation and overview
+- examples/STYLE_GUIDE.md: Example writing guidelines
+- examples/00_quickstart/README.md: Progressive quickstart (10 examples)
+- examples/01_apps/README.md: End-to-end sample apps (3 apps)
+- examples/02_optimization/README.md: Thompson Sampling deep dives
+- examples/03_knowledge/README.md: Context graph patterns
+- examples/04_safety/README.md: Safety and validation
+- examples/05_observability/README.md: Metrics and monitoring
+- examples/90_models/README.md: Provider integrations (Claude, OpenAI, Groq, Azure, Ollama)
+- examples/91_tools/README.md: Custom tool implementations
+- examples/92_integrations/README.md: External services (Discord, Gmail, Reddit)
+- examples/93_testing/README.md: Testing patterns
+
+## Core Modules
+- convergence/__init__.py: Package exports and public API
+- convergence/sdk.py: Programmatic optimization interface (run_optimization)
+- convergence/core/runtime.py: CivilizationRuntime - agent simulation engine
+- convergence/core/config.py: ConvergenceConfig and type definitions
+- convergence/core/protocols.py: Agent, LLMProvider, MABStrategy protocols
+- convergence/runtime/online.py: Runtime MAB selection (configure, select, update)
+- convergence/runtime/reward_evaluator.py: Multi-signal reward computation
+
+## Optimization
+- convergence/optimization/rl_optimizer.py: RL meta-optimizer (MAB + RL layers)
+- convergence/optimization/runner.py: OptimizationRunner for batch optimization
+- convergence/optimization/evolution.py: Evolutionary parameter optimization
+
+## Knowledge
+- convergence/knowledge/graph.py: ContextGraph (WHO/WHAT/HOW triad)
+- convergence/knowledge/schema.py: GraphNode, GraphEdge, EntityType, OntologyType
+
+## Safety
+- convergence/safety/: Framework-level guardrails (NeMo + Guardrails AI)
+
+## Cache
+- convergence/cache/semantic.py: SemanticCache for embedding-based response caching
+- convergence/cache/backends.py: Cache backends (memory, SQLite, Redis)
+
+## Clients
+- convergence/clients/claude.py: ClaudeClient with confidence extraction and MAB integration
+
+## Evaluators
+- convergence/evaluators/confidence.py: Confidence extraction from LLM text
+- convergence/evaluators/base.py: Base evaluator interface
+
+## Storage
+- convergence/storage/sqlite.py: SQLite storage backend
+- convergence/storage/postgresql.py: PostgreSQL storage backend
+- convergence/storage/memory.py: In-memory storage backend
+
+## Types
+- convergence/types/response.py: LLMResponse with gap detection
+- convergence/types/config.py: Configuration models (ApiConfig, SearchSpaceConfig, etc.)
+- convergence/types/runtime.py: Runtime types (RuntimeConfig, RuntimeSelection, etc.)

@@ -1,0 +1,91 @@
+name: Test Examples
+
+on:
+  push:
+    paths:
+      - 'examples/**'
+      - 'convergence/**'
+  pull_request:
+    paths:
+      - 'examples/**'
+      - 'convergence/**'
+
+jobs:
+  syntax-check:
+    name: Verify examples parse and import
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: pip install -e ".[dev]"
+
+      - name: Syntax check all examples
+        run: |
+          failed=0
+          for f in $(find examples -name "*.py" -not -path "*/agno_agents/*" -not -path "*/ai/*" -not -path "*/web_browsing/*" -not -path "*__init__*"); do
+            python -m py_compile "$f" || { echo "FAIL: $f"; failed=1; }
+          done
+          exit $failed
+
+      - name: Run examples that need no API keys
+        run: |
+          python examples/00_quickstart/02_confidence_extraction.py
+          python examples/00_quickstart/07_knowledge_graph.py
+          python examples/03_knowledge/basic_graph.py
+          python examples/04_safety/input_validation.py
+          python examples/04_safety/reward_bounds.py
+          python examples/91_tools/custom_evaluator.py
+          python examples/93_testing/test_case_basics.py
+
+  run-examples:
+    name: Full example run (with API keys)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: pip install -e ".[dev]"
+
+      - name: Run all non-API examples
+        run: |
+          for f in examples/00_quickstart/01_basic_runtime.py \
+                   examples/00_quickstart/02_confidence_extraction.py \
+                   examples/00_quickstart/04_semantic_cache.py \
+                   examples/00_quickstart/05_runtime_with_storage.py \
+                   examples/00_quickstart/06_thompson_sampling_loop.py \
+                   examples/00_quickstart/07_knowledge_graph.py \
+                   examples/00_quickstart/08_reward_evaluation.py \
+                   examples/00_quickstart/10_full_loop.py \
+                   examples/02_optimization/thompson_basic.py \
+                   examples/02_optimization/reward_evaluation.py \
+                   examples/02_optimization/convergence_visualization.py \
+                   examples/03_knowledge/basic_graph.py \
+                   examples/03_knowledge/graph_queries.py \
+                   examples/03_knowledge/graph_relationships.py \
+                   examples/03_knowledge/graph_patterns.py \
+                   examples/04_safety/input_validation.py \
+                   examples/04_safety/confidence_thresholds.py \
+                   examples/04_safety/budget_tracking.py \
+                   examples/04_safety/reward_bounds.py \
+                   examples/05_observability/learning_metrics.py \
+                   examples/05_observability/confidence_calibration.py \
+                   examples/05_observability/drift_detection.py \
+                   examples/05_observability/cost_tracking.py; do
+            echo "--- Running $f ---"
+            python "$f" || { echo "FAIL: $f"; exit 1; }
+          done

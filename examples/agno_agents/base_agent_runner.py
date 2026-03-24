@@ -26,18 +26,17 @@ Abstract methods (must implement in subclasses):
 - _build_query() - Service-specific query formatting
 """
 
-import os
-import time
-import json
 import logging
+import os
 import re
-from pathlib import Path
-from typing import Dict, Any, List, Optional
-from datetime import datetime
+import time
 from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Any, Dict, List
 
 from agno.agent import Agent
 from agno.models.azure import AzureOpenAI
+
 AGNO_AVAILABLE = True
 
 logger = logging.getLogger(__name__)
@@ -80,7 +79,7 @@ class BaseAgentRunner(ABC):
             def _build_query(self, test_case):
                 return test_case['input']['query']
     """
-    
+
     # Common instruction styles (can be overridden by subclasses)
     INSTRUCTION_STYLES = {
         'minimal': [
@@ -107,7 +106,7 @@ class BaseAgentRunner(ABC):
             "- Format output as clear, complete data structures"
         ]
     }
-    
+
     def __init__(self, config: Dict[str, Any]):
         """
         Initialize base agent runner.
@@ -119,42 +118,42 @@ class BaseAgentRunner(ABC):
             raise ImportError(
                 "Agno package not installed. Install with: pip install agno"
             )
-        
+
         self.config = config
         self.agent_config = config.get('agent', {})
-        
+
         # Service-specific config (subclass implements _get_service_config)
         self.service_config = self._get_service_config()
-        
+
         # Validate credentials (subclass implements _validate_credentials)
         self._validate_credentials()
-    
+
     # Abstract methods - must be implemented by subclasses
     @abstractmethod
     def _get_service_config(self) -> Dict[str, Any]:
         """Get service-specific configuration from agent_config."""
         pass
-    
+
     @abstractmethod
     def _validate_credentials(self) -> None:
         """Validate service-specific credentials."""
         pass
-    
+
     @abstractmethod
     def _initialize_tools(self) -> Any:
         """Initialize service-specific tools."""
         pass
-    
+
     @abstractmethod
     def _select_tools(self, tools: Any, strategy: str, test_case: Dict[str, Any] = None) -> List:
         """Select tools based on strategy and test case."""
         pass
-    
+
     @abstractmethod
     def _build_query(self, test_case: Dict[str, Any]) -> str:
         """Build query string from test case input."""
         pass
-    
+
     # Common methods - implemented in base class
     def create_agent(self, params: Dict[str, Any], test_case: Dict[str, Any] = None) -> Agent:
         """
@@ -178,52 +177,52 @@ class BaseAgentRunner(ABC):
         except Exception as e:
             logger.error(f"Failed to initialize tools: {e}")
             raise RuntimeError(f"Tool initialization failed: {e}") from e
-        
+
         # Select tools based on strategy
         tool_strategy = params.get('tool_strategy', 'include_all')
         tools = self._select_tools(tools_obj, tool_strategy, test_case)
-        
+
         # Get instructions based on style
         instruction_style = params.get('instruction_style', 'detailed')
         instructions = self.INSTRUCTION_STYLES.get(
             instruction_style,
             self.INSTRUCTION_STYLES['detailed']
         )
-        
+
         # Get model configuration from registry
         model_key = params.get('model', 'gpt-4')
         model_registry = self.agent_config.get('models', {})
-        
+
         if model_key not in model_registry:
             raise ValueError(
                 f"Model '{model_key}' not found in agent.models registry. "
                 f"Available models: {list(model_registry.keys())}"
             )
-        
+
         model_config = model_registry[model_key]
-        
+
         # Extract model configuration
         endpoint = model_config.get('endpoint')
         api_key_env = model_config.get('api_key_env', 'AZURE_API_KEY')
-        
+
         # Get API key from environment
         azure_api_key = os.getenv(api_key_env)
-        
+
         if not azure_api_key:
             raise ValueError(f"API key environment variable '{api_key_env}' not set")
         if not endpoint:
             raise ValueError(f"endpoint not specified in model config for '{model_key}'")
-        
+
         logger.info(f"Creating agent with model: {model_key}")
         logger.info(f"  Temperature: {params.get('temperature', 0.7)}")
         logger.info(f"  Max tokens: {params.get('max_completion_tokens', 1000)}")
         logger.info(f"  Instruction style: {instruction_style}")
         logger.info(f"  Tool strategy: {tool_strategy}")
-        
+
         # Extract deployment name and base URL from endpoint
         deployment_name = self._extract_deployment_from_endpoint(endpoint)
         base_url = self._extract_base_url_from_endpoint(endpoint)
-        
+
         # Create Azure OpenAI model (Agno 2.1.8 API)
         try:
             model = AzureOpenAI(
@@ -234,13 +233,13 @@ class BaseAgentRunner(ABC):
                 temperature=params.get('temperature', 0.7),
                 max_completion_tokens=params.get('max_completion_tokens', 1000)
             )
-            
+
             logger.info("✅ Azure OpenAI model created")
-            
+
         except Exception as e:
             logger.error(f"Failed to create Azure model: {e}")
             raise RuntimeError(f"Azure model creation failed: {e}") from e
-        
+
         # Create agent (Agno 2.1.8 API)
         try:
             agent = Agent(
@@ -251,14 +250,14 @@ class BaseAgentRunner(ABC):
                 markdown=False,
                 stream_intermediate_steps=True,
             )
-            
+
             logger.info("✅ Agent created successfully")
             return agent
-            
+
         except Exception as e:
             logger.error(f"Failed to create agent: {e}")
             raise RuntimeError(f"Agent creation failed: {e}") from e
-    
+
     def run_test(self, test_case: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute a test case with specified agent parameters.
@@ -271,10 +270,10 @@ class BaseAgentRunner(ABC):
             Result dict with tool calls, response, metrics
         """
         test_id = test_case.get('id', 'unknown')
-        logger.info(f"="*80)
+        logger.info("="*80)
         logger.info(f"Running test: {test_id}")
         logger.info(f"Function: {test_case.get('function', 'unknown')}")
-        
+
         # Create agent with test-specific tool restrictions
         try:
             agent = self.create_agent(params, test_case)
@@ -285,42 +284,42 @@ class BaseAgentRunner(ABC):
                 'error': f"Agent creation failed: {str(e)}",
                 'timestamp': datetime.now().isoformat()
             }
-        
+
         # Build query
         query = self._build_query(test_case)
         logger.info(f"Query: {query[:100]}...")
-        
+
         # Execute with timing
         start_time = time.time()
-        
+
         try:
             # Run agent (Agno 2.1.8 API)
             logger.info("Executing agent...")
             run_output = agent.run(query, stream=False)
-            
+
             end_time = time.time()
             latency = end_time - start_time
-            
+
             logger.info(f"✅ Test completed in {latency:.2f}s")
-            
+
             # Parse response
             result = self._parse_response(run_output)
-            
+
             # Log detailed response for debugging
             logger.info(f"Parsed response: {len(result.get('tool_calls', []))} tool calls, {len(result.get('tool_results', []))} results")
-            
+
             if result.get('final_response'):
                 logger.info(f"📝 Final response preview: {result['final_response'][:200]}...")
             else:
                 logger.warning("⚠️ No final response content")
-                
+
             if result.get('tool_calls'):
                 for i, tc in enumerate(result['tool_calls']):
                     tool_name = tc.get('function', {}).get('name', 'unknown')
                     logger.info(f"🔧 Tool call {i+1}: {tool_name}")
             else:
                 logger.warning("⚠️ No tool calls detected")
-            
+
             # Add metadata
             result['test_id'] = test_id
             result['test_function'] = test_case.get('function', 'unknown')
@@ -328,9 +327,9 @@ class BaseAgentRunner(ABC):
             result['latency_seconds'] = latency
             result['timestamp'] = datetime.now().isoformat()
             result['params'] = params
-            
+
             return result
-            
+
         except Exception as e:
             end_time = time.time()
             logger.error(f"Test failed: {e}", exc_info=True)
@@ -342,7 +341,7 @@ class BaseAgentRunner(ABC):
                 'timestamp': datetime.now().isoformat(),
                 'params': params
             }
-    
+
     def _parse_response(self, run_output: Any) -> Dict[str, Any]:
         """
         Parse agent RunOutput to extract tool calls and results.
@@ -360,7 +359,7 @@ class BaseAgentRunner(ABC):
             'tokens_used': {},
             'latency_seconds': 0.0
         }
-        
+
         # Extract response content (Agno 2.1.8 API)
         if hasattr(run_output, 'content'):
             result['final_response'] = run_output.content
@@ -368,7 +367,7 @@ class BaseAgentRunner(ABC):
             result['final_response'] = run_output.get_content_as_string()
         else:
             result['final_response'] = str(run_output)
-        
+
         # Extract tool calls and results from messages (Agno 2.1.8 API)
         if hasattr(run_output, 'messages') and run_output.messages:
             for msg in run_output.messages:
@@ -383,7 +382,7 @@ class BaseAgentRunner(ABC):
                         }
                         result['tool_calls'].append(tool_call_data)
                         logger.debug(f"Found tool call: {tool_call_data['function']['name']}")
-                
+
                 # Check for tool results in the message
                 if hasattr(msg, 'content') and msg.content:
                     # If this is a tool result message, add it to tool_results
@@ -393,7 +392,7 @@ class BaseAgentRunner(ABC):
                             'tool_call_id': getattr(msg, 'tool_call_id', None)
                         })
                         logger.debug(f"Found tool result: {msg.content[:100]}...")
-        
+
         # Extract metrics (token usage) from RunOutput (Agno 2.1.8 API)
         if hasattr(run_output, 'metrics') and run_output.metrics:
             metrics = run_output.metrics
@@ -409,11 +408,11 @@ class BaseAgentRunner(ABC):
                     'completion_tokens': getattr(metrics, 'completion_tokens', 0),
                     'total_tokens': getattr(metrics, 'total_tokens', 0)
                 }
-        
+
         logger.info(f"Parsed response: {len(result['tool_calls'])} tool calls, {len(result['tool_results'])} results")
-        
+
         return result
-    
+
     def _extract_deployment_from_endpoint(self, endpoint: str) -> str:
         """
         Extract deployment name from Azure endpoint URL.
@@ -426,7 +425,7 @@ class BaseAgentRunner(ABC):
         """
         match = re.search(r'/deployments/([^/]+)/', endpoint)
         return match.group(1) if match else 'default'
-    
+
     def _extract_base_url_from_endpoint(self, endpoint: str) -> str:
         """
         Extract base URL from Azure endpoint URL.

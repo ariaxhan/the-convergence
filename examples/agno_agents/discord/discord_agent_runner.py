@@ -6,12 +6,13 @@ Handles agent creation, Azure model configuration, and execution.
 
 """
 
+import logging
 import os
 import sys
-import logging
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 from agno.tools.discord import DiscordTools
+
 AGNO_AVAILABLE = True
 
 # Import base class from parent directory
@@ -33,7 +34,7 @@ class DiscordAgentRunner(BaseAgentRunner):
     
     All other logic (model creation, test execution, response parsing) inherited from base class.
     """
-    
+
     INSTRUCTION_STYLES = {
         'minimal': [
             "You are a Discord assistant.",
@@ -61,7 +62,7 @@ class DiscordAgentRunner(BaseAgentRunner):
             "- Format output as clear, complete JSON-like data structures"
         ]
     }
-    
+
     def __init__(self, config: Dict[str, Any]):
         """Initialize Discord agent runner with configuration."""
         if not AGNO_AVAILABLE:
@@ -69,22 +70,22 @@ class DiscordAgentRunner(BaseAgentRunner):
                 "Agno package not installed. Install with: pip install agno"
             )
         super().__init__(config)
-    
+
     def _get_service_config(self) -> Dict[str, Any]:
         """Get Discord-specific configuration from agent_config."""
         return self.agent_config.get('discord_auth', {})
-    
+
     def _validate_credentials(self) -> None:
         """Validate that Discord bot token is available."""
         bot_token = os.getenv(self._get_service_config().get('bot_token_env', 'DISCORD_BOT_TOKEN'))
-        
+
         if not bot_token:
             raise ValueError(
                 "Discord bot token not found. Set environment variable:\n"
                 f"  export {self._get_service_config().get('bot_token_env', 'DISCORD_BOT_TOKEN')}='your_bot_token'\n"
                 "Get your bot token from: https://discord.com/developers/applications"
             )
-    
+
     def _initialize_tools(self) -> DiscordTools:
         """Initialize DiscordTools with bot token."""
         bot_token_env = self.service_config.get('bot_token_env', 'DISCORD_BOT_TOKEN')
@@ -92,7 +93,7 @@ class DiscordAgentRunner(BaseAgentRunner):
         if not bot_token:
             raise ValueError(f"Discord bot token not found in environment: {bot_token_env}")
         return DiscordTools(bot_token=bot_token)
-    
+
     def _select_tools(self, tools: DiscordTools, strategy: str, test_case: Dict[str, Any] = None) -> List:
         """Select Discord tools based on strategy."""
         if strategy == 'include_all':
@@ -104,19 +105,19 @@ class DiscordAgentRunner(BaseAgentRunner):
                 tools.list_channels
             ]
         return [tools]
-    
+
     def _build_query(self, test_case: Dict[str, Any]) -> str:
         """Build query string from test case input, including all input fields."""
         input_data = test_case.get('input', {})
         query = input_data.get('query', '')
-        
+
         # Append all other input fields to the query
         other_fields = []
         for key, value in input_data.items():
             if key not in ['query', 'task']:
                 other_fields.append(f"{key}: {value}")
-        
+
         if other_fields:
             query += "\n\nContext:\n" + "\n".join(other_fields)
-        
+
         return query
