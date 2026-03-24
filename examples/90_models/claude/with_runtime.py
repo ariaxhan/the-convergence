@@ -23,10 +23,9 @@ import sys
 import uuid
 from typing import Any, Dict, List, Optional
 
-from convergence import configure_runtime, runtime_select, runtime_update
+from convergence import configure_runtime
 from convergence.clients import ClaudeClient
 from convergence.types import RuntimeArmTemplate, RuntimeConfig
-
 
 # --- Setup ---
 SYSTEM = "claude_runtime_demo"

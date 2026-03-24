@@ -82,13 +82,13 @@ if __name__ == "__main__":
     print(f"Leads: {[n.content for n in leads]}")
 
     # Traversal from API node
-    print(f"\nTraversal from 'REST API' (depth=1):")
+    print("\nTraversal from 'REST API' (depth=1):")
     reachable = graph.traverse("api", max_depth=1)
     for node in reachable:
         print(f"  [{node.entity_type.value}] {node.content}")
 
     # Deeper traversal
-    print(f"\nTraversal from 'Alice' (depth=2):")
+    print("\nTraversal from 'Alice' (depth=2):")
     reachable = graph.traverse("alice", max_depth=2)
     for node in reachable:
         print(f"  [{node.ontology_type.value}] {node.content}")

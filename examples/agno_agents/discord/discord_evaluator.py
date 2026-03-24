@@ -17,8 +17,7 @@ Validation Features:
 
 import json
 import logging
-import re
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -53,15 +52,15 @@ def score_discord_agent_response(
         raise RuntimeError(
             "API call returned None. Check Azure API key, endpoint, and deployment."
         )
-    
-    logger.info(f"="*80)
+
+    logger.info("="*80)
     logger.info(f"Evaluating metric: {metric}")
     logger.info(f"Agent params: {params}")
-    
+
     try:
         # Parse agent response
         agent_data = _parse_agent_response(result)
-        
+
         # Check for empty content
         if not agent_data.get('final_response') and not agent_data.get('tool_results'):
             logger.warning("Empty response from agent")
@@ -69,23 +68,23 @@ def score_discord_agent_response(
             if metric == "latency_seconds":
                 return _score_latency(agent_data, expected, params)
             return 0.0
-        
+
         # Route to appropriate evaluator
         if metric == "accuracy":
             return _score_accuracy(agent_data, expected, params)
-        
+
         elif metric == "completeness":
             return _score_completeness(agent_data, expected, params)
-        
+
         elif metric == "latency_seconds":
             return _score_latency(agent_data, expected, params)
-        
+
         elif metric == "token_efficiency":
             return _score_token_efficiency(agent_data, expected, params)
-        
+
         # Aggregate score (weighted average)
         return _aggregate_score(agent_data, expected, params)
-        
+
     except Exception as e:
         logger.error(f"Evaluator error: {e}", exc_info=True)
         raise RuntimeError(f"Evaluation failed: {e}") from e
@@ -108,7 +107,7 @@ def _parse_agent_response(result: Any) -> Dict[str, Any]:
         data = result
     else:
         data = {'raw_result': str(result)}
-    
+
     parsed = {
         'tool_calls': [],
         'final_response': '',
@@ -116,7 +115,7 @@ def _parse_agent_response(result: Any) -> Dict[str, Any]:
         'tokens_used': {},
         'latency_seconds': 0.0
     }
-    
+
     # Extract from Agno agent runner format
     if 'final_response' in data:
         parsed['final_response'] = data.get('final_response', '')
@@ -124,26 +123,26 @@ def _parse_agent_response(result: Any) -> Dict[str, Any]:
         parsed['tool_results'] = data.get('tool_results', [])
         parsed['tokens_used'] = data.get('tokens_used', {})
         parsed['latency_seconds'] = data.get('latency_seconds', 0.0)
-    
+
     return parsed
 
 
 def _score_accuracy(agent_data: Dict[str, Any], expected: Dict[str, Any], params: Dict[str, Any]) -> float:
     """Score accuracy: Did agent call correct tools with correct parameters?"""
     score = 0.0
-    
+
     tool_score = _check_tool_usage(agent_data, expected)
     score += tool_score * 0.30
-    
+
     param_score = _check_tool_parameters(agent_data, expected)
     score += param_score * 0.20
-    
+
     results_score = _check_results_validity(agent_data, expected)
     score += results_score * 0.30
-    
+
     keyword_score = _check_keywords(agent_data, expected)
     score += keyword_score * 0.20
-    
+
     logger.info(f"  Accuracy score: {score:.3f}")
     return score
 
@@ -153,15 +152,15 @@ def _score_completeness(agent_data: Dict[str, Any], expected: Dict[str, Any], pa
     validation = expected.get('result_validation', {})
     schema = validation.get('schema', {})
     data_checks = validation.get('data_checks', {})
-    
+
     if not data_checks:
         return 1.0
-    
+
     # Check required field presence
     score = 0.0
     checks_passed = 0
     total_checks = len([k for k in data_checks.keys() if isinstance(data_checks[k], bool)])
-    
+
     for check_name, check_value in data_checks.items():
         if isinstance(check_value, bool):
             # Simple boolean check
@@ -170,10 +169,10 @@ def _score_completeness(agent_data: Dict[str, Any], expected: Dict[str, Any], pa
             # Numeric threshold check
             if check_name in agent_data.get('final_response', '').lower():
                 checks_passed += 1
-    
+
     if total_checks > 0:
         score = checks_passed / total_checks
-    
+
     logger.info(f"  Completeness score: {score:.3f}")
     return score
 
@@ -181,7 +180,7 @@ def _score_completeness(agent_data: Dict[str, Any], expected: Dict[str, Any], pa
 def _score_latency(agent_data: Dict[str, Any], expected: Dict[str, Any], params: Dict[str, Any]) -> float:
     """Score latency: Lower is better."""
     latency = agent_data.get('latency_seconds', 0.0)
-    
+
     # Target: < 5 seconds is excellent
     if latency < 2.0:
         return 1.0
@@ -200,9 +199,9 @@ def _score_token_efficiency(agent_data: Dict[str, Any], expected: Dict[str, Any]
     tokens = agent_data.get('tokens_used', {})
     if not tokens or tokens.get('total', 0) == 0:
         return 0.5  # Neutral if no token info
-    
+
     total_tokens = tokens.get('total', 0)
-    
+
     # Target: < 1000 tokens is efficient
     if total_tokens < 500:
         return 1.0
@@ -220,14 +219,14 @@ def _aggregate_score(agent_data: Dict[str, Any], expected: Dict[str, Any], param
     completeness = _score_completeness(agent_data, expected, params)
     latency = _score_latency(agent_data, expected, params)
     token_efficiency = _score_token_efficiency(agent_data, expected, params)
-    
+
     weighted_score = (
         accuracy * 0.40 +
         completeness * 0.30 +
         latency * 0.20 +
         token_efficiency * 0.10
     )
-    
+
     logger.info(f"Aggregate score: {weighted_score:.3f}")
     return weighted_score
 
@@ -237,13 +236,13 @@ def _check_tool_usage(agent_data: Dict[str, Any], expected: Dict[str, Any]) -> f
     expected_tools = expected.get('expected', {}).get('tools_called', [])
     if not expected_tools:
         return 1.0
-    
+
     tool_calls = agent_data.get('tool_calls', [])
     if not tool_calls:
         return 0.0
-    
+
     called_tools = [tc.get('function', '') for tc in tool_calls]
-    
+
     matches = sum(1 for tool in expected_tools if tool in called_tools)
     return matches / len(expected_tools) if expected_tools else 0.0
 
@@ -253,23 +252,23 @@ def _check_tool_parameters(agent_data: Dict[str, Any], expected: Dict[str, Any])
     tool_sequence = expected.get('expected', {}).get('tool_sequence', [])
     if not tool_sequence:
         return 1.0
-    
+
     tool_calls = agent_data.get('tool_calls', [])
     if not tool_calls:
         return 0.0
-    
+
     # Check if any tool call matches expected parameters
     for expected_call in tool_sequence:
         expected_tool = expected_call.get('tool')
         expected_params = expected_call.get('params', {})
-        
+
         for tool_call in tool_calls:
             if tool_call.get('function') == expected_tool:
                 call_args = tool_call.get('arguments', {})
-                if all(key in call_args and str(call_args[key]) == str(expected_params[key]) 
+                if all(key in call_args and str(call_args[key]) == str(expected_params[key])
                        for key in expected_params):
                     return 1.0
-    
+
     return 0.5  # Partial credit if tools called but params don't match exactly
 
 
@@ -278,15 +277,15 @@ def _check_results_validity(agent_data: Dict[str, Any], expected: Dict[str, Any]
     final_response = agent_data.get('final_response', '')
     if not final_response:
         return 0.0
-    
+
     # Basic check: response is not empty
     if len(final_response) < 10:
         return 0.0
-    
+
     # Check for Discord-specific content
     discord_indicators = ['channel', 'message', 'guild', 'server', 'discord']
     has_discord_context = any(indicator in final_response.lower() for indicator in discord_indicators)
-    
+
     return 1.0 if has_discord_context else 0.7
 
 
@@ -294,19 +293,19 @@ def _check_keywords(agent_data: Dict[str, Any], expected: Dict[str, Any]) -> flo
     """Check if response contains expected keywords."""
     validation = expected.get('result_validation', {})
     keyword_config = validation.get('keywords', {})
-    
+
     if not keyword_config:
         return 1.0
-    
+
     required_keywords = keyword_config.get('required_in_response', [])
     if not required_keywords:
         return 1.0
-    
+
     final_response = agent_data.get('final_response', '').lower()
-    
+
     matches = sum(1 for keyword in required_keywords if keyword.lower() in final_response)
     min_matches = keyword_config.get('min_matches', len(required_keywords))
-    
+
     if matches >= min_matches:
         return 1.0
     elif matches > 0:

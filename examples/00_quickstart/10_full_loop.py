@@ -19,8 +19,7 @@ import asyncio
 import hashlib
 import math
 import random
-import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from convergence import (
     RewardEvaluatorConfig,
@@ -39,67 +38,8 @@ from convergence.knowledge.schema import (
     GraphNode,
     OntologyType,
 )
+from convergence.storage.memory import MemoryRuntimeStorage
 from convergence.types import RuntimeArmTemplate, RuntimeConfig
-
-
-# ---------------------------------------------------------------------------
-# In-memory runtime storage
-# ---------------------------------------------------------------------------
-class MemoryRuntimeStorage:
-    def __init__(self) -> None:
-        self._arms: Dict[str, List[Dict[str, Any]]] = {}
-        self._decisions: Dict[str, Dict[str, Any]] = {}
-
-    def _key(self, user_id: str, agent_type: str) -> str:
-        return f"{user_id}:{agent_type}"
-
-    async def get_arms(self, *, user_id: str, agent_type: str) -> List[Any]:
-        return self._arms.get(self._key(user_id, agent_type), [])
-
-    async def initialize_arms(
-        self, *, user_id: str, agent_type: str, arms: List[Dict[str, Any]]
-    ) -> None:
-        key = self._key(user_id, agent_type)
-        if key not in self._arms:
-            self._arms[key] = [
-                {"arm_id": a["arm_id"], "name": a.get("name"), "params": a.get("params", {}),
-                 "alpha": 1.0, "beta": 1.0, "total_pulls": 0, "total_reward": 0.0,
-                 "mean_estimate": None, "metadata": {}}
-                for a in arms
-            ]
-
-    async def create_decision(
-        self, *, user_id: str, agent_type: str, arm_pulled: str,
-        strategy_params: Dict[str, Any], arms_snapshot: List[Dict[str, Any]],
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> str:
-        did = uuid.uuid4().hex[:12]
-        self._decisions[did] = {
-            "decision_id": did, "user_id": user_id, "agent_type": agent_type,
-            "arm_id": arm_pulled, "params": strategy_params,
-            "arms_snapshot": arms_snapshot, "metadata": metadata or {},
-        }
-        return did
-
-    async def update_performance(
-        self, *, user_id: str, agent_type: str, decision_id: str, reward: float,
-        engagement: Optional[float] = None, grading: Optional[float] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        computed_update: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        decision = self._decisions.get(decision_id, {})
-        arm_id = decision.get("arm_id")
-        key = self._key(user_id, agent_type)
-        for arm in self._arms.get(key, []):
-            if arm["arm_id"] == arm_id and computed_update:
-                for k in ["alpha", "beta", "total_pulls", "total_reward", "mean_estimate", "avg_reward"]:
-                    if k in computed_update:
-                        arm[k] = computed_update[k]
-        return {"success": True}
-
-    async def get_decision(self, *, user_id: str, decision_id: str) -> Dict[str, Any]:
-        return self._decisions.get(decision_id, {})
-
 
 # ---------------------------------------------------------------------------
 # Hash-based embedding for cache
@@ -252,7 +192,7 @@ async def main() -> None:
     print("=" * 60)
     print("Summary")
     print(f"  Knowledge graph: {graph.node_count()} nodes, {graph.edge_count()} edges")
-    print(f"  Cache entries stored: queries processed with deduplication")
+    print("  Cache entries stored: queries processed with deduplication")
     print()
     print("The loop: SELECT -> GENERATE -> EVALUATE -> CACHE -> LEARN -> REPEAT")
     print("Each cycle makes the next one better. That is convergence.")

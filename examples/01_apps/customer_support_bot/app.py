@@ -12,10 +12,18 @@ Suggested prompts to explore after reading:
   - Add a fourth arm (e.g. "empathetic") and re-run
 """
 from __future__ import annotations
-import asyncio, hashlib, random
+
+import asyncio
+import hashlib
+import random
 from typing import Dict, List
+
 from convergence import (
-    RuntimeArmTemplate, RuntimeConfig, configure_runtime, runtime_select, runtime_update,
+    RuntimeArmTemplate,
+    RuntimeConfig,
+    configure_runtime,
+    runtime_select,
+    runtime_update,
 )
 from convergence.cache.semantic import SemanticCache
 from convergence.evaluators.confidence import extract_confidence
@@ -86,11 +94,11 @@ async def main() -> None:
     print(f"  Strategy selections: {wins}")
     print(f"  Cache hits: {cache_hits}/{total}  |  Escalations: {escalations}")
     arms = await storage.get_arms(user_id=USER_ID, agent_type="default")
-    print(f"\n  Final arm estimates:")
+    print("\n  Final arm estimates:")
     for arm in arms:
         m, p = arm.get("mean_estimate") or 0, arm.get("total_pulls", 0)
         print(f"    {arm.get('name', arm['arm_id']):12s} | pulls={p:3d} | mean={m:.3f} | {'#' * int(m * 30)}")
-    print(f"\n  The bandit should converge toward 'Casual' (highest reward profile).\n")
+    print("\n  The bandit should converge toward 'Casual' (highest reward profile).\n")
 
 if __name__ == "__main__":
     asyncio.run(main())

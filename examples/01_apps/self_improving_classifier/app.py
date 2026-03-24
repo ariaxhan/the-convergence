@@ -12,10 +12,17 @@ Suggested prompts to explore after reading:
   - Increase dataset to 100 samples and observe tighter convergence
 """
 from __future__ import annotations
-import asyncio, random
+
+import asyncio
+import random
 from typing import Dict, List, Tuple
+
 from convergence import (
-    RuntimeArmTemplate, RuntimeConfig, configure_runtime, runtime_select, runtime_update,
+    RuntimeArmTemplate,
+    RuntimeConfig,
+    configure_runtime,
+    runtime_select,
+    runtime_update,
 )
 from convergence.evaluators.confidence import extract_confidence
 from convergence.storage.memory import MemoryRuntimeStorage
@@ -121,12 +128,12 @@ async def main() -> None:
 
     # -- Arm convergence
     arms = await storage.get_arms(user_id=USER_ID, agent_type="default")
-    print(f"\n  Arm estimates:")
+    print("\n  Arm estimates:")
     for arm in arms:
         m, p = arm.get("mean_estimate") or 0, arm.get("total_pulls", 0)
         print(f"    {arm.get('name', arm['arm_id']):12s} | pulls={p:3d} | mean={m:.3f} | {'#' * int(m * 30)}")
     print(f"\n  Overall: {running_ok}/{len(DATASET)} = {running_ok/len(DATASET):.0%}")
-    print(f"  The bandit should converge toward 'Hybrid' (highest accuracy profile).\n")
+    print("  The bandit should converge toward 'Hybrid' (highest accuracy profile).\n")
 
 if __name__ == "__main__":
     asyncio.run(main())

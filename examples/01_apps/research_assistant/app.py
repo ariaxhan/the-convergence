@@ -12,10 +12,17 @@ Suggested prompts to explore after reading:
   - Use graph.extract_context() on a topic node to see surrounding knowledge
 """
 from __future__ import annotations
-import asyncio, random
+
+import asyncio
+import random
 from typing import Dict, Tuple
+
 from convergence import (
-    RuntimeArmTemplate, RuntimeConfig, configure_runtime, runtime_select, runtime_update,
+    RuntimeArmTemplate,
+    RuntimeConfig,
+    configure_runtime,
+    runtime_select,
+    runtime_update,
 )
 from convergence.knowledge.graph import ContextGraph
 from convergence.knowledge.schema import EntityType, GraphEdge, GraphNode, OntologyType
@@ -98,16 +105,16 @@ async def main() -> None:
     print(f"\n{'='*60}\n  Results\n{'='*60}")
     print(f"  Strategy picks: {picks}")
     print(f"  Final graph:    {graph.node_count()} nodes, {graph.edge_count()} edges")
-    print(f"\n  Researcher connections:")
+    print("\n  Researcher connections:")
     for name in RESEARCHERS:
         topics = [n.content for n in graph.get_neighbors(f"who_{name.lower()}")]
         print(f"    {name}: {', '.join(topics[:5])}")
     arms = await storage.get_arms(user_id=USER_ID, agent_type="default")
-    print(f"\n  Arm convergence:")
+    print("\n  Arm convergence:")
     for arm in arms:
         m, p = arm.get("mean_estimate") or 0, arm.get("total_pulls", 0)
         print(f"    {arm.get('name', arm['arm_id']):12s} | pulls={p:3d} | mean={m:.3f} | {'#' * int(m * 30)}")
-    print(f"\n  The bandit should converge toward 'Focused' (highest quality profile).\n")
+    print("\n  The bandit should converge toward 'Focused' (highest quality profile).\n")
 
 if __name__ == "__main__":
     asyncio.run(main())

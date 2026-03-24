@@ -22,7 +22,6 @@ from typing import List
 
 from convergence.cache.semantic import SemanticCache
 
-
 # ---------------------------------------------------------------------------
 # Simple deterministic embedding function (hash-based)
 # In production, replace with OpenAI/Cohere/local embeddings.

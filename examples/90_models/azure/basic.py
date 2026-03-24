@@ -27,7 +27,6 @@ from typing import Any, Dict, List
 from convergence import configure_runtime, runtime_select, runtime_update
 from convergence.types import RuntimeArmTemplate, RuntimeConfig
 
-
 # --- Setup ---
 SYSTEM = "azure_demo"
 

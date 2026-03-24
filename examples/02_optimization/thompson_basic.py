@@ -66,7 +66,7 @@ def run_thompson_sampling() -> None:
             b_params = f"{alphas[1]:.0f}/{betas[1]:.0f}"
             print(f"{episode:>7} | {arm_label:>8} | {reward:>6.1f} | {a_params:>14} | {b_params:>14}")
 
-    print(f"\nFinal statistics:")
+    print("\nFinal statistics:")
     for i, label in enumerate(["A", "B"]):
         mean = alphas[i] / (alphas[i] + betas[i])
         print(f"  Arm {label}: pulls={pulls[i]}, mean_estimate={mean:.3f}, "

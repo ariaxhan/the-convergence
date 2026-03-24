@@ -21,11 +21,10 @@ import asyncio
 import os
 import sys
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from convergence import configure_runtime, runtime_select, runtime_update
 from convergence.types import RuntimeArmTemplate, RuntimeConfig
-
 
 # --- Setup ---
 SYSTEM = "openai_demo"

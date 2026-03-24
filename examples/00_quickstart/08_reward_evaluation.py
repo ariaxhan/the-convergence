@@ -17,7 +17,6 @@ No API keys required. Pure local.
 
 from convergence import RewardEvaluatorConfig, RewardMetricConfig, RuntimeRewardEvaluator
 
-
 # --- Configuration: Weighted Metrics ---
 config = RewardEvaluatorConfig(
     metrics={

@@ -17,7 +17,6 @@ No API keys required. Pure local.
 
 from convergence.evaluators.confidence import extract_confidence
 
-
 # --- Test Inputs ---
 SAMPLES = [
     # (label, text)
@@ -49,7 +48,7 @@ def main() -> None:
 
     # Compare methods on a single input
     test_text = "I think the answer is probably 42, but I'm not entirely sure."
-    print(f"--- Method comparison ---")
+    print("--- Method comparison ---")
     print(f"  Text: \"{test_text}\"")
     print()
 

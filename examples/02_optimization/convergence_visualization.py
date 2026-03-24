@@ -89,7 +89,7 @@ if __name__ == "__main__":
     print("Cumulative Regret Chart:")
     print(ascii_chart(result["regret"], CHART_WIDTH, CHART_HEIGHT))
 
-    print(f"\nFinal Arm Statistics:")
+    print("\nFinal Arm Statistics:")
     print(f"{'Arm':<10} | {'Pulls':>5} | {'True P':>6} | {'Estimate':>8} | {'alpha':>5} | {'beta':>5}")
     print("-" * 55)
     for i, name in enumerate(ARM_NAMES):

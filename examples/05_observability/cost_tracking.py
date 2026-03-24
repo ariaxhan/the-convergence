@@ -19,8 +19,6 @@ Suggested prompts / test inputs:
 import hashlib
 import random
 
-from convergence.cache.semantic import SemanticCache
-
 COST_PER_1K_TOKENS = 0.03  # $0.03 per 1K tokens
 CACHE_HIT_RATE = 0.4       # 40% of queries are semantically similar
 NUM_QUERIES = 30
@@ -114,7 +112,7 @@ if __name__ == "__main__":
     # Dashboard
     total_possible = sum(e["tokens"] for e in tracker.entries) / 1000 * COST_PER_1K_TOKENS
     print(f"\n{'=' * 40}")
-    print(f"COST DASHBOARD")
+    print("COST DASHBOARD")
     print(f"{'=' * 40}")
     print(f"Total queries:     {len(tracker.entries)}")
     print(f"Cache hits:        {tracker.cache_hits} ({tracker.hit_rate():.0%})")

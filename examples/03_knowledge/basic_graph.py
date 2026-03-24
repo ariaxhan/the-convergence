@@ -78,7 +78,7 @@ if __name__ == "__main__":
             print(f"  {person.content} --{edge.relationship_type}--> {neighbor.content}")
 
     # Traverse from Alice
-    print(f"\nTraversal from Alice (depth=2):")
+    print("\nTraversal from Alice (depth=2):")
     reachable = graph.traverse("alice", max_depth=2)
     for node in reachable:
         print(f"  [{node.ontology_type.value}] {node.content}")

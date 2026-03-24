@@ -19,15 +19,14 @@ Suggested prompts / test inputs:
 
 # --- Configuration ---
 import asyncio
+import json
 import uuid
 from typing import Any, Dict, List
-from urllib.request import urlopen, Request
 from urllib.error import URLError
-import json
+from urllib.request import Request, urlopen
 
 from convergence import configure_runtime, runtime_select, runtime_update
 from convergence.types import RuntimeArmTemplate, RuntimeConfig
-
 
 # --- Setup ---
 SYSTEM = "ollama_demo"

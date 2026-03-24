@@ -83,7 +83,7 @@ if __name__ == "__main__":
         print(f"  {svc}")
 
     # Q2: What does Order Service produce and who consumes it?
-    print(f"\nOrder Service produces:")
+    print("\nOrder Service produces:")
     for edge in graph.get_outgoing_edges("order_svc"):
         if edge.relationship_type == "PRODUCES":
             target = graph.get_node(edge.target_id)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
             print(f"  {target.content} -> consumed by: {', '.join(consumers) or 'nobody'}")
 
     # Q3: Single points of failure (high in-degree infrastructure)
-    print(f"\nInfrastructure dependency counts:")
+    print("\nInfrastructure dependency counts:")
     for iid, label in INFRA:
         in_edges = graph.get_incoming_edges(iid)
         dep_count = len([e for e in in_edges if e.relationship_type in ("DEPENDS_ON", "USES")])
@@ -102,7 +102,7 @@ if __name__ == "__main__":
         print(f"  {label}: {dep_count} dependents [{risk}]")
 
     # Q4: Context extraction around a focal service
-    print(f"\nContext around 'Order Service' (depth=1):")
+    print("\nContext around 'Order Service' (depth=1):")
     context = graph.extract_context("order_svc", max_depth=1)
     print(f"  {context['summary']}")
     for n in context["related_nodes"]:
