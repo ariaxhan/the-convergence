@@ -1,0 +1,262 @@
+"""
+10 - Full Convergence Loop
+
+What this demonstrates:
+- All components working together in a single flow
+- Runtime MAB selecting a strategy
+- Confidence extraction on the response
+- Semantic cache reducing redundant work
+- Knowledge graph tracking decisions
+- Reward evaluation closing the learning loop
+
+This is the "convergence moment" -- every piece feeding into the next,
+the system learning and improving with each cycle.
+
+No API keys required. Pure local.
+"""
+
+import asyncio
+import hashlib
+import math
+import random
+import uuid
+from typing import Any, Dict, List, Optional
+
+from convergence import (
+    RewardEvaluatorConfig,
+    RewardMetricConfig,
+    RuntimeRewardEvaluator,
+    configure_runtime,
+    runtime_select,
+    runtime_update,
+)
+from convergence.cache.semantic import SemanticCache
+from convergence.evaluators.confidence import extract_confidence
+from convergence.knowledge.graph import ContextGraph
+from convergence.knowledge.schema import (
+    EntityType,
+    GraphEdge,
+    GraphNode,
+    OntologyType,
+)
+from convergence.types import RuntimeArmTemplate, RuntimeConfig
+
+
+# ---------------------------------------------------------------------------
+# In-memory runtime storage
+# ---------------------------------------------------------------------------
+class MemoryRuntimeStorage:
+    def __init__(self) -> None:
+        self._arms: Dict[str, List[Dict[str, Any]]] = {}
+        self._decisions: Dict[str, Dict[str, Any]] = {}
+
+    def _key(self, user_id: str, agent_type: str) -> str:
+        return f"{user_id}:{agent_type}"
+
+    async def get_arms(self, *, user_id: str, agent_type: str) -> List[Any]:
+        return self._arms.get(self._key(user_id, agent_type), [])
+
+    async def initialize_arms(
+        self, *, user_id: str, agent_type: str, arms: List[Dict[str, Any]]
+    ) -> None:
+        key = self._key(user_id, agent_type)
+        if key not in self._arms:
+            self._arms[key] = [
+                {"arm_id": a["arm_id"], "name": a.get("name"), "params": a.get("params", {}),
+                 "alpha": 1.0, "beta": 1.0, "total_pulls": 0, "total_reward": 0.0,
+                 "mean_estimate": None, "metadata": {}}
+                for a in arms
+            ]
+
+    async def create_decision(
+        self, *, user_id: str, agent_type: str, arm_pulled: str,
+        strategy_params: Dict[str, Any], arms_snapshot: List[Dict[str, Any]],
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        did = uuid.uuid4().hex[:12]
+        self._decisions[did] = {
+            "decision_id": did, "user_id": user_id, "agent_type": agent_type,
+            "arm_id": arm_pulled, "params": strategy_params,
+            "arms_snapshot": arms_snapshot, "metadata": metadata or {},
+        }
+        return did
+
+    async def update_performance(
+        self, *, user_id: str, agent_type: str, decision_id: str, reward: float,
+        engagement: Optional[float] = None, grading: Optional[float] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        computed_update: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        decision = self._decisions.get(decision_id, {})
+        arm_id = decision.get("arm_id")
+        key = self._key(user_id, agent_type)
+        for arm in self._arms.get(key, []):
+            if arm["arm_id"] == arm_id and computed_update:
+                for k in ["alpha", "beta", "total_pulls", "total_reward", "mean_estimate", "avg_reward"]:
+                    if k in computed_update:
+                        arm[k] = computed_update[k]
+        return {"success": True}
+
+    async def get_decision(self, *, user_id: str, decision_id: str) -> Dict[str, Any]:
+        return self._decisions.get(decision_id, {})
+
+
+# ---------------------------------------------------------------------------
+# Hash-based embedding for cache
+# ---------------------------------------------------------------------------
+EMBEDDING_DIM = 64
+
+def hash_embedding(text: str) -> List[float]:
+    words = text.lower().strip().split()
+    vector = [0.0] * EMBEDDING_DIM
+    for word in words:
+        digest = hashlib.sha256(word.encode()).digest()
+        for i in range(EMBEDDING_DIM):
+            vector[i] += digest[i % len(digest)] / 255.0
+    magnitude = math.sqrt(sum(v * v for v in vector))
+    if magnitude > 0:
+        vector = [v / magnitude for v in vector]
+    return vector
+
+
+# ---------------------------------------------------------------------------
+# Simulated LLM response
+# ---------------------------------------------------------------------------
+def simulate_llm(query: str, params: Dict[str, Any]) -> str:
+    """Simulate an LLM response with confidence language based on params."""
+    tone = params.get("tone", "neutral")
+    if tone == "confident":
+        return f"I am absolutely certain: the answer to '{query}' is 42. Confidence: 92%"
+    elif tone == "hedging":
+        return f"I think maybe the answer to '{query}' might possibly be 42."
+    else:
+        return f"The answer to '{query}' is 42."
+
+
+# --- Configuration ---
+SYSTEM = "full_loop"
+USER = "user_1"
+
+runtime_config = RuntimeConfig(
+    system=SYSTEM,
+    default_arms=[
+        RuntimeArmTemplate(
+            arm_id="confident_tone",
+            name="Confident Tone",
+            params={"tone": "confident", "temperature": 0.3},
+        ),
+        RuntimeArmTemplate(
+            arm_id="hedging_tone",
+            name="Hedging Tone",
+            params={"tone": "hedging", "temperature": 0.7},
+        ),
+    ],
+)
+
+reward_config = RewardEvaluatorConfig(
+    metrics={
+        "confidence": RewardMetricConfig(name="confidence", weight=0.4),
+        "user_satisfaction": RewardMetricConfig(name="user_satisfaction", weight=0.6),
+    }
+)
+
+
+# --- Execution ---
+async def main() -> None:
+    print("Full Convergence Loop")
+    print("=" * 60)
+    print()
+
+    # 1. Setup components
+    storage = MemoryRuntimeStorage()
+    await configure_runtime(SYSTEM, config=runtime_config, storage=storage)
+
+    cache = SemanticCache(embedding_fn=hash_embedding, backend="memory", threshold=0.99)
+    graph = ContextGraph()
+    reward_evaluator = RuntimeRewardEvaluator(reward_config)
+
+    queries = [
+        "What is the meaning of life?",
+        "What is the meaning of life?",  # Should cache hit
+        "How does photosynthesis work?",
+        "Explain quantum computing",
+        "What is the meaning of existence?",  # Semantically similar to #1
+    ]
+
+    for i, query in enumerate(queries, 1):
+        print(f"--- Round {i}: \"{query}\" ---")
+
+        # 2. Check cache first
+        cached = await cache.get(query)
+        if cached:
+            print(f"  [CACHE HIT] similarity={cached['similarity']:.3f}")
+            print(f"  Content: {cached['content'][:60]}...")
+            print()
+            continue
+
+        # 3. Runtime selects an arm (Thompson Sampling)
+        selection = await runtime_select(SYSTEM, user_id=USER)
+        print(f"  [RUNTIME]  arm={selection.arm_id} params={selection.params}")
+
+        # 4. Generate response (simulated)
+        response_text = simulate_llm(query, selection.params)
+        print(f"  [RESPONSE] {response_text[:70]}...")
+
+        # 5. Extract confidence
+        confidence = extract_confidence(response_text)
+        print(f"  [CONFIDENCE] {confidence}")
+
+        # 6. Cache the response
+        await cache.set(query, {"content": response_text, "confidence": confidence})
+
+        # 7. Record in knowledge graph
+        node_id = f"query_{i}"
+        graph.add_node(GraphNode(
+            id=node_id,
+            ontology_type=OntologyType.WHAT,
+            entity_type=EntityType.ARTIFACT,
+            content=query,
+            metadata={"arm": selection.arm_id, "confidence": confidence},
+        ))
+        if i > 1:
+            graph.add_edge(GraphEdge(
+                id=f"seq_{i}",
+                source_id=f"query_{i - 1}",
+                target_id=node_id,
+                relationship_type="followed_by",
+                weight=1.0,
+            ))
+
+        # 8. Evaluate composite reward
+        user_satisfaction = random.uniform(0.5, 1.0)  # Simulated user signal
+        signals = {
+            "confidence": confidence if confidence is not None else 0.5,
+            "user_satisfaction": user_satisfaction,
+        }
+        reward = reward_evaluator.evaluate(signals)
+        print(f"  [REWARD]   {reward:.3f} (confidence={confidence}, satisfaction={user_satisfaction:.2f})")
+
+        # 9. Update runtime with reward (closing the loop)
+        if selection.decision_id:
+            await runtime_update(
+                SYSTEM,
+                user_id=USER,
+                decision_id=selection.decision_id,
+                reward=reward,
+            )
+            print(f"  [LEARN]    Updated arm '{selection.arm_id}' with reward={reward:.3f}")
+
+        print()
+
+    # Summary
+    print("=" * 60)
+    print("Summary")
+    print(f"  Knowledge graph: {graph.node_count()} nodes, {graph.edge_count()} edges")
+    print(f"  Cache entries stored: queries processed with deduplication")
+    print()
+    print("The loop: SELECT -> GENERATE -> EVALUATE -> CACHE -> LEARN -> REPEAT")
+    print("Each cycle makes the next one better. That is convergence.")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
