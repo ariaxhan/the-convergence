@@ -1,6 +1,6 @@
 [project]
 name = "the-convergence"
-version = "0.1.8"
+version = "1.0.0"
 description = "Self-evolving agent framework powered by reinforcement learning, evolutionary algorithms, and self-improving policies"
 authors = [
     {name = "Aria Han", email = "ariaxhan@gmail.com"},

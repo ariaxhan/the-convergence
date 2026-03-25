@@ -5,15 +5,60 @@ All notable changes to The Convergence will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-03-24
 
-### Coming Soon
+### The Self-Evolving Agent Framework
 
-- Automated test suite with pytest
-- Performance benchmarking suite
-- Plugin development tutorial
-- Video documentation
-- Integration examples for popular APIs
+The Convergence reaches 1.0. This release marks the transition from research prototype to production-ready framework for building AI agents that improve themselves through reinforcement learning.
+
+### Added
+
+#### Comprehensive Example Library (40+ examples)
+- **Quickstart series** (00): 10 progressive examples from basic runtime to full optimization loop
+- **Sample apps** (01): Customer support bot, research assistant, self-improving classifier
+- **Optimization deep dives** (02): Thompson Sampling strategies, reward evaluation, convergence visualization
+- **Knowledge graph** (03): Graph construction, relationship patterns, queries
+- **Safety** (04): Budget tracking, confidence thresholds, input validation, reward bounds
+- **Observability** (05): Calibration, cost tracking, drift detection, learning metrics
+- **Team patterns** (06): Multi-agent teams, competitive selection, specialist routing
+- **Workflows** (07): Branching, human-in-the-loop, retry with learning, sequential pipelines
+- **Caching** (08): Analytics, invalidation, embedding comparison, SQLite cache
+- **Production** (09): A/B testing, gradual rollout, monitoring, PostgreSQL setup
+- **Agent patterns** (10): Observable pipelines, production runtime, resilient cache, safe evolution, secure clients
+- **Vector native** (11): Cache quality, embedding strategies, hybrid search, similarity tuning
+- **Model providers** (90): Azure, Claude, Groq, OpenAI, Ollama
+- **Integrations** (92): Discord, Gmail, Reddit, Browserbase
+
+#### In-Memory Storage Backend
+- Full `MemoryStorageBackend` for testing and ephemeral workloads
+
+#### Example Testing CI
+- GitHub Actions workflow to validate all examples
+
+#### AGENT.md
+- Machine-readable agent instructions for LLM-powered development tools
+
+#### llms.txt
+- Standardized LLM context file for the project
+
+#### USE_CASES.md
+- Dedicated use case documentation
+
+### Changed
+
+- **README completely rewritten** — skimmable, use-case-led, targets AI-literate readers
+- **License changed** from Apache 2.0 to Proprietary
+- **Version badge** updated across all files
+- **Examples reorganized** into numbered categories with READMEs and style guide
+- **Legacy examples** (agno_agents, ai/, web_browsing) cleaned up and modernized
+
+### Fixed
+
+- SAO plugin import cleanup
+- PostgreSQL storage backend corrections
+- CLI module path fixes
+
+---
 
 ## [0.1.0] - 2025-10-15
 

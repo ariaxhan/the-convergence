@@ -10,7 +10,7 @@ Usage:
     SDK: from convergence import run_optimization
 """
 
-__version__ = "0.1.3"
+__version__ = "1.0.0"
 
 from convergence.core.config import ConvergenceConfig
 from convergence.core.protocols import (

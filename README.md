@@ -4,7 +4,7 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.8-orange.svg)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-1.0.0-orange.svg)](pyproject.toml)
 
 ---
 
