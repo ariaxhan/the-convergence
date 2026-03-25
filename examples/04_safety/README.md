@@ -21,7 +21,7 @@ Patterns for input validation, confidence-based routing, budget tracking, and sa
 ## Running
 
 ```bash
-pip install the-convergence
+pip install -e .
 python input_validation.py
 python confidence_thresholds.py
 python budget_tracking.py

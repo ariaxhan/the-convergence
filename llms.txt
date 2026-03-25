@@ -31,12 +31,17 @@
 - examples/03_knowledge/README.md: Context graph patterns
 - examples/04_safety/README.md: Safety and validation
 - examples/05_observability/README.md: Metrics and monitoring
+- examples/06_teams/README.md: Multi-agent team patterns
+- examples/07_workflows/README.md: Pipeline and workflow optimization
+- examples/08_caching/README.md: Advanced caching patterns
+- examples/09_production/README.md: Production deployment patterns
 - examples/90_models/README.md: Provider integrations (Claude, OpenAI, Groq, Azure, Ollama)
 - examples/91_tools/README.md: Custom tool implementations
 - examples/92_integrations/README.md: External services (Discord, Gmail, Reddit)
 - examples/93_testing/README.md: Testing patterns
 - examples/10_agent_patterns/README.md: Production implementation patterns (security, resilience, observability)
 - examples/11_vector_native/README.md: Vector-native optimization (embeddings, similarity, hybrid search)
+- examples/94_yaml_configs/README.md: YAML configuration examples
 
 ## Core Modules
 - convergence/__init__.py: Package exports and public API

@@ -22,7 +22,7 @@ Deep dives into the ContextGraph: building, querying, traversing, and extracting
 ## Running
 
 ```bash
-pip install the-convergence
+pip install -e .
 python basic_graph.py
 python graph_queries.py
 python graph_relationships.py

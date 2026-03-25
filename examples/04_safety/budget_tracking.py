@@ -8,7 +8,7 @@ What this demonstrates:
 - Cost estimation from token counts
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Reduce BUDGET_LIMIT to 5000 to trigger earlier warnings

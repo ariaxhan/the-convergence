@@ -7,7 +7,7 @@ What this demonstrates:
 - Weighted aggregation: sum(signal * weight) / sum(weights)
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Change weights to see how prioritizing speed vs quality shifts rewards

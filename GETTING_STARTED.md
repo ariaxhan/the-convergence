@@ -9,13 +9,13 @@ The Convergence uses reinforcement learning to find optimal configurations. Each
 ## Installation
 
 ```bash
-pip install the-convergence
+pip install -e .
 ```
 
 **Or install from source:**
 
 ```bash
-git clone https://github.com/persist-os/the-convergence.git
+git clone https://github.com/ariaxhan/the-convergence.git
 cd the-convergence
 pip install -e .
 ```
@@ -386,7 +386,7 @@ optimization:
 ## Need Help?
 
 - **Documentation**: `README.md`, `SDK_USAGE.md`, `TROUBLESHOOTING.md`
-- **Issues**: [GitHub Issues](https://github.com/persist-os/the-convergence/issues)
+- **Issues**: [GitHub Issues](https://github.com/ariaxhan/the-convergence/issues)
 - **Security**: See `SECURITY.md`
 
 ---

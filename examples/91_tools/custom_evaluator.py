@@ -7,7 +7,7 @@ What this demonstrates:
 - Simple text quality scoring based on length and keyword presence
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Add more keywords to the expected dict and watch scores change

@@ -292,7 +292,7 @@ def optimize(
     """
     if not OPTIMIZATION_AVAILABLE:
         console.print("[red]Error:[/red] Optimization components not available")
-        console.print("Install with: pip install the-convergence")
+        console.print("Install with: pip install -e .")
         raise typer.Exit(1)
 
     try:
@@ -774,7 +774,7 @@ def info():
         "• Agent Society - Parallel optimization (RLP + SAO + Memory)\n\n"
         "[bold]Usage:[/bold]\n"
         "  convergence optimize config.yaml\n\n"
-        "[bold]Docs:[/bold] github.com/persist-os/the-convergence",
+        "[bold]Docs:[/bold] github.com/ariaxhan/the-convergence",
         title="📚 About",
         border_style="cyan"
     ))

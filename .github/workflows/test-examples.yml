@@ -85,7 +85,22 @@ jobs:
                    examples/05_observability/learning_metrics.py \
                    examples/05_observability/confidence_calibration.py \
                    examples/05_observability/drift_detection.py \
-                   examples/05_observability/cost_tracking.py; do
+                   examples/05_observability/cost_tracking.py \
+                   examples/06_teams/basic_team.py \
+                   examples/06_teams/specialist_routing.py \
+                   examples/06_teams/team_with_memory.py \
+                   examples/07_workflows/sequential_pipeline.py \
+                   examples/07_workflows/branching_workflow.py \
+                   examples/07_workflows/retry_with_learning.py \
+                   examples/07_workflows/human_in_the_loop.py \
+                   examples/08_caching/sqlite_cache.py \
+                   examples/08_caching/cache_analytics.py \
+                   examples/08_caching/embedding_comparison.py \
+                   examples/09_production/postgresql_setup.py \
+                   examples/09_production/monitoring_dashboard.py \
+                   examples/09_production/ab_testing.py \
+                   examples/09_production/gradual_rollout.py \
+                   examples/94_yaml_configs/evaluator.py; do
             echo "--- Running $f ---"
             python "$f" || { echo "FAIL: $f"; exit 1; }
           done

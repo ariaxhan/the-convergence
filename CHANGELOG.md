@@ -155,7 +155,7 @@ Not applicable for initial release.
 
 ```bash
 # Install
-pip install the-convergence
+pip install -e .
 
 # Run optimization
 convergence optimize examples/ai/openai/openai_responses_optimization.yaml
@@ -236,16 +236,16 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 We'd love to hear from you:
 
-- 🐛 [Report bugs](https://github.com/persist-os/the-convergence/issues)
-- 💡 [Request features](https://github.com/persist-os/the-convergence/issues)
-- 💬 [Join discussions](https://github.com/persist-os/the-convergence/discussions)
-- ⭐ [Star on GitHub](https://github.com/persist-os/the-convergence)
+- 🐛 [Report bugs](https://github.com/ariaxhan/the-convergence/issues)
+- 💡 [Request features](https://github.com/ariaxhan/the-convergence/issues)
+- 💬 [Join discussions](https://github.com/ariaxhan/the-convergence/discussions)
+- ⭐ [Star on GitHub](https://github.com/ariaxhan/the-convergence)
 
 ## Support
 
 - Documentation: [README.md](README.md)
-- Issues: [GitHub Issues](https://github.com/persist-os/the-convergence/issues)
-- Discussions: [GitHub Discussions](https://github.com/persist-os/the-convergence/discussions)
+- Issues: [GitHub Issues](https://github.com/ariaxhan/the-convergence/issues)
+- Discussions: [GitHub Discussions](https://github.com/ariaxhan/the-convergence/discussions)
 
 ## License
 
@@ -255,4 +255,4 @@ We'd love to hear from you:
 
 **Release Date:** October 15, 2025  
 **Maintained by:** Aria Han  
-**Repository:** <https://github.com/persist-os/the-convergence>
+**Repository:** <https://github.com/ariaxhan/the-convergence>

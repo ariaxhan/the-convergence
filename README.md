@@ -3,7 +3,7 @@
 **Build AI agents that improve themselves, safely.**
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.8-orange.svg)](pyproject.toml)
 
 ---
@@ -196,7 +196,7 @@ The key insight: safety checks happen at the *framework* level, not the *prompt*
 ### Installation
 
 ```bash
-pip install the-convergence
+pip install -e .
 ```
 
 ### Try It Now
@@ -529,7 +529,7 @@ We especially welcome:
 
 ## License
 
-Apache 2.0 — See [LICENSE](LICENSE) file.
+Proprietary — See [LICENSE](LICENSE) file.
 
 ---
 

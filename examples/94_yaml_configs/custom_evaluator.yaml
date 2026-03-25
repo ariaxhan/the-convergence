@@ -1,0 +1,47 @@
+# Custom evaluator config — references a Python function for scoring.
+# The evaluator module is in evaluator.py alongside this config.
+# Run: convergence optimize custom_evaluator.yaml
+
+api:
+  name: "content_api"
+  endpoint: "https://api.example.com/v1/generate"
+  auth:
+    type: "api_key"
+    token_env: "CONTENT_API_KEY"
+
+search_space:
+  parameters:
+    temperature:
+      type: "continuous"
+      min: 0.0
+      max: 1.0
+    max_tokens:
+      type: "continuous"
+      min: 100
+      max: 800
+
+evaluation:
+  # Dotted path to a callable: module.function
+  evaluator: "examples.94_yaml_configs.evaluator.evaluate_response"
+  test_cases:
+    inline:
+      - input: { prompt: "Write a greeting" }
+        expected: { contains: "hello", format: "sentence" }
+      - input: { prompt: "Explain recursion" }
+        expected: { contains: "itself", format: "paragraph" }
+  metrics:
+    keyword_match:
+      weight: 0.4
+      type: "higher_is_better"
+    length_score:
+      weight: 0.3
+      type: "higher_is_better"
+    format_score:
+      weight: 0.3
+      type: "higher_is_better"
+
+optimization:
+  algorithm: "mab_evolution"
+  evolution:
+    population_size: 15
+    generations: 8

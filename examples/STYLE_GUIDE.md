@@ -13,7 +13,7 @@ What this demonstrates:
 - Concept 2: brief explanation
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 - (list any optional deps)
 
 Suggested prompts / test inputs:
