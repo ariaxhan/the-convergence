@@ -21,7 +21,7 @@ Deep dives into Thompson Sampling, reward evaluation, and convergence behavior.
 ## Running
 
 ```bash
-pip install the-convergence
+pip install -e .
 python thompson_basic.py
 python thompson_strategies.py
 python reward_evaluation.py

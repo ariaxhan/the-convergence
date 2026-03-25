@@ -7,7 +7,7 @@ What this demonstrates:
 - The same select -> call -> evaluate -> update pattern
 
 Prerequisites:
-- pip install the-convergence groq
+- pip install -e . groq
 - Set GROQ_API_KEY environment variable
 
 Suggested prompts / test inputs:

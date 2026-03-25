@@ -52,7 +52,7 @@ See `openai/`, `groq/`, `azure/`, and `local/` for provider-specific examples.
 ## Prerequisites
 
 ```bash
-pip install the-convergence
+pip install -e .
 
 # Provider-specific:
 pip install anthropic   # Claude

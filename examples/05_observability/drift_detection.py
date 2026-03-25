@@ -8,7 +8,7 @@ What this demonstrates:
 - How Beta parameters adapt when the world changes
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Make the drift more subtle (0.7->0.6) to see slower detection

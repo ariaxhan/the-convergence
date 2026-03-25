@@ -7,7 +7,7 @@ What this demonstrates:
 - Returning structured validation results
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Add a regex-based email validation check

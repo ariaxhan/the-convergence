@@ -8,7 +8,7 @@ What this demonstrates:
 - Final arm statistics with posterior parameters
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Set all TRUE_PROBS close together (e.g., 0.5, 0.48, 0.52, 0.49) to see slower convergence

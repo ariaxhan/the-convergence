@@ -7,7 +7,7 @@ What this demonstrates:
 - The same select -> call -> evaluate -> update pattern
 
 Prerequisites:
-- pip install the-convergence openai
+- pip install -e . openai
 - Set AZURE_OPENAI_ENDPOINT (e.g. https://myresource.openai.azure.com/)
 - Set AZURE_OPENAI_KEY
 

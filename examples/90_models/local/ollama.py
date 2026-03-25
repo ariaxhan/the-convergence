@@ -7,7 +7,7 @@ What this demonstrates:
 - How to optimize local model parameters (temperature, model choice)
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 - Ollama running locally: ollama serve
 - At least one model pulled: ollama pull llama3.2
 

@@ -35,7 +35,7 @@ Runnable examples for self-evolving AI agents. Copy. Paste. Run.
 ## Quick Start
 
 ```bash
-pip install the-convergence
+pip install -e .
 cd examples/00_quickstart
 python 01_basic_runtime.py
 ```

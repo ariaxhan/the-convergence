@@ -268,7 +268,7 @@ tests/
 
 ## SUCCESS CRITERIA
 
-- [ ] `pip install the-convergence[postgresql]` works
+- [ ] `pip install -e .[postgresql]` works
 - [ ] Semantic cache reduces API calls by 70%+ in tests
 - [ ] PostgreSQL storage passes all RuntimeStorageProtocol tests
 - [ ] Confidence extraction works on sample responses

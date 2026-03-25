@@ -6,7 +6,7 @@ to a full self-evolving system.
 ## Prerequisites
 
 ```bash
-pip install the-convergence
+pip install -e .
 ```
 
 Some examples require additional dependencies:

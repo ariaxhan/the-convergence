@@ -8,7 +8,7 @@ What this demonstrates:
 - How the RuntimeRewardEvaluator auto-clamps outputs
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Feed rewards of exactly 0.0 and 1.0 to verify boundary behavior

@@ -8,7 +8,7 @@ What this demonstrates:
 - Calibration table: confidence bucket vs actual accuracy
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Change the bias in simulate_outcome to see miscalibration

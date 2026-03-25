@@ -8,7 +8,7 @@ What this demonstrates:
 - Querying node counts by type
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Add a third team member who USES both Python and React

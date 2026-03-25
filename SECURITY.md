@@ -15,7 +15,7 @@ We take the security of The Convergence seriously. If you discover a security vu
 **DO NOT** open a public GitHub issue for security vulnerabilities.
 
 Instead, please report security issues by emailing:
-- **Email:** aria@persistos.co
+- **Email:** ariaxhan@gmail.com
 - **Subject:** [SECURITY] Brief description of issue
 
 ### What to Include
@@ -247,10 +247,10 @@ When contributing code, ensure:
 
 For security-related questions (non-vulnerabilities):
 - Open a GitHub Discussion with [Security] tag
-- Email: aria@persistos.co
+- Email: ariaxhan@gmail.com
 
 For security vulnerabilities:
-- **Always email directly:** aria@persistos.co
+- **Always email directly:** ariaxhan@gmail.com
 - Include [SECURITY] in subject line
 
 ---

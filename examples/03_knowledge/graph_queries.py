@@ -8,7 +8,7 @@ What this demonstrates:
 - BFS traversal with configurable depth
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Add metadata_filter to query_nodes to find nodes by role or version
