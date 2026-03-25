@@ -28,7 +28,7 @@ Scoring criteria:
 - Length appropriateness (within bounds)
 - Speed efficiency (Groq's main strength)
 """
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 
 def score_groq_response(
@@ -66,29 +66,29 @@ def score_groq_response(
     """
     # Extract text from Chat Completions format
     text = _extract_text(result)
-    
+
     if not text or len(text.strip()) < 3:
         return 0.0
-    
+
     # Three-component scoring
     scores = {}
-    
+
     # 1. Completeness: Required keywords present? (50%)
     scores['completeness'] = _score_completeness(text, expected)
-    
+
     # 2. Quality: Well-formed response? (30%)
     scores['quality'] = _score_quality(text, expected)
-    
+
     # 3. Length: Appropriate length? (20%)
     scores['length'] = _score_length(text, expected)
-    
+
     # Weighted average
     final_score = (
         scores['completeness'] * 0.50 +
         scores['quality'] * 0.30 +
         scores['length'] * 0.20
     )
-    
+
     return round(min(1.0, max(0.0, final_score)), 3)
 
 
@@ -103,30 +103,30 @@ def _extract_text(result: Any) -> str:
     """
     if isinstance(result, str):
         return result
-    
+
     if isinstance(result, dict):
         # Standard Chat Completions format
         if 'choices' in result and isinstance(result['choices'], list):
             if len(result['choices']) > 0:
                 choice = result['choices'][0]
-                
+
                 # Standard message format
                 if 'message' in choice and isinstance(choice['message'], dict):
                     content = choice['message'].get('content', '')
                     return str(content) if content else ''
-                
+
                 # Legacy text format
                 if 'text' in choice:
                     return str(choice['text'])
-        
+
         # Direct content field (fallback)
         if 'content' in result:
             return str(result['content'])
-        
+
         # Generic text field
         if 'text' in result:
             return str(result['text'])
-    
+
     return str(result)
 
 
@@ -139,10 +139,10 @@ def _score_completeness(text: str, expected: Dict[str, Any]) -> float:
     required = expected.get('contains', [])
     if not required:
         return 1.0  # No requirements = perfect score
-    
+
     text_lower = text.lower()
     found = sum(1 for keyword in required if keyword.lower() in text_lower)
-    
+
     return found / len(required)
 
 
@@ -158,30 +158,30 @@ def _score_quality(text: str, expected: Dict[str, Any]) -> float:
     """
     if len(text) < 5:
         return 0.2
-    
+
     score = 0.0
     format_type = expected.get('format', 'text')
-    
+
     # Check 1: Format-specific validation (40%)
     if format_type == 'code':
         # Code should have syntax elements
         code_indicators = ['def ', 'function ', 'return ', 'class ', 'import ', '=', '{', '}']
         has_code = any(indicator in text for indicator in code_indicators)
         score += 0.4 if has_code else 0.1
-    
+
     elif format_type == 'list':
         # Lists should have numbered/bulleted items
         list_indicators = ['1.', '2.', '3.', '•', '-', '*']
         has_list = any(indicator in text for indicator in list_indicators)
         score += 0.4 if has_list else 0.1
-    
+
     else:  # text format
         # Text should start with capital letter
         if text[0].isupper():
             score += 0.4
         else:
             score += 0.1
-    
+
     # Check 2: Word variety - not too repetitive (30%)
     words = text.lower().split()
     if words:
@@ -189,7 +189,7 @@ def _score_quality(text: str, expected: Dict[str, Any]) -> float:
         score += 0.3 * min(1.0, unique_ratio * 1.5)
     else:
         score += 0.1
-    
+
     # Check 3: Reasonable length - not too short or ridiculously long (30%)
     if 10 <= len(text) <= 2000:
         score += 0.3
@@ -197,7 +197,7 @@ def _score_quality(text: str, expected: Dict[str, Any]) -> float:
         score += 0.1
     else:
         score += 0.2
-    
+
     return min(1.0, score)
 
 
@@ -209,24 +209,24 @@ def _score_length(text: str, expected: Dict[str, Any]) -> float:
     """
     min_length = expected.get('min_length', 0)
     max_length = expected.get('max_length', float('inf'))
-    
+
     actual_length = len(text)
-    
+
     # Perfect if within bounds
     if min_length <= actual_length <= max_length:
         return 1.0
-    
+
     # Too short: proportional penalty
     if actual_length < min_length:
         if min_length > 0:
             return max(0.3, actual_length / min_length)
         return 0.8
-    
+
     # Too long: smaller penalty (verbose is better than missing content)
     if actual_length > max_length and max_length < float('inf'):
         overage = (actual_length - max_length) / max_length
         return max(0.5, 1.0 - overage * 0.3)  # Max 50% penalty
-    
+
     return 0.9
 
 
@@ -256,14 +256,14 @@ def score_groq_speed_optimized(
         Score 0.0-1.0
     """
     text = _extract_text(result)
-    
+
     if not text:
         return 0.0
-    
+
     completeness = _score_completeness(text, expected)
     quality = _score_quality(text, expected)
     length = _score_length(text, expected)
-    
+
     # Speed-optimized weighting
     final_score = (completeness * 0.70 + quality * 0.20 + length * 0.10)
     return round(min(1.0, max(0.0, final_score)), 3)

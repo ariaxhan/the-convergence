@@ -1,6 +1,6 @@
 # Contributing to The Convergence
 
-Thank you for your interest in contributing to The Convergence! This document provides guidelines and instructions for contributing.
+This is a private, proprietary project. Internal contributors should follow the guidelines below.
 
 ## Table of Contents
 

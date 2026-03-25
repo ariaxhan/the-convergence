@@ -3,7 +3,7 @@
 **AI agents that get better every time they run.**
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.8-orange.svg)](pyproject.toml)
 
 ---
@@ -80,8 +80,22 @@ The Convergence is designed to wrap around your existing stack, not replace it.
 ## Quick Start
 
 ```bash
-pip install the-convergence
+pip install -e .
 ```
+
+### Try It Now
+
+```bash
+# Clone and run an example in 30 seconds
+git clone https://github.com/ariaxhan/the-convergence.git
+cd the-convergence/examples/00_quickstart
+python 02_confidence_extraction.py  # No API key needed
+python 06_thompson_sampling_loop.py  # Watch Thompson Sampling converge
+```
+
+See the full **[Cookbook](examples/)** for 40+ runnable examples: progressive quickstart, sample apps, deep dives, and provider integrations.
+
+### Minimal Example
 
 ```python
 import asyncio
@@ -185,7 +199,7 @@ Built on peer-reviewed work: [Thompson Sampling](https://en.wikipedia.org/wiki/T
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). We especially welcome integration examples, safety audit findings, and documentation improvements.
 
-**License:** Apache 2.0
+Proprietary — See [LICENSE](LICENSE) file.
 
 ---
 

@@ -740,7 +740,6 @@ Judgment:"""
         # Note: _baseline_vocab is guaranteed non-None here (checked by has_distribution_baseline)
         baseline_vocab = self._baseline_vocab or {}
         all_words = set(baseline_vocab.keys()) | set(current_dist.keys())
-        baseline_only = set(baseline_vocab.keys()) - set(current_dist.keys())
         current_only = set(current_dist.keys()) - set(baseline_vocab.keys())
 
         js_shift = 0.0

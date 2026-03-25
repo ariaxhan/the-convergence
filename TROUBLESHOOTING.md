@@ -77,7 +77,7 @@ sudo apt install python3.11
 # Create venv with specific version
 python3.11 -m venv venv
 source venv/bin/activate
-pip install the-convergence
+pip install -e .
 ```
 
 ---
@@ -630,8 +630,8 @@ python -c "from convergence.optimization.runner import OptimizationRunner; print
 
 ### Still stuck?
 
-1. **Search existing issues:** [GitHub Issues](https://github.com/persist-os/the-convergence/issues)
-2. **Ask in discussions:** [GitHub Discussions](https://github.com/persist-os/the-convergence/discussions)
+1. **Search existing issues:** [GitHub Issues](https://github.com/ariaxhan/the-convergence/issues)
+2. **Ask in discussions:** [GitHub Discussions](https://github.com/ariaxhan/the-convergence/discussions)
 3. **Open new issue:** Provide:
    - Python version
    - Convergence version

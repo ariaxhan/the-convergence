@@ -3,18 +3,16 @@ name = "the-convergence"
 version = "0.1.8"
 description = "Self-evolving agent framework powered by reinforcement learning, evolutionary algorithms, and self-improving policies"
 authors = [
-    {name = "Aria Han", email = "aria@persistos.co"},
-    {name = "Shreyash Hamal", email = "shrey@persistos.co"},
-    {name = "Myat Pyae Paing", email = "paing@persistos.co"}
+    {name = "Aria Han", email = "ariaxhan@gmail.com"},
+    {name = "Shreyash Hamal"},
+    {name = "Myat Pyae Paing"},
 ]
 maintainers = [
-    {name = "Aria Han", email = "aria@persistos.co"},
-    {name = "Shreyash Hamal", email = "shrey@persistos.co"},
-    {name = "Myat Pyae Paing", email = "paing@persistos.co"}
+    {name = "Aria Han", email = "ariaxhan@gmail.com"},
 ]
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "Apache-2.0"}
+license = {text = "Proprietary"}
 keywords = [
     "reinforcement-learning",
     "self-evolving",
@@ -35,7 +33,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "License :: OSI Approved :: Apache Software License",
+    "License :: Other/Proprietary License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -119,11 +117,10 @@ dev = [
 convergence = "convergence.cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/persist-os/the-convergence"
-Documentation = "https://github.com/persist-os/the-convergence#readme"
-Repository = "https://github.com/persist-os/the-convergence"
-Issues = "https://github.com/persist-os/the-convergence/issues"
-Changelog = "https://github.com/persist-os/the-convergence/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/ariaxhan/the-convergence"
+Documentation = "https://github.com/ariaxhan/the-convergence#readme"
+Repository = "https://github.com/ariaxhan/the-convergence"
+Changelog = "https://github.com/ariaxhan/the-convergence/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["setuptools>=68.0.0", "wheel"]

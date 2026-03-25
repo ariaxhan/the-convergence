@@ -10,7 +10,7 @@ Requires asyncpg for async PostgreSQL operations.
 from __future__ import annotations
 
 import json
-from typing import Any, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, List, Optional
 
 if TYPE_CHECKING:
     import asyncpg
