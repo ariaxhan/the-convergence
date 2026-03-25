@@ -19,6 +19,9 @@
 - CONTRIBUTING.md: Contribution guidelines
 - CHANGELOG.md: Version history and changes
 
+## Agent Reference
+- AGENT.md: Complete implementation reference for AI agents (API surface, edge cases, security, patterns, anti-patterns)
+
 ## Examples (Cookbook)
 - examples/README.md: Cookbook navigation and overview
 - examples/STYLE_GUIDE.md: Example writing guidelines
@@ -36,6 +39,8 @@
 - examples/91_tools/README.md: Custom tool implementations
 - examples/92_integrations/README.md: External services (Discord, Gmail, Reddit)
 - examples/93_testing/README.md: Testing patterns
+- examples/10_agent_patterns/README.md: Production implementation patterns (security, resilience, observability)
+- examples/11_vector_native/README.md: Vector-native optimization (embeddings, similarity, hybrid search)
 - examples/94_yaml_configs/README.md: YAML configuration examples
 
 ## Core Modules

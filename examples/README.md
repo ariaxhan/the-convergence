@@ -28,6 +28,14 @@ Runnable examples for self-evolving AI agents. Copy. Paste. Run.
 | [`08_caching/`](08_caching/) | SQLite persistence, cache analytics, TTL invalidation, embedding comparison |
 | [`09_production/`](09_production/) | PostgreSQL setup, monitoring dashboards, A/B testing, gradual rollout |
 
+### Agent Patterns (production-grade, enterprise-ready)
+| Directory | What You'll Learn |
+|-----------|------------------|
+| [`10_agent_patterns/`](10_agent_patterns/) | Production runtime, secure client, resilient cache, observable pipeline, safe evolution |
+| [`11_vector_native/`](11_vector_native/) | Embedding strategies, similarity tuning, hybrid search, cache quality monitoring |
+
+> **AI Agents:** Start with [`AGENT.md`](../AGENT.md) for the complete implementation reference, then use these patterns.
+
 ### Integrations
 | Directory | What You'll Learn |
 |-----------|------------------|
