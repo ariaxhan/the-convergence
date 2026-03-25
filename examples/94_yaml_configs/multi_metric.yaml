@@ -1,0 +1,51 @@
+# Multi-metric optimization with thresholds and early stopping.
+# Run: convergence optimize multi_metric.yaml
+
+api:
+  name: "chat_api"
+  endpoint: "https://api.example.com/v1/chat"
+  auth:
+    type: "api_key"
+    token_env: "CHAT_API_KEY"
+
+search_space:
+  parameters:
+    temperature:
+      type: "continuous"
+      min: 0.0
+      max: 1.0
+    model:
+      type: "categorical"
+      values: ["gpt-4", "claude-3", "gemini-pro"]
+    max_tokens:
+      type: "continuous"
+      min: 100
+      max: 1000
+    top_p:
+      type: "continuous"
+      min: 0.1
+      max: 1.0
+
+evaluation:
+  test_cases:
+    path: "test_cases.json"  # external test cases file
+  metrics:
+    quality:
+      weight: 0.5
+      type: "higher_is_better"
+      threshold: 0.7  # minimum acceptable score
+    speed:
+      weight: 0.3
+      type: "higher_is_better"
+      threshold: 0.5
+    cost:
+      weight: 0.2
+      type: "lower_is_better"
+
+optimization:
+  algorithm: "mab_evolution"
+  early_stopping:
+    patience: 3  # stop after 3 gens without improvement
+  evolution:
+    population_size: 20
+    generations: 10
