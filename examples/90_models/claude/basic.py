@@ -7,7 +7,7 @@ What this demonstrates:
 - Gap detection for low-confidence answers
 
 Prerequisites:
-- pip install the-convergence anthropic
+- pip install -e . anthropic
 - Set ANTHROPIC_API_KEY environment variable
 
 Suggested prompts / test inputs:

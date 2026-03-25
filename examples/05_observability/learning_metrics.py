@@ -8,7 +8,7 @@ What this demonstrates:
 - How Thompson Sampling shifts from exploration to exploitation
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Increase to 500 episodes to see entropy drop further

@@ -22,7 +22,7 @@ Metrics, monitoring, calibration, and cost tracking patterns for production syst
 ## Running
 
 ```bash
-pip install the-convergence
+pip install -e .
 python learning_metrics.py
 python confidence_calibration.py
 python drift_detection.py

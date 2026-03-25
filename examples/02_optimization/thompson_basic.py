@@ -7,7 +7,7 @@ What this demonstrates:
 - How the algorithm learns which arm is better
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Change TRUE_PROBS to (0.5, 0.51) to see how the algorithm handles near-identical arms

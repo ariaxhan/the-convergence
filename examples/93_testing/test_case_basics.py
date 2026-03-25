@@ -7,7 +7,7 @@ What this demonstrates:
 - Inspecting test case structure (input, expected, meta)
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Add more test cases with different difficulty levels

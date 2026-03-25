@@ -8,7 +8,7 @@ What this demonstrates:
 - Extracting architectural insights from graph queries
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Add a "monitoring" service that CONSUMES events from all services

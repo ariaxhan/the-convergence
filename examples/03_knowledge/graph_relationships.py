@@ -8,7 +8,7 @@ What this demonstrates:
 - Analyzing dependency chains
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Add a BREAKS relationship type for failure analysis

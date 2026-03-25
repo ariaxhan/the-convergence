@@ -8,7 +8,7 @@ What this demonstrates:
 - How hedging and certainty language affect confidence scores
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Try "I am absolutely 100% certain" to see max confidence

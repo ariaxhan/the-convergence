@@ -7,7 +7,7 @@ What this demonstrates:
 - How runtime optimizes parameters across requests
 
 Prerequisites:
-- pip install the-convergence openai
+- pip install -e . openai
 - Set OPENAI_API_KEY environment variable
 
 Suggested prompts / test inputs:

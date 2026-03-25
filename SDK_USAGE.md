@@ -6,7 +6,7 @@ Programmatic interface for building systems that evolve through experience.
 
 ```bash
 # Core framework
-pip install the-convergence
+pip install -e .
 
 # With self-improving agents (RLP + SAO)
 pip install "the-convergence[agents]"
@@ -340,7 +340,7 @@ print(f'Success: {result[\"success\"]}')
 
 - **Documentation**: `README.md`, `GETTING_STARTED.md`
 - **Examples**: `examples/` directory
-- **Issues**: https://github.com/persist-os/the-convergence/issues
+- **Issues**: https://github.com/ariaxhan/the-convergence/issues
 
 ---
 

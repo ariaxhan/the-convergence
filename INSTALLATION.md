@@ -7,7 +7,7 @@
 
 ```bash
 # Install
-pip install the-convergence
+pip install -e .
 
 # Import
 from convergence import run_optimization
@@ -42,7 +42,7 @@ pip install -r requirements.txt
 ### 3. Production Install
 
 ```bash
-pip install the-convergence
+pip install -e .
 ```
 
 ## Verify Installation
@@ -64,7 +64,7 @@ If you need the latest development version:
 
 ```bash
 # Clone repository
-git clone https://github.com/persist-os/the-convergence.git
+git clone https://github.com/ariaxhan/the-convergence.git
 cd the-convergence
 
 # Install in development mode
@@ -115,7 +115,7 @@ ImportError: No module named 'convergence'
 
 **Solution**: Package not installed. Run:
 ```bash
-pip install the-convergence
+pip install -e .
 ```
 
 ### Issue: Wrong Python Environment
@@ -127,7 +127,7 @@ which pip
 
 # Use correct environment
 source venv/bin/activate  # if using venv
-pip install the-convergence
+pip install -e .
 ```
 
 ### Issue: Editable Install Not Working

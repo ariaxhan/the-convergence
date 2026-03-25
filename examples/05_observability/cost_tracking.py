@@ -8,7 +8,7 @@ What this demonstrates:
 - Cost dashboard with per-query and aggregate metrics
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Change CACHE_HIT_RATE to 0.8 to see higher savings

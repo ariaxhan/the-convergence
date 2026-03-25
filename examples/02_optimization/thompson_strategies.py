@@ -7,7 +7,7 @@ What this demonstrates:
 - How strategy configuration affects arm selection behavior
 
 Prerequisites:
-- pip install the-convergence
+- pip install -e .
 
 Suggested prompts / test inputs:
 - Set exploration_bonus to 0.5 and watch under-explored arms get more pulls

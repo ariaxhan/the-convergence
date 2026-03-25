@@ -3,7 +3,7 @@
 ## Install (30 seconds)
 
 ```bash
-pip install the-convergence
+pip install -e .
 
 # Verify
 python -c "from convergence import run_optimization; print('Ready!')"
@@ -134,7 +134,7 @@ config = {
 
 ## Support
 
-Issues/Questions: https://github.com/persist-os/the-convergence/issues
+Issues/Questions: https://github.com/ariaxhan/the-convergence/issues
 
 ---
 
