@@ -47,7 +47,7 @@ The Convergence reaches 1.0. This release marks the transition from research pro
 ### Changed
 
 - **README completely rewritten** — skimmable, use-case-led, targets AI-literate readers
-- **License changed** from Apache 2.0 to Proprietary
+- **License changed** to MIT
 - **Version badge** updated across all files
 - **Examples reorganized** into numbered categories with READMEs and style guide
 - **Legacy examples** (agno_agents, ai/, web_browsing) cleaned up and modernized

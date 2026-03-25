@@ -1,6 +1,6 @@
 # Contributing to The Convergence
 
-This is a private, proprietary project. Internal contributors should follow the guidelines below.
+Thanks for your interest in contributing. Follow the guidelines below to get started.
 
 ## Table of Contents
 
