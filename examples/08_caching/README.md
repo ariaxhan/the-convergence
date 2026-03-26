@@ -14,7 +14,7 @@ Beyond basic get/set -- persistence, analytics, invalidation, and embedding stra
 ## Prerequisites
 
 ```bash
-pip install the-convergence
+pip install armature-ai
 ```
 
 No API keys required. All examples use local embedding functions.

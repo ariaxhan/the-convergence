@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Common issues and solutions for The Convergence.
+Common issues and solutions for Armature.
 
 ## Table of Contents
 
@@ -18,22 +18,22 @@ Common issues and solutions for The Convergence.
 
 ## Installation Issues
 
-### "Command not found: convergence"
+### "Command not found: armature"
 
-**Problem:** After installation, `convergence` command not found.
+**Problem:** After installation, `armature` command not found.
 
 **Solution:**
 
 ```bash
 # Reinstall in development mode
-cd /path/to/the-convergence
+cd /path/to/armature-ai
 pip install -e .
 
 # Or check if it's in your PATH
-which convergence
+which armature
 
 # If not in PATH, find the script
-find $(python -m site --user-base) -name "convergence"
+find $(python -m site --user-base) -name "armature"
 
 # Add to PATH if needed
 export PATH="$PATH:$(python -m site --user-base)/bin"
@@ -54,7 +54,7 @@ pip install -e ".[agents]"  # For RLP/SAO
 pip install -e ".[dev]"     # For development
 
 # Check installed packages
-pip list | grep convergence
+pip list | grep armature
 ```
 
 ### Python version compatibility
@@ -195,7 +195,7 @@ api:
   request:
     timeout_seconds: 60  # Increase timeout
     headers:
-      User-Agent: "convergence/0.1.0"  # Some APIs require this
+      User-Agent: "armature/0.1.0"  # Some APIs require this
 ```
 
 ### "Rate limit exceeded"
@@ -414,10 +414,10 @@ rm -rf data/ results/ legacy/
 lsof data/legacy.db
 
 # Kill stale processes
-pkill -f convergence
+pkill -f armature
 
 # Or use different database
-convergence optimize config.yaml  # Will create new session
+armature optimize config.yaml  # Will create new session
 ```
 
 ### "Table already exists" error
@@ -434,7 +434,7 @@ cp data/legacy.db data/legacy.db.backup
 rm data/legacy.db
 
 # Or migrate (future feature)
-# convergence migrate --from 0.0.1 --to 0.1.0
+# armature migrate --from 0.0.1 --to 0.1.0
 ```
 
 ### Results not being saved
@@ -471,7 +471,7 @@ mkdir -p results/optimization_run
 ```bash
 # Run from correct directory
 cd examples/ai/openai/
-convergence optimize openai_responses_optimization.yaml
+armature optimize openai_responses_optimization.yaml
 
 # Or use absolute paths in YAML
 evaluation:
@@ -530,7 +530,7 @@ curl https://api.openai.com/v1/chat/completions \
 
 ```bash
 # Reinstall package
-pip uninstall the-convergence
+pip uninstall armature-ai
 pip install -e .
 
 # Clear Python cache
@@ -566,7 +566,7 @@ pip install weave --upgrade
 
 ```bash
 # Install optional agent features
-pip install "the-convergence[agents]"
+pip install "armature-ai[agents]"
 
 # Or install individually
 pip install transformers torch trl
@@ -589,10 +589,10 @@ society:
 ```bash
 # Enable verbose logging
 export LOG_LEVEL=DEBUG
-convergence optimize config.yaml --verbose
+armature optimize config.yaml --verbose
 
 # Check log files
-tail -f logs/convergence.log  # If logging to file
+tail -f logs/armature.log  # If logging to file
 ```
 
 ### Minimal reproduction
@@ -602,21 +602,21 @@ When reporting issues, provide:
 ```bash
 # System info
 python --version
-pip show the-convergence
+pip show armature-ai
 uname -a  # Or: ver (Windows)
 
 # Minimal config that reproduces issue
 cat minimal_config.yaml
 
 # Full error message
-convergence optimize minimal_config.yaml 2>&1 | tee error.log
+armature optimize minimal_config.yaml 2>&1 | tee error.log
 ```
 
 ### Common debugging commands
 
 ```bash
 # Validate configuration
-python -c "from convergence.optimization.config_loader import ConfigLoader; ConfigLoader.load('config.yaml')"
+python -c "from armature.optimization.config_loader import ConfigLoader; ConfigLoader.load('config.yaml')"
 
 # Test API connection
 python -c "import httpx; print(httpx.get('https://api.openai.com/v1/models').status_code)"
@@ -625,16 +625,16 @@ python -c "import httpx; print(httpx.get('https://api.openai.com/v1/models').sta
 env | grep -i api
 
 # Test imports
-python -c "from convergence.optimization.runner import OptimizationRunner; print('OK')"
+python -c "from armature.optimization.runner import OptimizationRunner; print('OK')"
 ```
 
 ### Still stuck?
 
-1. **Search existing issues:** [GitHub Issues](https://github.com/ariaxhan/the-convergence/issues)
-2. **Ask in discussions:** [GitHub Discussions](https://github.com/ariaxhan/the-convergence/discussions)
+1. **Search existing issues:** [GitHub Issues](https://github.com/ariaxhan/armature-ai/issues)
+2. **Ask in discussions:** [GitHub Discussions](https://github.com/ariaxhan/armature-ai/discussions)
 3. **Open new issue:** Provide:
    - Python version
-   - Convergence version
+   - Armature version
    - Full error message
    - Minimal config to reproduce
    - What you've tried

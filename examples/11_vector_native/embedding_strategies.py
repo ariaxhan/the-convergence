@@ -8,7 +8,7 @@ What this demonstrates:
 - Benchmarking with precision/recall/F1 at configurable threshold
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Adjust EMBEDDING_DIM to see quality vs dimensionality tradeoff"

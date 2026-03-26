@@ -20,8 +20,8 @@ export OPENAI_API_KEY="sk-..."
 
 ### 2. Run optimization
 ```bash
-cd /Users/ariahan/Documents/div/both/the_convergence
-convergence optimize examples/ai/openai_responses_optimization.yaml
+cd /Users/ariahan/Documents/div/both/the_armature
+armature optimize examples/ai/openai_responses_optimization.yaml
 ```
 
 ### 3. View results
@@ -68,7 +68,7 @@ After running, you'll get:
 
 ## Files Created
 
-✅ `convergence/evaluators/openai_responses.py` - Built-in evaluator  
+✅ `armature/evaluators/openai_responses.py` - Built-in evaluator  
 ✅ `examples/test_cases/openai_responses_tests.json` - 10 test cases  
 ✅ `examples/ai/openai_responses_optimization.yaml` - Config file  
 
@@ -166,8 +166,8 @@ evaluation:
 ### "Test cases file not found"
 Make sure you're running from the project root:
 ```bash
-cd /Users/ariahan/Documents/div/both/the_convergence
-convergence optimize examples/ai/openai_responses_optimization.yaml
+cd /Users/ariahan/Documents/div/both/the_armature
+armature optimize examples/ai/openai_responses_optimization.yaml
 ```
 
 ### "API key not found"
@@ -179,7 +179,7 @@ export OPENAI_API_KEY="sk-..."
 ### "Module 'openai_responses' not found"
 The evaluator is built-in, but make sure you're using the latest version:
 ```bash
-cd /Users/ariahan/Documents/div/both/the_convergence
+cd /Users/ariahan/Documents/div/both/the_armature
 pip install -e .
 ```
 
@@ -196,7 +196,7 @@ pip install -e .
 - **Architecture**: `examples/ARCHITECTURE_GUIDE.md`
 - **API Caller vs LiteLLM**: `examples/AI_INTEGRATION_ARCHITECTURE.md`
 - **Test Cases**: `examples/test_cases/README.md`
-- **Evaluators**: `convergence/evaluators/README.md`
+- **Evaluators**: `armature/evaluators/README.md`
 
 ---
 

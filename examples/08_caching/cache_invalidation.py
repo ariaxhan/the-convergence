@@ -6,7 +6,7 @@ What this demonstrates:
 - Concept 2: Manual invalidation via cache.clear()
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Change ttl_seconds to 5 and observe longer cache life"
@@ -17,7 +17,7 @@ Suggested prompts / test inputs:
 import asyncio
 import hashlib
 
-from convergence.cache.semantic import SemanticCache
+from armature.cache.semantic import SemanticCache
 
 TTL_SECONDS = 2
 

@@ -1,6 +1,6 @@
 # Gmail Integration
 
-A self-evolving email assistant powered by Convergence.
+A self-evolving email assistant powered by Armature.
 
 ## What It Does
 

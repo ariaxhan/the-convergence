@@ -9,7 +9,7 @@ What this demonstrates:
 - Per-domain threshold support for multi-category systems
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Change GRID_STEP to 0.005 for finer resolution"

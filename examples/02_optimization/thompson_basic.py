@@ -11,7 +11,7 @@ Prerequisites:
 
 Suggested prompts / test inputs:
 - Change TRUE_PROBS to (0.5, 0.51) to see how the algorithm handles near-identical arms
-- Increase EPISODES to 500 to see tighter convergence
+- Increase EPISODES to 500 to see tighter armature
 """
 
 # --- Configuration ---

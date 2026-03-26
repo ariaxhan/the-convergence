@@ -1,4 +1,4 @@
-# The Convergence — Agent Implementation Reference
+# Armature — Agent Implementation Reference
 
 > Structured context for AI agents implementing self-evolving systems.
 > Not a tutorial. A decision-complete reference for flawless production execution.
@@ -11,8 +11,8 @@
 
 ```python
 # --- Runtime (online MAB selection) ---
-from convergence import configure_runtime, runtime_select, runtime_update, runtime_get_decision
-from convergence.types import (
+from armature import configure_runtime, runtime_select, runtime_update, runtime_get_decision
+from armature.types import (
     RuntimeConfig,
     RuntimeArmTemplate,
     RuntimeSelection,      # returned by runtime_select
@@ -23,39 +23,39 @@ from convergence.types import (
 )
 
 # --- Storage backends ---
-from convergence.storage.memory import MemoryRuntimeStorage      # dev/test (non-persistent)
-from convergence.storage.postgresql import PostgreSQLRuntimeStorage  # production (requires asyncpg)
-# from convergence.storage.sqlite import SQLiteStorage             # general storage, NOT runtime storage
+from armature.storage.memory import MemoryRuntimeStorage      # dev/test (non-persistent)
+from armature.storage.postgresql import PostgreSQLRuntimeStorage  # production (requires asyncpg)
+# from armature.storage.sqlite import SQLiteStorage             # general storage, NOT runtime storage
 
 # --- Semantic cache ---
-from convergence.cache.semantic import SemanticCache
-from convergence.cache.backends import MemoryCacheBackend, SQLiteCacheBackend, RedisCacheBackend
+from armature.cache.semantic import SemanticCache
+from armature.cache.backends import MemoryCacheBackend, SQLiteCacheBackend, RedisCacheBackend
 
 # --- LLM clients ---
-from convergence.clients.claude import ClaudeClient
+from armature.clients.claude import ClaudeClient
 
 # --- Evaluation ---
-from convergence.evaluators.confidence import extract_confidence
-from convergence.runtime.reward_evaluator import (
+from armature.evaluators.confidence import extract_confidence
+from armature.runtime.reward_evaluator import (
     RuntimeRewardEvaluator,
     RewardEvaluatorConfig,
     RewardMetricConfig,
 )
 
 # --- Types ---
-from convergence.types.response import LLMResponse, detect_gap
-from convergence.types.config import ConvergenceConfig, ApiConfig, SearchSpaceConfig, RunnerConfig, EvaluationConfig
+from armature.types.response import LLMResponse, detect_gap
+from armature.types.config import ArmatureConfig, ApiConfig, SearchSpaceConfig, RunnerConfig, EvaluationConfig
 
 # --- Knowledge ---
-from convergence.knowledge.graph import ContextGraph
-from convergence.knowledge.schema import GraphNode, GraphEdge, EntityType, OntologyType
+from armature.knowledge.graph import ContextGraph
+from armature.knowledge.schema import GraphNode, GraphEdge, EntityType, OntologyType
 
 # --- SDK (batch optimization) ---
-from convergence.sdk import run_optimization, run_optimization_sync
+from armature.sdk import run_optimization, run_optimization_sync
 
 # --- Agent simulation ---
-from convergence.core.runtime import CivilizationRuntime, Environment, CivilizationState
-from convergence.core.protocols import Agent, LLMProvider, MABStrategy, Plugin
+from armature.core.runtime import CivilizationRuntime, Environment, CivilizationState
+from armature.core.protocols import Agent, LLMProvider, MABStrategy, Plugin
 ```
 
 ---
@@ -151,7 +151,7 @@ SemanticCache(
     ttl_seconds: int | None = None,
     sqlite_path: str | None = None,  # REQUIRED if backend="sqlite"
     redis_url: str | None = None,    # REQUIRED if backend="redis"
-    namespace: str = "convergence_cache",
+    namespace: str = "armature_cache",
 )
 # .get(query: str) -> dict | None    — returns {content, similarity, original_query, created_at, ...} or None
 # .set(query: str, response: dict)   — store query → response mapping
@@ -274,9 +274,9 @@ threshold=0.70  → Aggressive caching (only for fuzzy/exploratory use cases)
 
 **Calibration method:** Use `examples/11_vector_native/similarity_tuning.py` with labeled pairs from your domain.
 
-### ADR-5: Convergence Timeline
+### ADR-5: Armature Timeline
 
-| Mechanism | Convergence Speed | Data Needed | When to Use |
+| Mechanism | Armature Speed | Data Needed | When to Use |
 |-----------|-------------------|-------------|-------------|
 | Thompson Sampling | 15-30 interactions | Binary reward (0/1) | Most cases — start here |
 | Thompson + exploration_bonus | 20-40 interactions | Same | Cold start, need to sample all arms |
@@ -590,7 +590,7 @@ await runtime_update(system, user_id=uid, decision_id=did, signals=signals)
 To implement a custom storage backend:
 
 ```python
-from convergence.storage.runtime_protocol import RuntimeStorageProtocol
+from armature.storage.runtime_protocol import RuntimeStorageProtocol
 
 class MyCustomStorage:
     """Must implement all 5 methods with exact signatures."""

@@ -1,5 +1,5 @@
 """
-06 - Thompson Sampling Convergence
+06 - Thompson Sampling Armature
 
 What this demonstrates:
 - Thompson Sampling converging over 50 rounds
@@ -19,9 +19,9 @@ import asyncio
 import random
 from typing import Dict, List
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 # --- Configuration ---
 SYSTEM = "thompson_demo"
@@ -62,7 +62,7 @@ async def main() -> None:
         history.append(arm)
 
     # --- ASCII Visualization ---
-    print("Thompson Sampling Convergence (50 rounds)")
+    print("Thompson Sampling Armature (50 rounds)")
     print("=" * 55)
     print(f"True rates: Arm A = {TRUE_RATES['arm_a']}, Arm B = {TRUE_RATES['arm_b']}")
     print()
@@ -86,7 +86,7 @@ async def main() -> None:
 
     print()
     if counts["arm_a"] > counts["arm_b"]:
-        print("Arm A (the better arm) was selected more often. Convergence achieved.")
+        print("Arm A (the better arm) was selected more often. Armature achieved.")
     else:
         print("Arm B was selected more (unusual with these rates -- run again).")
 

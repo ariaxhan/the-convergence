@@ -6,7 +6,7 @@ Tests dataset integrity monitoring for self-alignment optimization.
 
 import pytest
 
-from convergence.plugins.learning.sao import SAOMixin, SAOConfig
+from armature.plugins.learning.sao import SAOMixin, SAOConfig
 
 
 # =============================================================================

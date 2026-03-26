@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from convergence.optimization.config_loader import ConfigLoader
+from armature.optimization.config_loader import ConfigLoader
 
 
 def main() -> None:
@@ -30,7 +30,7 @@ def main() -> None:
     pop = config.optimization.evolution.population_size
     gens = config.optimization.evolution.generations
     print(f"\nOptimization: {gens} generations x {pop} population")
-    print("Ready to run. Use: convergence optimize basic_optimization.yaml")
+    print("Ready to run. Use: armature optimize basic_optimization.yaml")
 
 
 if __name__ == "__main__":

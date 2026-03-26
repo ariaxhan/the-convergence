@@ -1,5 +1,5 @@
 # Multi-metric optimization with thresholds and early stopping.
-# Run: convergence optimize multi_metric.yaml
+# Run: armature optimize multi_metric.yaml
 
 api:
   name: "chat_api"

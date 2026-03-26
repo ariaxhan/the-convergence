@@ -1,5 +1,5 @@
 # Basic optimization config — minimal setup for a single API endpoint.
-# Run: convergence optimize basic_optimization.yaml
+# Run: armature optimize basic_optimization.yaml
 
 api:
   name: "my_api"

@@ -19,7 +19,7 @@ class TestSemanticCacheBasics:
     @pytest.mark.asyncio
     async def test_cache_miss_returns_none(self):
         """Empty cache should return None."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -32,7 +32,7 @@ class TestSemanticCacheBasics:
     @pytest.mark.asyncio
     async def test_cache_hit_after_set(self):
         """Exact same query should hit cache."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -51,7 +51,7 @@ class TestSemanticCacheBasics:
     @pytest.mark.asyncio
     async def test_cache_returns_similarity_score(self):
         """Cache hit should include similarity score."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -68,7 +68,7 @@ class TestSemanticCacheBasics:
     @pytest.mark.asyncio
     async def test_clear_removes_all_entries(self):
         """Clear should remove all cached entries."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -90,7 +90,7 @@ class TestSemanticSimilarity:
     @pytest.mark.asyncio
     async def test_similar_queries_hit_cache(self):
         """Semantically similar queries should hit cache."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_semantic_embedding_fn,
@@ -113,7 +113,7 @@ class TestSemanticSimilarity:
     @pytest.mark.asyncio
     async def test_dissimilar_queries_miss_cache(self):
         """Semantically different queries should miss cache."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_semantic_embedding_fn,
@@ -135,7 +135,7 @@ class TestSemanticSimilarity:
     @pytest.mark.asyncio
     async def test_threshold_respected(self):
         """Similarity threshold should be respected."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         # High threshold - stricter matching
         strict_cache = SemanticCache(
@@ -174,7 +174,7 @@ class TestCacheMetadata:
     @pytest.mark.asyncio
     async def test_stores_original_query(self):
         """Cache should store the original query."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -192,7 +192,7 @@ class TestCacheMetadata:
     @pytest.mark.asyncio
     async def test_stores_timestamp(self):
         """Cache entries should have timestamps."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
         import time
 
         cache = SemanticCache(
@@ -216,7 +216,7 @@ class TestCacheTTL:
     @pytest.mark.asyncio
     async def test_ttl_expiration(self):
         """Entries should expire after TTL."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -238,7 +238,7 @@ class TestCacheTTL:
     @pytest.mark.asyncio
     async def test_no_ttl_never_expires(self):
         """Entries with no TTL should not expire."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -259,7 +259,7 @@ class TestMemoryBackend:
     @pytest.mark.asyncio
     async def test_memory_backend_works(self):
         """Memory backend should function correctly."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -275,7 +275,7 @@ class TestMemoryBackend:
     @pytest.mark.asyncio
     async def test_memory_backend_isolation(self):
         """Different cache instances should be isolated."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache1 = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -298,7 +298,7 @@ class TestSQLiteBackend:
     @pytest.mark.asyncio
     async def test_sqlite_backend_works(self, temp_sqlite_path):
         """SQLite backend should function correctly."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -315,7 +315,7 @@ class TestSQLiteBackend:
     @pytest.mark.asyncio
     async def test_sqlite_persistence(self, temp_sqlite_path):
         """SQLite should persist across cache instances."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         # First instance - write
         cache1 = SemanticCache(
@@ -343,7 +343,7 @@ class TestRedisBackend:
     @pytest.mark.asyncio
     async def test_redis_backend_works(self, redis_url):
         """Redis backend should function correctly."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -363,7 +363,7 @@ class TestRedisBackend:
     @pytest.mark.asyncio
     async def test_redis_shared_cache(self, redis_url):
         """Redis cache should be shared across instances."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache1 = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -394,7 +394,7 @@ class TestConcurrency:
     @pytest.mark.asyncio
     async def test_concurrent_reads(self):
         """Concurrent reads should not interfere."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -413,7 +413,7 @@ class TestConcurrency:
     @pytest.mark.asyncio
     async def test_concurrent_writes(self):
         """Concurrent writes should not lose data."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         # Create an embedding function that uses hash for uniqueness
         async def hash_embedding_fn(text: str) -> List[float]:
@@ -451,7 +451,7 @@ class TestCacheConfiguration:
     @pytest.mark.asyncio
     async def test_custom_threshold(self):
         """Custom threshold should be applied."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -464,7 +464,7 @@ class TestCacheConfiguration:
     @pytest.mark.asyncio
     async def test_default_threshold(self):
         """Default threshold should be 0.88."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,
@@ -476,7 +476,7 @@ class TestCacheConfiguration:
     @pytest.mark.asyncio
     async def test_invalid_threshold_raises(self):
         """Invalid threshold should raise error."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         with pytest.raises(ValueError):
             SemanticCache(
@@ -495,7 +495,7 @@ class TestCacheConfiguration:
     @pytest.mark.asyncio
     async def test_invalid_backend_raises(self):
         """Invalid backend should raise error."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         with pytest.raises(ValueError):
             SemanticCache(
@@ -510,7 +510,7 @@ class TestEmbeddingFunction:
     @pytest.mark.asyncio
     async def test_sync_embedding_fn_works(self):
         """Sync embedding function should be wrapped."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
         from tests.conftest import simple_embedding_fn
 
         cache = SemanticCache(
@@ -526,7 +526,7 @@ class TestEmbeddingFunction:
     @pytest.mark.asyncio
     async def test_async_embedding_fn_works(self):
         """Async embedding function should work directly."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         cache = SemanticCache(
             embedding_fn=async_simple_embedding_fn,  # Async function
@@ -541,7 +541,7 @@ class TestEmbeddingFunction:
     @pytest.mark.asyncio
     async def test_embedding_dimension_consistency(self):
         """Cache should handle varying embedding dimensions."""
-        from convergence.cache import SemanticCache
+        from armature.cache import SemanticCache
 
         # 128-dim embeddings
         async def embed_128(text: str) -> List[float]:

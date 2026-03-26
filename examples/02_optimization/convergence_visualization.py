@@ -1,18 +1,18 @@
 """
-Convergence Visualization with Cumulative Regret
+Armature Visualization with Cumulative Regret
 
 What this demonstrates:
 - 4-arm Thompson Sampling over 200 episodes
 - Cumulative regret tracking (gap from optimal)
-- ASCII chart showing convergence behavior
+- ASCII chart showing armature behavior
 - Final arm statistics with posterior parameters
 
 Prerequisites:
 - pip install -e .
 
 Suggested prompts / test inputs:
-- Set all TRUE_PROBS close together (e.g., 0.5, 0.48, 0.52, 0.49) to see slower convergence
-- Increase EPISODES to 1000 for clearer convergence
+- Set all TRUE_PROBS close together (e.g., 0.5, 0.48, 0.52, 0.49) to see slower armature
+- Increase EPISODES to 1000 for clearer armature
 """
 
 # --- Configuration ---

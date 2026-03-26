@@ -1,4 +1,4 @@
-# Contributing to The Convergence
+# Contributing to Armature
 
 Thanks for your interest in contributing. Follow the guidelines below to get started.
 
@@ -47,8 +47,8 @@ We are committed to providing a welcoming and inclusive environment for everyone
 
 ```bash
 # Fork the repository on GitHub, then:
-git clone https://github.com/YOUR_USERNAME/the-convergence.git
-cd the-convergence
+git clone https://github.com/YOUR_USERNAME/armature-ai.git
+cd armature-ai
 ```
 
 2. **Create Virtual Environment**
@@ -75,8 +75,8 @@ pre-commit install
 5. **Verify Installation**
 
 ```bash
-convergence --version
-convergence info
+armature --version
+armature info
 ```
 
 ## How to Contribute
@@ -150,8 +150,8 @@ from pydantic import BaseModel
 import weave
 
 # Local imports
-from convergence.core.protocols import LLMProvider
-from convergence.optimization.models import OptimizationResult
+from armature.core.protocols import LLMProvider
+from armature.optimization.models import OptimizationResult
 ```
 
 ### Naming Conventions
@@ -249,7 +249,7 @@ async def process_batch(items: List[str]) -> List[Result]:
 pytest
 
 # Run with coverage
-pytest --cov=convergence --cov-report=html
+pytest --cov=armature --cov-report=html
 
 # Run specific test file
 pytest tests/test_optimization.py
@@ -262,7 +262,7 @@ pytest -v
 
 ```python
 import pytest
-from convergence.optimization.runner import OptimizationRunner
+from armature.optimization.runner import OptimizationRunner
 
 @pytest.mark.asyncio
 async def test_optimization_basic():
@@ -430,22 +430,22 @@ Contributors are recognized in:
 
 ```bash
 # Format code
-black convergence/
+black armature/
 
 # Check types
-mypy convergence/
+mypy armature/
 
 # Lint
-ruff check convergence/
+ruff check armature/
 
 # Run single example
-convergence optimize examples/ai/openai/openai_responses_optimization.yaml
+armature optimize examples/ai/openai/openai_responses_optimization.yaml
 
 # Build package
 python -m build
 
 # Install local build
-pip install dist/the_convergence-*.whl
+pip install dist/armature_ai-*.whl
 ```
 
 ### Debugging
@@ -453,13 +453,13 @@ pip install dist/the_convergence-*.whl
 ```bash
 # Enable verbose logging
 export LOG_LEVEL=DEBUG
-convergence optimize config.yaml --verbose
+armature optimize config.yaml --verbose
 
 # Use Python debugger
 import pdb; pdb.set_trace()
 
 # Check Weave traces
-# Visit: https://wandb.ai/your-org/convergence
+# Visit: https://wandb.ai/your-org/armature
 ```
 
 ## Questions?
@@ -480,7 +480,7 @@ Every contribution matters, whether it's:
 - Adding a feature
 - Improving documentation
 
-Your work makes The Convergence better for everyone.
+Your work makes Armature better for everyone.
 
 **Happy contributing!** 🚀
 

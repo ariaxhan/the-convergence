@@ -1,5 +1,5 @@
 [project]
-name = "the-convergence"
+name = "armature-ai"
 version = "1.0.0"
 description = "Self-evolving agent framework powered by reinforcement learning, evolutionary algorithms, and self-improving policies"
 authors = [
@@ -49,26 +49,26 @@ dependencies = [
     "pyyaml>=6.0.0",
     "rich>=13.0.0",
     "diagrams",
-    
+
     # Optimization engine
     "httpx>=0.25.0",
     "tenacity>=8.0.0",
     "numpy>=1.24.0",
     "scipy>=1.10.0",
-    
+
     # Storage
     "aiosqlite>=0.19.0",
     "aiofiles>=23.0.0",
-    
+
     # Logging
     "weave>=0.50.0",
-    
+
     # LLM Provider (for RLP/SAO)
     "litellm>=1.0.0",
-    
+
     # Environment management
     "python-dotenv>=1.0.0",
-    
+
     # Plugin system
     "pluggy>=1.3.0",
 ]
@@ -99,7 +99,7 @@ reddit = [
 
 # All features
 all = [
-    "the-convergence[agents,llm,reddit]",
+    "armature-ai[agents,llm,reddit]",
 ]
 
 # Development tools
@@ -114,13 +114,13 @@ dev = [
 ]
 
 [project.scripts]
-convergence = "convergence.cli.main:app"
+armature = "armature.cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/ariaxhan/the-convergence"
-Documentation = "https://github.com/ariaxhan/the-convergence#readme"
-Repository = "https://github.com/ariaxhan/the-convergence"
-Changelog = "https://github.com/ariaxhan/the-convergence/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/ariaxhan/armature-ai"
+Documentation = "https://github.com/ariaxhan/armature-ai#readme"
+Repository = "https://github.com/ariaxhan/armature-ai"
+Changelog = "https://github.com/ariaxhan/armature-ai/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["setuptools>=68.0.0", "wheel"]
@@ -128,7 +128,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["convergence*", "examples*"]
+include = ["armature*", "examples*"]
 
 [tool.setuptools]
 include-package-data = true
@@ -137,7 +137,7 @@ include-package-data = true
 line-length = 100
 target-version = "py311"
 exclude = [
-    "convergence/generator/templates/*.py",  # Code generation templates with placeholders
+    "armature/generator/templates/*.py",  # Code generation templates with placeholders
 ]
 
 [tool.ruff.lint]
@@ -149,7 +149,7 @@ python_version = "3.11"
 warn_unused_configs = true
 # Exclude template files (contain placeholders, not valid Python)
 exclude = [
-    "convergence/generator/templates/",
+    "armature/generator/templates/",
 ]
 
 # Ignore missing stubs for third-party libraries
@@ -162,21 +162,21 @@ ignore_missing_imports = true
 # TODO: Fix incrementally and remove from this list
 [[tool.mypy.overrides]]
 module = [
-    "convergence.cli.main",
-    "convergence.core.registry",
-    "convergence.evaluators.code_quality",
-    "convergence.evaluators.json_structure",
-    "convergence.generator.*",
-    "convergence.legacy.*",
-    "convergence.optimization.*",
-    "convergence.plugins.learning.rlp",
-    "convergence.runtime.online",
-    "convergence.sdk",
-    "convergence.storage.convex",
-    "convergence.storage.legacy_manager",
-    "convergence.storage.multi_backend",
-    "convergence.storage.runtime_stub",
-    "convergence.storage.sqlite",
+    "armature.cli.main",
+    "armature.core.registry",
+    "armature.evaluators.code_quality",
+    "armature.evaluators.json_structure",
+    "armature.generator.*",
+    "armature.legacy.*",
+    "armature.optimization.*",
+    "armature.plugins.learning.rlp",
+    "armature.runtime.online",
+    "armature.sdk",
+    "armature.storage.convex",
+    "armature.storage.legacy_manager",
+    "armature.storage.multi_backend",
+    "armature.storage.runtime_stub",
+    "armature.storage.sqlite",
 ]
 ignore_errors = true
 

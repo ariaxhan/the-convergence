@@ -7,14 +7,14 @@ Uses real databases (SQLite, Memory) — no mocks.
 
 import pytest
 
-from convergence.knowledge.schema import (
+from armature.knowledge.schema import (
     GraphNode,
     GraphEdge,
     OntologyType,
     EntityType,
 )
-from convergence.knowledge.graph import ContextGraph
-from convergence.knowledge.storage import GraphStorage
+from armature.knowledge.graph import ContextGraph
+from armature.knowledge.storage import GraphStorage
 
 
 # =============================================================================
@@ -321,7 +321,7 @@ class TestExtractContext:
         """Create graph with test data."""
         graph = ContextGraph()
 
-        graph.add_node(GraphNode(id="project", ontology_type=OntologyType.WHAT, entity_type=EntityType.CONCEPT, content="The Convergence"))
+        graph.add_node(GraphNode(id="project", ontology_type=OntologyType.WHAT, entity_type=EntityType.CONCEPT, content="The Armature"))
         graph.add_node(GraphNode(id="goal", ontology_type=OntologyType.WHAT, entity_type=EntityType.DECISION, content="Build self-evolving agents"))
         graph.add_node(GraphNode(id="alice", ontology_type=OntologyType.WHO, entity_type=EntityType.PERSON, content="Alice (Lead)"))
         graph.add_node(GraphNode(id="mab", ontology_type=OntologyType.HOW, entity_type=EntityType.PROCESS, content="Multi-Armed Bandit"))

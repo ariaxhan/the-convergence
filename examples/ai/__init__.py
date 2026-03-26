@@ -1,2 +1,2 @@
-"""AI API examples for The Convergence."""
+"""AI API examples for The Armature."""
 

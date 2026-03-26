@@ -1,6 +1,6 @@
 # BrowserBase Integration
 
-A self-evolving web scraping agent powered by Convergence.
+A self-evolving web scraping agent powered by Armature.
 
 ## What It Does
 

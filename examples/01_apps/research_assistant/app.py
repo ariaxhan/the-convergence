@@ -1,5 +1,5 @@
 """
-Research Assistant -- Convergence end-to-end example.
+Research Assistant -- Armature end-to-end example.
 
 What this demonstrates:
   - Thompson Sampling (Runtime MAB) to select the best search strategy
@@ -17,16 +17,16 @@ import asyncio
 import random
 from typing import Dict, Tuple
 
-from convergence import (
+from armature import (
     RuntimeArmTemplate,
     RuntimeConfig,
     configure_runtime,
     runtime_select,
     runtime_update,
 )
-from convergence.knowledge.graph import ContextGraph
-from convergence.knowledge.schema import EntityType, GraphEdge, GraphNode, OntologyType
-from convergence.storage.memory import MemoryRuntimeStorage
+from armature.knowledge.graph import ContextGraph
+from armature.knowledge.schema import EntityType, GraphEdge, GraphNode, OntologyType
+from armature.storage.memory import MemoryRuntimeStorage
 
 SYSTEM, USER_ID = "research_assistant", "researcher_1"
 RESEARCHERS = ["Alice", "Bob", "Carol"]
@@ -110,7 +110,7 @@ async def main() -> None:
         topics = [n.content for n in graph.get_neighbors(f"who_{name.lower()}")]
         print(f"    {name}: {', '.join(topics[:5])}")
     arms = await storage.get_arms(user_id=USER_ID, agent_type="default")
-    print("\n  Arm convergence:")
+    print("\n  Arm armature:")
     for arm in arms:
         m, p = arm.get("mean_estimate") or 0, arm.get("total_pulls", 0)
         print(f"    {arm.get('name', arm['arm_id']):12s} | pulls={p:3d} | mean={m:.3f} | {'#' * int(m * 30)}")

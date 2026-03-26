@@ -8,7 +8,7 @@ What this demonstrates:
 - Knowledge accumulation enabling better decisions
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Add a third agent that only reads but never writes
@@ -19,8 +19,8 @@ Suggested prompts / test inputs:
 import asyncio
 import random
 
-from convergence.knowledge.graph import ContextGraph
-from convergence.knowledge.schema import EntityType, GraphEdge, GraphNode, OntologyType
+from armature.knowledge.graph import ContextGraph
+from armature.knowledge.schema import EntityType, GraphEdge, GraphNode, OntologyType
 
 # --- Configuration ---
 DOMAINS = ["python", "rust", "typescript", "go"]

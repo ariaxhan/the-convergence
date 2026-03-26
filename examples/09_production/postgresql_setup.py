@@ -7,28 +7,28 @@ What this demonstrates:
 - Stable arm selection with minimal unnecessary switching
 
 Prerequisites:
-- pip install the-convergence
-- For real PostgreSQL: pip install the-convergence[postgresql]
+- pip install armature-ai
+- For real PostgreSQL: pip install armature-ai[postgresql]
 
 Suggested prompts / test inputs:
 - Increase stability_improvement_threshold to 0.2 for even less switching
-- Lower exploration_min_pulls to 3 to see faster convergence
+- Lower exploration_min_pulls to 3 to see faster armature
 """
 
 # --- Configuration ---
 import asyncio
 import random
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
-from convergence.types.runtime import SelectionStrategyConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
+from armature.types.runtime import SelectionStrategyConfig
 
 SYSTEM = "prod_service"
 USER = "user_1"
 
 # Production:
-# from convergence.storage.postgresql import PostgreSQLRuntimeStorage
+# from armature.storage.postgresql import PostgreSQLRuntimeStorage
 # storage = PostgreSQLRuntimeStorage(dsn="postgresql://user:pass@host/db", system="prod")
 # Development fallback:
 storage = MemoryRuntimeStorage()

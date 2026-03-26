@@ -1,11 +1,11 @@
 # Custom Tools
 
-How to build custom tools for Convergence agents.
+How to build custom tools for Armature agents.
 
 ## Custom Evaluators
 
 The `run_optimization` function accepts a custom evaluator that scores
-API responses. This is how you teach Convergence what "good" looks like
+API responses. This is how you teach Armature what "good" looks like
 for your specific use case.
 
 ### Evaluator Interface
@@ -30,7 +30,7 @@ def my_evaluator(prediction: dict, expected: dict, *, context: dict = None) -> d
 ### Usage with run_optimization
 
 ```python
-from convergence.sdk import run_optimization
+from armature.sdk import run_optimization
 
 result = await run_optimization(
     config=my_config,

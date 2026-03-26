@@ -1,2 +1,2 @@
-"""Web browsing API examples for The Convergence."""
+"""Web browsing API examples for The Armature."""
 

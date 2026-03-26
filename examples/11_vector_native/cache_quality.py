@@ -10,7 +10,7 @@ What this demonstrates:
 - Decay detection (alerts on dropping hit rate)
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Adjust AVG_API_COST to match your LLM pricing"
@@ -27,7 +27,7 @@ import re
 import time
 from typing import Dict, List, Optional, Tuple
 
-from convergence.cache.semantic import SemanticCache
+from armature.cache.semantic import SemanticCache
 
 EMBEDDING_DIM: int = 64
 ROLLING_WINDOW: int = 100

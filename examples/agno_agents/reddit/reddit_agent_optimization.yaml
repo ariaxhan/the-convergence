@@ -19,7 +19,7 @@
 #   7. export AZURE_API_KEY="your_azure_key"
 #   8. Configure models in agent.models registry below
 #   9. Select active model(s) in search_space.parameters.model.values
-#   10. convergence optimize reddit_agent_optimization.yaml
+#   10. armature optimize reddit_agent_optimization.yaml
 
 api:
   name: "agno_reddit_agent"
@@ -47,7 +47,7 @@ agent:
   reddit_auth:
     client_id_env: "REDDIT_CLIENT_ID"
     client_secret_env: "REDDIT_CLIENT_SECRET"
-    user_agent: "the-convergence-reddit-tester/1.0"
+    user_agent: "armature-ai-reddit-tester/1.0"
     # Required for Reddit API operations that need user authentication
     username_env: "REDDIT_USERNAME"
     password_env: "REDDIT_PASSWORD"

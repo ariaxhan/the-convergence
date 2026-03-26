@@ -1,5 +1,5 @@
 """
-10 - Full Convergence Loop
+10 - Full Armature Loop
 
 What this demonstrates:
 - All components working together in a single flow
@@ -9,7 +9,7 @@ What this demonstrates:
 - Knowledge graph tracking decisions
 - Reward evaluation closing the learning loop
 
-This is the "convergence moment" -- every piece feeding into the next,
+This is the "armature moment" -- every piece feeding into the next,
 the system learning and improving with each cycle.
 
 No API keys required. Pure local.
@@ -21,7 +21,7 @@ import math
 import random
 from typing import Any, Dict, List
 
-from convergence import (
+from armature import (
     RewardEvaluatorConfig,
     RewardMetricConfig,
     RuntimeRewardEvaluator,
@@ -29,17 +29,17 @@ from convergence import (
     runtime_select,
     runtime_update,
 )
-from convergence.cache.semantic import SemanticCache
-from convergence.evaluators.confidence import extract_confidence
-from convergence.knowledge.graph import ContextGraph
-from convergence.knowledge.schema import (
+from armature.cache.semantic import SemanticCache
+from armature.evaluators.confidence import extract_confidence
+from armature.knowledge.graph import ContextGraph
+from armature.knowledge.schema import (
     EntityType,
     GraphEdge,
     GraphNode,
     OntologyType,
 )
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 # ---------------------------------------------------------------------------
 # Hash-based embedding for cache
@@ -103,7 +103,7 @@ reward_config = RewardEvaluatorConfig(
 
 # --- Execution ---
 async def main() -> None:
-    print("Full Convergence Loop")
+    print("Full Armature Loop")
     print("=" * 60)
     print()
 
@@ -195,7 +195,7 @@ async def main() -> None:
     print("  Cache entries stored: queries processed with deduplication")
     print()
     print("The loop: SELECT -> GENERATE -> EVALUATE -> CACHE -> LEARN -> REPEAT")
-    print("Each cycle makes the next one better. That is convergence.")
+    print("Each cycle makes the next one better. That is armature.")
 
 
 if __name__ == "__main__":

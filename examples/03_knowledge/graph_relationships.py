@@ -16,8 +16,8 @@ Suggested prompts / test inputs:
 """
 
 # --- Configuration ---
-from convergence.knowledge.graph import ContextGraph
-from convergence.knowledge.schema import EntityType, GraphEdge, GraphNode, OntologyType
+from armature.knowledge.graph import ContextGraph
+from armature.knowledge.schema import EntityType, GraphEdge, GraphNode, OntologyType
 
 RELATIONSHIP_TYPES = ["OWNS", "USES", "DEPENDS_ON", "PRODUCES", "CONSUMES"]
 

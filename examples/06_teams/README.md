@@ -21,7 +21,7 @@ Patterns for multiple agents collaborating, competing, and evolving together.
 ## Running
 
 ```bash
-pip install the-convergence
+pip install armature-ai
 
 python basic_team.py
 python competitive_selection.py

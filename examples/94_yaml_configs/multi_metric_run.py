@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from convergence.optimization.config_loader import ConfigLoader
+from armature.optimization.config_loader import ConfigLoader
 
 
 def main() -> None:

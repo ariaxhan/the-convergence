@@ -11,7 +11,7 @@ What this demonstrates:
 - Full audit trail for every evolution event
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Run with more agents to see evolution dynamics"
@@ -29,9 +29,9 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig, SelectionStrategyConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig, SelectionStrategyConfig
 
 logger = logging.getLogger(__name__)
 
@@ -77,12 +77,12 @@ class SafeEvolutionManager:
     """
     Evolution manager with safety bounds, anomaly detection, and rollback.
 
-    Wraps convergence runtime to add safety guarantees around arm evolution.
+    Wraps armature runtime to add safety guarantees around arm evolution.
     Tracks per-agent performance, detects anomalies, enforces reward bounds,
     and provides a kill switch for emergency stops.
 
     Args:
-        system: Convergence system name.
+        system: Armature system name.
         agents: List of agent configs (each has agent_id, arm_id, params).
         min_reward: Lower bound -- pause evolution if avg drops below.
         max_exploration_ratio: Cap on exploration selections.

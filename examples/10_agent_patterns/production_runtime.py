@@ -9,7 +9,7 @@ What this demonstrates:
 - Idempotent initialization and clean shutdown
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Run with different arm configurations"
@@ -26,9 +26,9 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig, SelectionStrategyConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig, SelectionStrategyConfig
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +111,7 @@ class Metrics:
 
 class ProductionRuntime:
     """
-    Enterprise wrapper around convergence runtime with production safeguards.
+    Enterprise wrapper around armature runtime with production safeguards.
 
     Provides retry logic, circuit breaking, graceful degradation, health checks,
     structured logging, and metrics collection. Designed so swapping storage

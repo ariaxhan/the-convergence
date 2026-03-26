@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to The Convergence will be documented in this file.
+All notable changes to Armature will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -9,14 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### The Self-Evolving Agent Framework
 
-The Convergence reaches 1.0. This release marks the transition from research prototype to production-ready framework for building AI agents that improve themselves through reinforcement learning.
+Armature reaches 1.0. This release marks the transition from research prototype to production-ready framework for building AI agents that improve themselves through reinforcement learning.
 
 ### Added
 
 #### Comprehensive Example Library (40+ examples)
 - **Quickstart series** (00): 10 progressive examples from basic runtime to full optimization loop
 - **Sample apps** (01): Customer support bot, research assistant, self-improving classifier
-- **Optimization deep dives** (02): Thompson Sampling strategies, reward evaluation, convergence visualization
+- **Optimization deep dives** (02): Thompson Sampling strategies, reward evaluation, armature visualization
 - **Knowledge graph** (03): Graph construction, relationship patterns, queries
 - **Safety** (04): Budget tracking, confidence thresholds, input validation, reward bounds
 - **Observability** (05): Calibration, cost tracking, drift detection, learning metrics
@@ -64,7 +64,7 @@ The Convergence reaches 1.0. This release marks the transition from research pro
 
 ### 🎉 Initial Release
 
-The Convergence is an API optimization framework that finds optimal configurations through evolutionary algorithms, multi-armed bandits, and agent societies.
+Armature is an API optimization framework that finds optimal configurations through evolutionary algorithms, multi-armed bandits, and agent societies.
 
 ### Added
 
@@ -111,7 +111,7 @@ The Convergence is an API optimization framework that finds optimal configuratio
 - **Weave Integration** - Full observability with W&B Weave
 - **LLM Tracing** - Track all API calls and costs
 - **Experiment Tracking** - Compare optimization runs
-- **Metrics Dashboard** - Visualize convergence
+- **Metrics Dashboard** - Visualize armature
 
 #### Documentation
 
@@ -188,7 +188,7 @@ Not applicable for initial release.
 
 ### What's New in 0.1.0
 
-**The Convergence** makes API optimization accessible to everyone:
+**Armature** makes API optimization accessible to everyone:
 
 - **Zero ML Expertise Required:** Just provide your API and test cases
 - **Automated Discovery:** Find optimal configs through evolution
@@ -203,7 +203,7 @@ Not applicable for initial release.
 pip install -e .
 
 # Run optimization
-convergence optimize examples/ai/openai/openai_responses_optimization.yaml
+armature optimize examples/ai/openai/openai_responses_optimization.yaml
 
 # View results
 cat results/optimization_run/best_config.json
@@ -281,16 +281,16 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 We'd love to hear from you:
 
-- 🐛 [Report bugs](https://github.com/ariaxhan/the-convergence/issues)
-- 💡 [Request features](https://github.com/ariaxhan/the-convergence/issues)
-- 💬 [Join discussions](https://github.com/ariaxhan/the-convergence/discussions)
-- ⭐ [Star on GitHub](https://github.com/ariaxhan/the-convergence)
+- 🐛 [Report bugs](https://github.com/ariaxhan/armature-ai/issues)
+- 💡 [Request features](https://github.com/ariaxhan/armature-ai/issues)
+- 💬 [Join discussions](https://github.com/ariaxhan/armature-ai/discussions)
+- ⭐ [Star on GitHub](https://github.com/ariaxhan/armature-ai)
 
 ## Support
 
 - Documentation: [README.md](README.md)
-- Issues: [GitHub Issues](https://github.com/ariaxhan/the-convergence/issues)
-- Discussions: [GitHub Discussions](https://github.com/ariaxhan/the-convergence/discussions)
+- Issues: [GitHub Issues](https://github.com/ariaxhan/armature-ai/issues)
+- Discussions: [GitHub Discussions](https://github.com/ariaxhan/armature-ai/discussions)
 
 ## License
 
@@ -300,4 +300,4 @@ We'd love to hear from you:
 
 **Release Date:** October 15, 2025  
 **Maintained by:** Aria Han  
-**Repository:** <https://github.com/ariaxhan/the-convergence>
+**Repository:** <https://github.com/ariaxhan/armature-ai>

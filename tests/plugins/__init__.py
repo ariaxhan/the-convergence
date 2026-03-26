@@ -1,1 +1,1 @@
-"""Tests for convergence plugins."""
+"""Tests for armature plugins."""

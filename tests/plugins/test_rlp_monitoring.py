@@ -7,7 +7,7 @@ Tests policy stability checks for safe reinforcement learning.
 import pytest
 import numpy as np
 
-from convergence.plugins.learning.rlp import RLPMixin, RLPConfig
+from armature.plugins.learning.rlp import RLPMixin, RLPConfig
 
 
 # =============================================================================

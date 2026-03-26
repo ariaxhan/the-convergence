@@ -21,7 +21,7 @@ import asyncio
 import os
 import sys
 
-from convergence.clients import ClaudeClient
+from armature.clients import ClaudeClient
 
 
 # --- Setup ---

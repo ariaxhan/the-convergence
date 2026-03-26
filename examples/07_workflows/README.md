@@ -7,7 +7,7 @@ The runtime learns independently at each stage, optimizing the full pipeline ove
 
 | File | Pattern | Key Concept |
 |------|---------|-------------|
-| `sequential_pipeline.py` | 3-step classify->generate->validate | Per-step convergence in a serial pipeline |
+| `sequential_pipeline.py` | 3-step classify->generate->validate | Per-step armature in a serial pipeline |
 | `branching_workflow.py` | Confidence-based routing | Route to different branches based on confidence |
 | `retry_with_learning.py` | Retry with arm switching | Thompson Sampling naturally tries alternatives |
 | `human_in_the_loop.py` | Escalation workflow | Auto-respond vs flag for human review |
@@ -15,7 +15,7 @@ The runtime learns independently at each stage, optimizing the full pipeline ove
 ## Running
 
 ```bash
-pip install the-convergence
+pip install armature-ai
 
 python sequential_pipeline.py
 python branching_workflow.py

@@ -1,17 +1,17 @@
 """
 Agno Discord Agent Optimization - Programmatic Example
 
-This demonstrates the new programmatic Convergence SDK interface for optimizing
+This demonstrates the new programmatic Armature SDK interface for optimizing
 Discord agent workflows without YAML configuration files.
 """
 
 import asyncio
 
-from convergence.sdk import run_optimization
-from convergence.types import (
+from armature.sdk import run_optimization
+from armature.types import (
     AgentConfig,
     ApiConfig,
-    ConvergenceConfig,
+    ArmatureConfig,
     EvaluationConfig,
     RunnerConfig,
     SearchSpaceConfig,
@@ -80,7 +80,7 @@ async def discord_optimization_example():
     ]
 
     # Define configuration as Python objects
-    config = ConvergenceConfig(
+    config = ArmatureConfig(
         api=ApiConfig(
             name="agno_discord_agent",
             kind="http",
@@ -262,7 +262,7 @@ async def discord_optimization_full():
     print(f"Loaded {len(test_cases)} test cases")
 
     # Define configuration
-    config = ConvergenceConfig(
+    config = ArmatureConfig(
         api=ApiConfig(
             name="agno_discord_agent",
             kind="http",

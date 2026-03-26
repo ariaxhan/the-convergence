@@ -15,7 +15,7 @@ Suggested prompts to explore after running:
 No API keys required. Pure local.
 """
 
-from convergence import RewardEvaluatorConfig, RewardMetricConfig, RuntimeRewardEvaluator
+from armature import RewardEvaluatorConfig, RewardMetricConfig, RuntimeRewardEvaluator
 
 # --- Configuration: Weighted Metrics ---
 config = RewardEvaluatorConfig(

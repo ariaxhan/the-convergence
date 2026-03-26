@@ -1,4 +1,4 @@
-# Convergence SDK: Building Self-Learning Systems
+# Armature SDK: Building Self-Learning Systems
 
 Programmatic interface for building systems that evolve through experience.
 
@@ -9,7 +9,7 @@ Programmatic interface for building systems that evolve through experience.
 pip install -e .
 
 # With self-improving agents (RLP + SAO)
-pip install "the-convergence[agents]"
+pip install "armature-ai[agents]"
 
 # Development mode
 pip install -e .
@@ -22,7 +22,7 @@ pip install -e .
 Run optimization episodes to find optimal configurations.
 
 ```python
-from convergence import run_optimization
+from armature import run_optimization
 
 config = {
     "api": {
@@ -75,7 +75,7 @@ result2 = await run_optimization(config_dict=config)
 Per-request Thompson Sampling that evolves during production use.
 
 ```python
-from convergence import configure_runtime, runtime_select, runtime_update
+from armature import configure_runtime, runtime_select, runtime_update
 
 # Configure at startup
 await configure_runtime(
@@ -202,7 +202,7 @@ See `examples/` directory:
 For production runtime selection, implement the storage protocol:
 
 ```python
-from convergence.storage.runtime_protocol import RuntimeStorageProtocol
+from armature.storage.runtime_protocol import RuntimeStorageProtocol
 
 class MyRuntimeStorage(RuntimeStorageProtocol):
     async def get_arms(self, *, user_id: str, agent_type: str):
@@ -230,7 +230,7 @@ class MyRuntimeStorage(RuntimeStorageProtocol):
         ...
 ```
 
-See `convergence/storage/runtime_protocol.py` for complete interface.
+See `armature/storage/runtime_protocol.py` for complete interface.
 
 ---
 
@@ -306,12 +306,12 @@ except Exception as e:
 
 ```bash
 # Test SDK import
-python -c "from convergence import run_optimization; print('Ready!')"
+python -c "from armature import run_optimization; print('Ready!')"
 
 # Run with mock mode
 python -c "
 import asyncio
-from convergence import run_optimization
+from armature import run_optimization
 
 config = {
     'api': {'name': 'test', 'endpoint': 'http://test', 'mock_mode': True},
@@ -340,7 +340,7 @@ print(f'Success: {result[\"success\"]}')
 
 - **Documentation**: `README.md`, `GETTING_STARTED.md`
 - **Examples**: `examples/` directory
-- **Issues**: https://github.com/ariaxhan/the-convergence/issues
+- **Issues**: https://github.com/ariaxhan/armature-ai/issues
 
 ---
 

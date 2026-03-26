@@ -10,16 +10,16 @@ What this demonstrates:
 Suggested prompts to explore after running:
 - Change the reward values and see how arms shift
 - Add a third arm with different reward characteristics
-- Increase iterations to 100 and observe stronger convergence
+- Increase iterations to 100 and observe stronger armature
 
 No API keys required. Pure local.
 """
 
 import asyncio
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 # --- Configuration ---
 SYSTEM = "persistent_demo"

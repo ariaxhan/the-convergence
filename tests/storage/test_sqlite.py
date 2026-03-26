@@ -7,8 +7,8 @@ import pytest
 import asyncio
 from pathlib import Path
 
-from convergence.storage.sqlite import SQLiteStorage
-from convergence.storage.base import StorageError, StorageConnectionError
+from armature.storage.sqlite import SQLiteStorage
+from armature.storage.base import StorageError, StorageConnectionError
 
 
 class TestSQLiteStorageBasics:

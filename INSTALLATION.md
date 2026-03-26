@@ -1,16 +1,16 @@
-# Convergence Installation Guide
+# Armature Installation Guide
 
 ## Package Names
 
-- **Package name** (for pip): `the-convergence`
-- **Import name** (in Python): `convergence`
+- **Package name** (for pip): `armature-ai`
+- **Import name** (in Python): `armature`
 
 ```bash
 # Install
 pip install -e .
 
 # Import
-from convergence import run_optimization
+from armature import run_optimization
 ```
 
 ## Installation Methods
@@ -20,7 +20,7 @@ from convergence import run_optimization
 For local development where you want changes to reflect immediately:
 
 ```bash
-cd /path/to/the-convergence
+cd /path/to/armature-ai
 pip install -e .
 ```
 
@@ -28,11 +28,11 @@ This creates a symbolic link, so code changes take effect immediately without re
 
 ### 2. Backend Integration
 
-For the backend to use Convergence:
+For the backend to use Armature:
 
 ```bash
 # Already in backend/requirements.txt as:
-the-convergence
+armature-ai
 
 # Install dependencies
 cd /path/to/backend
@@ -49,13 +49,13 @@ pip install -e .
 
 ```bash
 # Test 1: Import check
-python -c "from convergence import run_optimization; print('✅ SDK import works')"
+python -c "from armature import run_optimization; print('✅ SDK import works')"
 
 # Test 2: Check version
-python -c "from convergence import __version__; print(f'Convergence v{__version__}')"
+python -c "from armature import __version__; print(f'Armature v{__version__}')"
 
 # Test 3: CLI check
-convergence --help
+armature --help
 ```
 
 ## Installing from Source
@@ -64,8 +64,8 @@ If you need the latest development version:
 
 ```bash
 # Clone repository
-git clone https://github.com/ariaxhan/the-convergence.git
-cd the-convergence
+git clone https://github.com/ariaxhan/armature-ai.git
+cd armature-ai
 
 # Install in development mode
 pip install -e .
@@ -73,7 +73,7 @@ pip install -e .
 # Or build and install
 pip install build
 python -m build
-pip install dist/the_convergence-*.whl
+pip install dist/the_armature-*.whl
 ```
 
 ## Backend Integration Setup
@@ -82,27 +82,27 @@ pip install dist/the_convergence-*.whl
 
 ```bash
 cd backend
-pip install -e ../the-convergence
+pip install -e ../armature-ai
 ```
 
 ### Step 2: Verify Import
 
 ```python
 # Test in Python
-from convergence import run_optimization
-print("✅ Convergence SDK ready")
+from armature import run_optimization
+print("✅ Armature SDK ready")
 ```
 
 ### Step 3: Update Requirements (if needed)
 
 The backend's `requirements.txt` already includes:
 ```
-the-convergence
+armature-ai
 ```
 
 If you need a specific version:
 ```
-the-convergence>=0.1.2
+armature-ai>=0.1.2
 ```
 
 ## Common Issues
@@ -110,7 +110,7 @@ the-convergence>=0.1.2
 ### Issue: Import Error
 
 ```python
-ImportError: No module named 'convergence'
+ImportError: No module named 'armature'
 ```
 
 **Solution**: Package not installed. Run:
@@ -134,17 +134,17 @@ pip install -e .
 
 ```bash
 # Reinstall in editable mode
-pip uninstall the-convergence
-cd /path/to/the-convergence
+pip uninstall armature-ai
+cd /path/to/armature-ai
 pip install -e .
 ```
 
 ## Development Workflow
 
-### For Convergence Development
+### For Armature Development
 
 ```bash
-cd the-convergence
+cd armature-ai
 pip install -e .
 # Make changes to code
 # Test immediately (no reinstall needed)
@@ -154,24 +154,24 @@ python test_script.py
 ### For Backend Development
 
 ```bash
-# Install Convergence in editable mode
+# Install Armature in editable mode
 cd backend
-pip install -e ../the-convergence
+pip install -e ../armature-ai
 
-# Now backend can import latest Convergence code
-python -m app.background_jobs.executors.convergence_optimization
+# Now backend can import latest Armature code
+python -m app.background_jobs.executors.armature_optimization
 ```
 
 ## Dependencies
 
-Convergence requires:
+Armature requires:
 - Python >= 3.11
 - pydantic >= 2.0.0
 - httpx >= 0.25.0
 - pyyaml >= 6.0.0
 - Other dependencies (see pyproject.toml)
 
-These are automatically installed when you install `the-convergence`.
+These are automatically installed when you install `armature-ai`.
 
 ## Next Steps
 

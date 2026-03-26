@@ -116,4 +116,4 @@ if __name__ == "__main__":
         print(f"{ep:>7} | {h['means'][0]:>7.3f} | {h['means'][1]:>7.3f} | {arm:>8} | {note}")
 
     print("\nNote: Thompson Sampling adapts to drift naturally through Bayesian updating,")
-    print("though accumulated priors slow re-convergence. Consider prior decay for faster adaptation.")
+    print("though accumulated priors slow re-armature. Consider prior decay for faster adaptation.")

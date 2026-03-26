@@ -1,2 +1,2 @@
-"""Agno agent optimization examples for The Convergence."""
+"""Agno agent optimization examples for The Armature."""
 

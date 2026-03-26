@@ -17,7 +17,7 @@ Suggested prompts / test inputs:
 # --- Configuration ---
 import random
 
-from convergence.types.runtime import SelectionStrategyConfig
+from armature.types.runtime import SelectionStrategyConfig
 
 TRUE_PROBS = [0.6, 0.55, 0.3]
 EPISODES = 80

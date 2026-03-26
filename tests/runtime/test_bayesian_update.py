@@ -6,8 +6,8 @@ This is critical math - must be correct for Thompson Sampling to work.
 import pytest
 import math
 
-from convergence.types.runtime import RuntimeArm
-from convergence.runtime.bayesian_update import compute_bayesian_update
+from armature.types.runtime import RuntimeArm
+from armature.runtime.bayesian_update import compute_bayesian_update
 
 
 class TestBayesianUpdateBasics:

@@ -1,15 +1,15 @@
 """
-Self-Improving Classifier -- Convergence end-to-end example.
+Self-Improving Classifier -- Armature end-to-end example.
 
 What this demonstrates:
   - Thompson Sampling (Runtime MAB) with 4 classification strategy arms
   - Confidence extraction to measure classification certainty
-  - Accuracy tracking and ASCII convergence chart
+  - Accuracy tracking and ASCII armature chart
 
 Suggested prompts to explore after reading:
-  - Swap the accuracy profiles so "zero_shot" wins and watch convergence shift
+  - Swap the accuracy profiles so "zero_shot" wins and watch armature shift
   - Add noise to labels and see how the bandit adapts
-  - Increase dataset to 100 samples and observe tighter convergence
+  - Increase dataset to 100 samples and observe tighter armature
 """
 from __future__ import annotations
 
@@ -17,15 +17,15 @@ import asyncio
 import random
 from typing import Dict, List, Tuple
 
-from convergence import (
+from armature import (
     RuntimeArmTemplate,
     RuntimeConfig,
     configure_runtime,
     runtime_select,
     runtime_update,
 )
-from convergence.evaluators.confidence import extract_confidence
-from convergence.storage.memory import MemoryRuntimeStorage
+from armature.evaluators.confidence import extract_confidence
+from armature.storage.memory import MemoryRuntimeStorage
 
 SYSTEM, USER_ID, LABELS = "classifier", "eval_user", ["positive", "negative", "neutral"]
 DATASET: List[Tuple[str, str]] = [
@@ -117,7 +117,7 @@ async def main() -> None:
         a = c / t if t else 0
         print(f"    {s:12s} | {c:2d}/{t:2d} = {a:.0%}  {'#' * int(a * 30)}")
 
-    # -- ASCII convergence chart
+    # -- ASCII armature chart
     print(f"\n{'='*60}\n  Running Accuracy\n{'='*60}")
     step = max(1, len(running_acc) // 40)
     sampled = [running_acc[j] for j in range(0, len(running_acc), step)]
@@ -126,7 +126,7 @@ async def main() -> None:
         print(f"  {thr:4.1f} |" + "".join("#" if v >= thr else " " for v in sampled))
     print(f"       +{'-' * len(sampled)}\n        iteration -->")
 
-    # -- Arm convergence
+    # -- Arm armature
     arms = await storage.get_arms(user_id=USER_ID, agent_type="default")
     print("\n  Arm estimates:")
     for arm in arms:

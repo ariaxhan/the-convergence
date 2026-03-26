@@ -15,7 +15,7 @@ Suggested prompts to explore after running:
 No API keys required. Pure local.
 """
 
-from convergence.evaluators.confidence import extract_confidence
+from armature.evaluators.confidence import extract_confidence
 
 # --- Test Inputs ---
 SAMPLES = [

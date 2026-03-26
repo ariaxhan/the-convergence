@@ -16,7 +16,7 @@ Suggested prompts / test inputs:
 """
 
 # --- Configuration ---
-from convergence.sdk import TestCase, normalize_test_cases
+from armature.sdk import TestCase, normalize_test_cases
 
 # --- Setup ---
 # Test cases can be created as objects or from dicts

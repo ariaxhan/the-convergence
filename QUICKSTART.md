@@ -6,7 +6,7 @@
 pip install -e .
 
 # Verify
-python -c "from convergence import run_optimization; print('Ready!')"
+python -c "from armature import run_optimization; print('Ready!')"
 ```
 
 ## Three Patterns (Choose Your Level)
@@ -16,7 +16,7 @@ python -c "from convergence import run_optimization; print('Ready!')"
 Basic optimization - run once, get best config.
 
 ```python
-from convergence import run_optimization
+from armature import run_optimization
 
 config = {
     "api": {
@@ -45,7 +45,7 @@ print(f"Best: {result['best_config']}")
 Enable warm-start - each run learns from previous runs.
 
 ```python
-from convergence import run_optimization
+from armature import run_optimization
 
 config = {
     "api": {"name": "my_system", "endpoint": "...", "mock_mode": True},
@@ -73,7 +73,7 @@ print(f"Episode 2 best: {result2['best_config']}")
 Per-request Thompson Sampling - system evolves during production use.
 
 ```python
-from convergence import configure_runtime, runtime_select, runtime_update
+from armature import configure_runtime, runtime_select, runtime_update
 
 # Configure once at startup
 await configure_runtime(
@@ -120,8 +120,8 @@ config = {
 
 ## Important
 
-- **Package name**: `the-convergence` (with hyphens)
-- **Import name**: `convergence` (no hyphens)
+- **Package name**: `armature-ai` (with hyphens)
+- **Import name**: `armature` (no hyphens)
 - **Learning**: Enabled by default via `legacy` section
 - **Start small**: 2-3 generations for testing, 10-20 for real optimization
 
@@ -134,7 +134,7 @@ config = {
 
 ## Support
 
-Issues/Questions: https://github.com/ariaxhan/the-convergence/issues
+Issues/Questions: https://github.com/ariaxhan/armature-ai/issues
 
 ---
 

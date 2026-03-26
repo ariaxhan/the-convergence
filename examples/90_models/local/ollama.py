@@ -2,7 +2,7 @@
 Ollama Integration -- Local Models with Runtime Optimization
 
 What this demonstrates:
-- Using Convergence runtime with Ollama local models
+- Using Armature runtime with Ollama local models
 - No API key needed -- runtime still optimizes parameters
 - How to optimize local model parameters (temperature, model choice)
 
@@ -25,8 +25,8 @@ from typing import Any, Dict, List
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 # --- Setup ---
 SYSTEM = "ollama_demo"

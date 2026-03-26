@@ -1,6 +1,6 @@
 # Reddit Integration
 
-A self-evolving Reddit analysis agent powered by Convergence.
+A self-evolving Reddit analysis agent powered by Armature.
 
 ## What It Does
 

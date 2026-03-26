@@ -8,7 +8,7 @@ What this demonstrates:
 - Routing statistics per branch
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Adjust HIGH/LOW thresholds and see how routing shifts
@@ -20,8 +20,8 @@ No API keys required. Pure local.
 
 import random
 
-from convergence.evaluators.confidence import extract_confidence
-from convergence.types.response import LLMResponse, detect_gap
+from armature.evaluators.confidence import extract_confidence
+from armature.types.response import LLMResponse, detect_gap
 
 # --- Configuration ---
 HIGH_THRESHOLD = 0.7

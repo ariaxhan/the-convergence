@@ -1,6 +1,6 @@
 # Use Case Decision Matrix
 
-Find the right Convergence modules for your goal.
+Find the right Armature modules for your goal.
 
 ## "I want to..."
 
@@ -31,7 +31,7 @@ Find the right Convergence modules for your goal.
 | **Deploy with canary rollout** | Runtime + SelectionStrategy | [`09_production/gradual_rollout.py`](examples/09_production/gradual_rollout.py) | Medium |
 | **Use YAML config (CLI workflow)** | ConfigLoader | [`94_yaml_configs/`](examples/94_yaml_configs/) | Low |
 
-## When NOT to Use Convergence
+## When NOT to Use Armature
 
 | Scenario | Why | Use Instead |
 |----------|-----|-------------|

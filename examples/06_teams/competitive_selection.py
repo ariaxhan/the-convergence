@@ -7,7 +7,7 @@ What this demonstrates:
 - How natural selection pressure favors better-adapted strategies
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Change exploration rates to find the optimal range
@@ -18,7 +18,7 @@ Suggested prompts / test inputs:
 import asyncio
 import random
 
-from convergence.core.runtime import CivilizationRuntime
+from armature.core.runtime import CivilizationRuntime
 
 # --- Configuration ---
 EXPLORATION_RATES = [0.1, 0.3, 0.5, 0.7, 0.9]

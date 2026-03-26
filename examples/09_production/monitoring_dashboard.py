@@ -7,7 +7,7 @@ What this demonstrates:
 - Cumulative regret calculation against the optimal arm
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Change TRUE_RATES to make arms closer and watch regret grow
@@ -19,9 +19,9 @@ import asyncio
 import math
 import random
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 SYSTEM = "monitored_service"
 USER = "user_1"
@@ -60,9 +60,9 @@ async def main() -> None:
         cumulative_regret += OPTIMAL - TRUE_RATES[sel.arm_id]
 
         # In production, export to Prometheus:
-        # convergence_arm_pulls.labels(arm=sel.arm_id).inc()
-        # convergence_reward.labels(arm=sel.arm_id).observe(reward)
-        # convergence_regret.set(cumulative_regret)
+        # armature_arm_pulls.labels(arm=sel.arm_id).inc()
+        # armature_reward.labels(arm=sel.arm_id).observe(reward)
+        # armature_regret.set(cumulative_regret)
 
         if i % 25 == 0:
             explores = sum(1 for a in TRUE_RATES if pulls[a] < 5)

@@ -16,7 +16,7 @@ Suggested prompts / test inputs:
 """
 
 # --- Configuration ---
-from convergence.runtime.reward_evaluator import (
+from armature.runtime.reward_evaluator import (
     RewardEvaluatorConfig,
     RewardMetricConfig,
     RuntimeRewardEvaluator,

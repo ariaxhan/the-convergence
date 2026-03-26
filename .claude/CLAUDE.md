@@ -1,4 +1,4 @@
-# The Convergence
+# Armature
 
 **TIER:** 2 (Production-grade)
 **STACK:** Python 3.11+, asyncio, Pydantic, LiteLLM
@@ -8,7 +8,7 @@
 
 ## Project Identity
 
-The Convergence is a **self-evolving agent framework** built on reinforcement learning principles. The core insight: systems that improve themselves through experience outperform static configurations.
+Armature is a **self-evolving agent framework** built on reinforcement learning principles. The core insight: systems that improve themselves through experience outperform static configurations.
 
 ### Core Narrative (Use This Language)
 

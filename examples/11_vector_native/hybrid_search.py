@@ -9,7 +9,7 @@ What this demonstrates:
 - Cases where hybrid outperforms pure semantic or pure keyword search
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Adjust SEMANTIC_WEIGHT to see blend tradeoff"

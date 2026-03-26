@@ -1,5 +1,5 @@
 """
-Customer Support Bot -- Convergence end-to-end example.
+Customer Support Bot -- Armature end-to-end example.
 
 What this demonstrates:
   - Thompson Sampling (Runtime MAB) to select the best response strategy
@@ -18,16 +18,16 @@ import hashlib
 import random
 from typing import Dict, List
 
-from convergence import (
+from armature import (
     RuntimeArmTemplate,
     RuntimeConfig,
     configure_runtime,
     runtime_select,
     runtime_update,
 )
-from convergence.cache.semantic import SemanticCache
-from convergence.evaluators.confidence import extract_confidence
-from convergence.storage.memory import MemoryRuntimeStorage
+from armature.cache.semantic import SemanticCache
+from armature.evaluators.confidence import extract_confidence
+from armature.storage.memory import MemoryRuntimeStorage
 
 SYSTEM, USER_ID = "support_bot", "demo_user"
 QUERIES = [
@@ -37,7 +37,7 @@ QUERIES = [
     "How do I cancel my subscription?", "The app crashes on startup",
     "Do you ship internationally?", "How do I enable two-factor auth?",
 ]
-# (mean, std) -- "casual" is intentionally best to show convergence
+# (mean, std) -- "casual" is intentionally best to show armature
 STRATEGY_REWARDS: Dict[str, tuple] = {
     "formal": (0.50, 0.15), "casual": (0.75, 0.10), "technical": (0.60, 0.12),
 }

@@ -23,7 +23,7 @@ Suggested prompts / test inputs:
 
 # --- Configuration ---
 import os
-from convergence import ...
+from armature import ...
 
 # --- Setup ---
 # (Initialize objects, configure runtime)

@@ -1,10 +1,10 @@
-# The Convergence Cookbook
+# Armature Cookbook
 
 Runnable examples for self-evolving AI agents. Copy. Paste. Run.
 
 ## Where to Start
 
-- **New to Convergence?** Start with [`00_quickstart/`](00_quickstart/) — 10 progressive examples, each adding one concept
+- **New to Armature?** Start with [`00_quickstart/`](00_quickstart/) — 10 progressive examples, each adding one concept
 - **Want real applications?** Jump to [`01_apps/`](01_apps/) — 3 production-realistic sample apps
 - **Looking for a specific module?** Browse by topic below
 
@@ -19,7 +19,7 @@ Runnable examples for self-evolving AI agents. Copy. Paste. Run.
 ### Deep Dives
 | Directory | What You'll Learn |
 |-----------|------------------|
-| [`02_optimization/`](02_optimization/) | Thompson Sampling, MAB strategies, convergence visualization, parameter evolution |
+| [`02_optimization/`](02_optimization/) | Thompson Sampling, MAB strategies, armature visualization, parameter evolution |
 | [`03_knowledge/`](03_knowledge/) | Context graphs, WHO/WHAT/HOW triad, graph traversal, progressive disclosure |
 | [`04_safety/`](04_safety/) | Input validation, output guardrails, budget limits, PII detection |
 | [`05_observability/`](05_observability/) | Learning metrics, confidence calibration, drift detection, cost tracking |

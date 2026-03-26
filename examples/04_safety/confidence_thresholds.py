@@ -16,8 +16,8 @@ Suggested prompts / test inputs:
 """
 
 # --- Configuration ---
-from convergence.evaluators.confidence import extract_confidence
-from convergence.types.response import LLMResponse, detect_gap
+from armature.evaluators.confidence import extract_confidence
+from armature.types.response import LLMResponse, detect_gap
 
 HIGH_THRESHOLD = 0.8
 LOW_THRESHOLD = 0.5

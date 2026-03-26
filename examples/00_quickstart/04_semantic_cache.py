@@ -20,7 +20,7 @@ import hashlib
 import math
 from typing import List
 
-from convergence.cache.semantic import SemanticCache
+from armature.cache.semantic import SemanticCache
 
 # ---------------------------------------------------------------------------
 # Simple deterministic embedding function (hash-based)

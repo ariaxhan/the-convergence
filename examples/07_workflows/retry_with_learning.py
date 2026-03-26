@@ -8,7 +8,7 @@ What this demonstrates:
 - Retry rate decreases as the system learns
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Set all true_conf values equal and see if retries persist
@@ -21,9 +21,9 @@ No API keys required. Pure local.
 import asyncio
 import random
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 # --- Configuration ---
 SYSTEM = "retry_demo"

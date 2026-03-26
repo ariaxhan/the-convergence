@@ -1,1 +1,1 @@
-"""Tests for convergence knowledge graph."""
+"""Tests for armature knowledge graph."""

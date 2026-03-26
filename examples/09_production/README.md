@@ -1,6 +1,6 @@
 # 09 - Production Deployment
 
-Production patterns for running Convergence in real systems.
+Production patterns for running Armature in real systems.
 
 ## Examples
 
@@ -17,7 +17,7 @@ All examples use `MemoryRuntimeStorage` so they run without external dependencie
 Comments show the production equivalents (PostgreSQL, Prometheus, etc.).
 
 ```bash
-pip install the-convergence
+pip install armature-ai
 python postgresql_setup.py
 python monitoring_dashboard.py
 python ab_testing.py

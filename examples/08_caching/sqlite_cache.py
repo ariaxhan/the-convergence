@@ -6,7 +6,7 @@ What this demonstrates:
 - Concept 2: Cache data survives process termination and reload
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Change threshold to 0.95 and see fewer cache hits"
@@ -18,7 +18,7 @@ import asyncio
 import hashlib
 import os
 
-from convergence.cache.semantic import SemanticCache
+from armature.cache.semantic import SemanticCache
 
 DB_PATH = "./cache_demo.db"
 

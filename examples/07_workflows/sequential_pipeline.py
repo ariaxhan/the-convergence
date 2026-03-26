@@ -8,12 +8,12 @@ What this demonstrates:
 - Overall pipeline success rate improves over time
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Change TRUE_RATES to make different arms better
-- Add a 4th pipeline step and watch convergence
-- Set all rates equal and see how long convergence takes
+- Add a 4th pipeline step and watch armature
+- Set all rates equal and see how long armature takes
 
 No API keys required. Pure local.
 """
@@ -21,9 +21,9 @@ No API keys required. Pure local.
 import asyncio
 import random
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 # --- Configuration ---
 ROUNDS = 30

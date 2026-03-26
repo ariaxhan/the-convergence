@@ -8,7 +8,7 @@
 #
 # 1. Get API key: https://platform.openai.com/api-keys
 # 2. Set environment variable: export OPENAI_API_KEY="sk-..."
-# 3. Run: convergence optimize examples/ai/openai/openai_optimization.yaml
+# 3. Run: armature optimize examples/ai/openai/openai_optimization.yaml
 
 api:
   name: "openai"

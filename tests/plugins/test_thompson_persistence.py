@@ -7,12 +7,12 @@ Uses real databases (SQLite, Memory, PostgreSQL) — no mocks.
 
 import pytest
 
-from convergence.plugins.mab.thompson_sampling import (
+from armature.plugins.mab.thompson_sampling import (
     ThompsonSamplingStrategy,
     ThompsonSamplingConfig,
 )
-from convergence.storage.sqlite import SQLiteStorage
-from convergence.storage.memory import MemoryStorage
+from armature.storage.sqlite import SQLiteStorage
+from armature.storage.memory import MemoryStorage
 
 
 # =============================================================================
@@ -115,7 +115,7 @@ class TestThompsonPersistenceSQLite:
     @pytest.mark.asyncio
     async def test_save_and_load_state_sqlite(self, sqlite_storage):
         """State should roundtrip through SQLite storage."""
-        from convergence.plugins.mab.persistence import ThompsonPersistence
+        from armature.plugins.mab.persistence import ThompsonPersistence
 
         persistence = ThompsonPersistence(storage=sqlite_storage)
 
@@ -143,7 +143,7 @@ class TestThompsonPersistenceSQLite:
 
         # First session: create and save
         async with SQLiteStorage(db_path=str(db_path)) as storage1:
-            from convergence.plugins.mab.persistence import ThompsonPersistence
+            from armature.plugins.mab.persistence import ThompsonPersistence
 
             persistence = ThompsonPersistence(storage=storage1)
             strategy = ThompsonSamplingStrategy()
@@ -164,7 +164,7 @@ class TestThompsonPersistenceSQLite:
     @pytest.mark.asyncio
     async def test_multiple_strategies_sqlite(self, sqlite_storage):
         """Multiple strategies should be stored independently."""
-        from convergence.plugins.mab.persistence import ThompsonPersistence
+        from armature.plugins.mab.persistence import ThompsonPersistence
 
         persistence = ThompsonPersistence(storage=sqlite_storage)
 
@@ -212,7 +212,7 @@ class TestThompsonPersistenceMemory:
     @pytest.mark.asyncio
     async def test_save_and_load_state_memory(self, memory_storage):
         """State should roundtrip through Memory storage."""
-        from convergence.plugins.mab.persistence import ThompsonPersistence
+        from armature.plugins.mab.persistence import ThompsonPersistence
 
         persistence = ThompsonPersistence(storage=memory_storage)
 
@@ -243,14 +243,14 @@ class TestThompsonPersistencePostgres:
         Skips if asyncpg not available or no database connection.
         """
         try:
-            from convergence.storage.postgres import PostgreSQLStorage
+            from armature.storage.postgres import PostgreSQLStorage
         except ImportError:
             pytest.skip("asyncpg not installed")
 
         import os
         dsn = os.environ.get(
             "TEST_POSTGRES_DSN",
-            "postgresql://postgres:postgres@localhost:5432/convergence_test"
+            "postgresql://postgres:postgres@localhost:5432/armature_test"
         )
 
         try:
@@ -265,7 +265,7 @@ class TestThompsonPersistencePostgres:
     @pytest.mark.asyncio
     async def test_save_and_load_state_postgres(self, postgres_storage):
         """State should roundtrip through PostgreSQL storage."""
-        from convergence.plugins.mab.persistence import ThompsonPersistence
+        from armature.plugins.mab.persistence import ThompsonPersistence
 
         persistence = ThompsonPersistence(storage=postgres_storage)
 
@@ -284,7 +284,7 @@ class TestThompsonPersistencePostgres:
     @pytest.mark.asyncio
     async def test_state_survives_reconnect_postgres(self, postgres_storage):
         """State should survive PostgreSQL reconnection."""
-        from convergence.plugins.mab.persistence import ThompsonPersistence
+        from armature.plugins.mab.persistence import ThompsonPersistence
 
         persistence = ThompsonPersistence(storage=postgres_storage)
 
@@ -313,7 +313,7 @@ class TestThompsonPersistenceErrors:
     @pytest.mark.asyncio
     async def test_load_nonexistent_key_raises(self):
         """Loading nonexistent key should raise KeyError."""
-        from convergence.plugins.mab.persistence import ThompsonPersistence
+        from armature.plugins.mab.persistence import ThompsonPersistence
 
         storage = MemoryStorage()
         persistence = ThompsonPersistence(storage=storage)
@@ -328,7 +328,7 @@ class TestThompsonPersistenceErrors:
     @pytest.mark.asyncio
     async def test_exists_check(self):
         """Should be able to check if state exists."""
-        from convergence.plugins.mab.persistence import ThompsonPersistence
+        from armature.plugins.mab.persistence import ThompsonPersistence
 
         storage = MemoryStorage()
         persistence = ThompsonPersistence(storage=storage)

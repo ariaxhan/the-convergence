@@ -1,6 +1,6 @@
 # Testing Patterns
 
-Testing patterns for Convergence optimization workflows.
+Testing patterns for Armature optimization workflows.
 
 ## Test Case Format
 
@@ -30,7 +30,7 @@ The SDK provides `TestCase` and `normalize_test_cases` for working
 with test cases programmatically:
 
 ```python
-from convergence.sdk import TestCase, normalize_test_cases
+from armature.sdk import TestCase, normalize_test_cases
 
 tc = TestCase(
     input={"prompt": "What is 2+2?"},

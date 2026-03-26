@@ -1,6 +1,6 @@
 # Custom evaluator config — references a Python function for scoring.
 # The evaluator module is in evaluator.py alongside this config.
-# Run: convergence optimize custom_evaluator.yaml
+# Run: armature optimize custom_evaluator.yaml
 
 api:
   name: "content_api"

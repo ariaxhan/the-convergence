@@ -10,10 +10,10 @@ What this demonstrates:
 - Per-step latency percentiles (p50, p95), success rate, avg reward
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
-- "Run 50 items to see arm convergence"
+- "Run 50 items to see arm armature"
 - "Lower timeout to trigger more failures"
 - "Adjust error budget threshold to 5%"
 """
@@ -29,9 +29,9 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any, Callable, Coroutine, Dict, List, Optional
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig, SelectionStrategyConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig, SelectionStrategyConfig
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +147,7 @@ class Pipeline:
         Args:
             name: Step name (must be unique within pipeline).
             fn: Async callable taking and returning a dict.
-            runtime_system: Convergence system name for MAB selection.
+            runtime_system: Armature system name for MAB selection.
             timeout_seconds: Max execution time before timeout.
             max_retries: Number of retry attempts on failure.
 

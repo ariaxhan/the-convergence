@@ -1,6 +1,6 @@
 # YAML Configuration Reference
 
-Complete reference for all configuration options available in Convergence optimization.yaml files.
+Complete reference for all configuration options available in Armature optimization.yaml files.
 
 **Last Updated:** 2025-01-26
 
@@ -148,7 +148,7 @@ request:
   method: "POST"
   headers:
     Content-Type: "application/json"
-    User-Agent: "Convergence-Optimizer/1.0"
+    User-Agent: "Armature-Optimizer/1.0"
   timeout_seconds: 60
 ```
 

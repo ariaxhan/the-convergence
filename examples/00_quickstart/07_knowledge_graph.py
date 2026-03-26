@@ -15,8 +15,8 @@ Suggested prompts to explore after running:
 No API keys required. Pure local.
 """
 
-from convergence.knowledge.graph import ContextGraph
-from convergence.knowledge.schema import (
+from armature.knowledge.graph import ContextGraph
+from armature.knowledge.schema import (
     EntityType,
     GraphEdge,
     GraphNode,

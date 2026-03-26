@@ -1,6 +1,6 @@
 # Optimization Examples
 
-Deep dives into Thompson Sampling, reward evaluation, and convergence behavior.
+Deep dives into Thompson Sampling, reward evaluation, and armature behavior.
 
 ## Examples
 
@@ -9,7 +9,7 @@ Deep dives into Thompson Sampling, reward evaluation, and convergence behavior.
 | `thompson_basic.py` | Two-arm Thompson Sampling with Beta distribution evolution |
 | `thompson_strategies.py` | Comparing selection strategies: default, exploration-bonus, stability |
 | `reward_evaluation.py` | Multi-metric reward evaluation with weighted aggregation |
-| `convergence_visualization.py` | ASCII visualization of 4-arm convergence and cumulative regret |
+| `armature_visualization.py` | ASCII visualization of 4-arm armature and cumulative regret |
 
 ## Key Concepts
 
@@ -25,5 +25,5 @@ pip install -e .
 python thompson_basic.py
 python thompson_strategies.py
 python reward_evaluation.py
-python convergence_visualization.py
+python armature_visualization.py
 ```

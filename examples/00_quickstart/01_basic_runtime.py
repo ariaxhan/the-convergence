@@ -16,9 +16,9 @@ No API keys required. Pure local.
 
 import asyncio
 
-from convergence import configure_runtime, runtime_select
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature import configure_runtime, runtime_select
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 # --- Configuration ---
 SYSTEM = "quickstart_demo"

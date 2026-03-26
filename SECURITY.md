@@ -8,7 +8,7 @@
 
 ## Reporting a Vulnerability
 
-We take the security of The Convergence seriously. If you discover a security vulnerability, please follow these steps:
+We take the security of Armature seriously. If you discover a security vulnerability, please follow these steps:
 
 ### How to Report
 
@@ -54,7 +54,7 @@ Please include the following information:
 ```bash
 # ✅ Good - Use environment variables
 export OPENAI_API_KEY="sk-..."
-convergence optimize config.yaml
+armature optimize config.yaml
 
 # ❌ Bad - Hardcoded in YAML
 # api:
@@ -100,7 +100,7 @@ jq 'del(.all_results[].test_results[].response_text)' results/detailed_results.j
 pip list --outdated
 
 # Update safely
-pip install --upgrade the-convergence
+pip install --upgrade armature-ai
 
 # Audit dependencies
 pip-audit  # Install with: pip install pip-audit
@@ -132,7 +132,7 @@ FROM python:3.11-slim  # Use official images
 ```yaml
 # docker-compose.yml
 services:
-  convergence:
+  armature:
     # Don't expose database ports externally
     # Only expose what's needed
 ```
@@ -141,7 +141,7 @@ services:
 
 ### 1. LLM Provider Access
 
-The Convergence makes API calls to external LLM providers (OpenAI, Anthropic, etc.). Be aware:
+Armature makes API calls to external LLM providers (OpenAI, Anthropic, etc.). Be aware:
 
 - API keys grant access to paid services
 - Providers may log requests (check their policies)

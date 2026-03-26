@@ -72,7 +72,7 @@ evaluation:
     path: "test_cases.json"
 
 # Run optimization
-convergence optimize optimization.yaml
+armature optimize optimization.yaml
 ```
 
 ---
@@ -497,7 +497,7 @@ See working examples in `examples/`:
 
 ## 🎓 Evolution Engine Deep Dive
 
-The test case evolution engine (`convergence/optimization/test_case_evolution.py`) uses:
+The test case evolution engine (`armature/optimization/test_case_evolution.py`) uses:
 
 ### Mutation Strategies
 
@@ -541,7 +541,7 @@ The test case evolution engine (`convergence/optimization/test_case_evolution.py
 ### Implementation
 
 ```python
-from convergence.optimization.test_case_evolution import TestCaseEvolutionEngine
+from armature.optimization.test_case_evolution import TestCaseEvolutionEngine
 
 # Create engine
 engine = TestCaseEvolutionEngine(
@@ -556,7 +556,7 @@ original_tests = [...]
 augmented_tests = engine.augment_test_cases(original_tests)
 
 # Analyze diversity
-from convergence.optimization.test_case_evolution import TestCaseAnalyzer
+from armature.optimization.test_case_evolution import TestCaseAnalyzer
 diversity = TestCaseAnalyzer.analyze_diversity(augmented_tests)
 print(f"Diversity score: {diversity['diversity']:.2f}")
 ```
@@ -637,8 +637,8 @@ More tests = more API calls:
 
 - **Main README**: `../README.md` - Project overview
 - **Best Practices**: `../BEST_PRACTICES.md` - Optimization tips
-- **Custom Evaluators**: `../../convergence/evaluators/README.md`
-- **Evolution Engine**: `../../convergence/optimization/test_case_evolution.py` - Source code
+- **Custom Evaluators**: `../../armature/evaluators/README.md`
+- **Evolution Engine**: `../../armature/optimization/test_case_evolution.py` - Source code
 
 ---
 

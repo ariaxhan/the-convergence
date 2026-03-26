@@ -1,8 +1,8 @@
-# Getting Started with The Convergence
+# Getting Started with Armature
 
 **Build self-learning systems that improve with every optimization run.**
 
-The Convergence uses reinforcement learning to find optimal configurations. Each run learns from previous runs, and your system gets smarter over time.
+Armature uses reinforcement learning to find optimal configurations. Each run learns from previous runs, and your system gets smarter over time.
 
 ---
 
@@ -15,15 +15,15 @@ pip install -e .
 **Or install from source:**
 
 ```bash
-git clone https://github.com/ariaxhan/the-convergence.git
-cd the-convergence
+git clone https://github.com/ariaxhan/armature-ai.git
+cd armature-ai
 pip install -e .
 ```
 
 **With self-improving agents (RLP + SAO):**
 
 ```bash
-pip install "the-convergence[agents]"
+pip install "armature-ai[agents]"
 ```
 
 ---
@@ -34,10 +34,10 @@ pip install "the-convergence[agents]"
 
 ```bash
 # Interactive wizard guides you through setup
-convergence init
+armature init
 
 # Run optimization - system learns from this run
-convergence optimize optimization.yaml
+armature optimize optimization.yaml
 ```
 
 ### Option 2: Use a Preset
@@ -50,7 +50,7 @@ cp examples/ai/openai/openai_responses_optimization.yaml my_config.yaml
 export OPENAI_API_KEY="sk-..."
 
 # Run optimization
-convergence optimize my_config.yaml
+armature optimize my_config.yaml
 ```
 
 ---
@@ -69,7 +69,7 @@ export OPENAI_API_KEY="sk-..."
 ### Step 2: Run Interactive Setup
 
 ```bash
-convergence init
+armature init
 ```
 
 **This wizard will:**
@@ -88,7 +88,7 @@ convergence init
 ### Step 3: Run Optimization
 
 ```bash
-convergence optimize optimization.yaml
+armature optimize optimization.yaml
 ```
 
 **Watch the system learn:**
@@ -139,7 +139,7 @@ Learning System: Results saved for next run
 ### Step 5: Run Again (Watch It Learn)
 
 ```bash
-convergence optimize optimization.yaml
+armature optimize optimization.yaml
 ```
 
 The second run starts from your previous winners and explores from there - that's the learning loop in action.
@@ -148,7 +148,7 @@ The second run starts from your previous winners and explores from there - that'
 
 ## How Learning Works
 
-The Convergence improves across runs through three mechanisms:
+Armature improves across runs through three mechanisms:
 
 ### 1. Thompson Sampling (Per-Decision Learning)
 
@@ -331,11 +331,11 @@ git commit -m "Optimization config v1"
 
 ## Troubleshooting
 
-### "Command not found: convergence"
+### "Command not found: armature"
 
 ```bash
-pip install --upgrade the-convergence
-which convergence
+pip install --upgrade armature-ai
+which armature
 ```
 
 ### "API key not found"
@@ -345,10 +345,10 @@ echo $OPENAI_API_KEY
 export OPENAI_API_KEY="sk-..."
 ```
 
-### "No module named 'convergence'"
+### "No module named 'armature'"
 
 ```bash
-pip install --upgrade the-convergence
+pip install --upgrade armature-ai
 ```
 
 ### Optimization takes too long
@@ -386,7 +386,7 @@ optimization:
 ## Need Help?
 
 - **Documentation**: `README.md`, `SDK_USAGE.md`, `TROUBLESHOOTING.md`
-- **Issues**: [GitHub Issues](https://github.com/ariaxhan/the-convergence/issues)
+- **Issues**: [GitHub Issues](https://github.com/ariaxhan/armature-ai/issues)
 - **Security**: See `SECURITY.md`
 
 ---

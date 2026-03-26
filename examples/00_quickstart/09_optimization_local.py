@@ -18,10 +18,10 @@ No API keys required. Uses a local function instead of an API endpoint.
 import asyncio
 from typing import Any, Dict
 
-from convergence import run_optimization
-from convergence.types import (
+from armature import run_optimization
+from armature.types import (
     ApiConfig,
-    ConvergenceConfig,
+    ArmatureConfig,
     EvaluationConfig,
     RunnerConfig,
     SearchSpaceConfig,
@@ -60,7 +60,7 @@ def my_evaluator(response: Dict[str, Any], expected: Dict[str, Any]) -> Dict[str
 
 
 # --- Configuration ---
-config = ConvergenceConfig(
+config = ArmatureConfig(
     api=ApiConfig(name="local_function", endpoint="http://localhost:0/unused"),
     search_space=SearchSpaceConfig(
         parameters={

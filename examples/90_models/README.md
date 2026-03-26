@@ -1,6 +1,6 @@
 # Provider Integration Guide
 
-Convergence works with any LLM provider. The framework is provider-agnostic
+Armature works with any LLM provider. The framework is provider-agnostic
 by design -- it optimizes *how* you call models, not *which* models you call.
 
 ## Built-in: Claude
@@ -9,7 +9,7 @@ The `ClaudeClient` handles Claude natively with confidence extraction
 and gap detection out of the box.
 
 ```python
-from convergence.clients import ClaudeClient
+from armature.clients import ClaudeClient
 
 client = ClaudeClient(system="my_app", model="claude-sonnet-4-5")
 response = await client.chat(message="Hello", user_id="user_1")
@@ -21,7 +21,7 @@ See `claude/` for full examples.
 ## Any Other Provider: Runtime Pattern
 
 For OpenAI, Groq, Azure, Ollama, or any other provider, use the
-Convergence runtime directly. The pattern is always the same:
+Armature runtime directly. The pattern is always the same:
 
 1. **Select** -- runtime picks optimal parameters via Thompson Sampling
 2. **Call** -- you call the provider API with those parameters
@@ -29,7 +29,7 @@ Convergence runtime directly. The pattern is always the same:
 4. **Update** -- feed the reward back so the runtime learns
 
 ```python
-from convergence import configure_runtime, runtime_select, runtime_update
+from armature import configure_runtime, runtime_select, runtime_update
 
 selection = await runtime_select("my_system", user_id="user_1")
 response = call_any_provider(**selection.params)

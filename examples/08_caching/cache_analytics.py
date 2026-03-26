@@ -6,7 +6,7 @@ What this demonstrates:
 - Concept 2: Estimating cost savings from semantic caching
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Increase the repeat ratio to see higher hit rates"
@@ -18,7 +18,7 @@ import asyncio
 import hashlib
 import random
 
-from convergence.cache.semantic import SemanticCache
+from armature.cache.semantic import SemanticCache
 
 COST_PER_TOKEN = 0.00003
 UNIQUE_QUERIES = [

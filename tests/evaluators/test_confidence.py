@@ -11,7 +11,7 @@ class TestExplicitConfidenceExtraction:
 
     def test_extract_percentage_format(self):
         """Extract 'confidence: X%' format."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "The answer is X. Confidence: 85%"
         result = extract_confidence(text, method="explicit")
@@ -20,7 +20,7 @@ class TestExplicitConfidenceExtraction:
 
     def test_extract_decimal_format(self):
         """Extract 'confidence: 0.X' format."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "Based on the data, Y is correct. Confidence: 0.92"
         result = extract_confidence(text, method="explicit")
@@ -29,7 +29,7 @@ class TestExplicitConfidenceExtraction:
 
     def test_extract_with_colon_space(self):
         """Handle variations in spacing."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         # With space
         assert extract_confidence("Confidence: 80%", method="explicit") == pytest.approx(0.80, abs=0.01)
@@ -42,7 +42,7 @@ class TestExplicitConfidenceExtraction:
 
     def test_extract_case_insensitive(self):
         """Extraction should be case insensitive."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         assert extract_confidence("CONFIDENCE: 75%", method="explicit") == pytest.approx(0.75, abs=0.01)
         assert extract_confidence("confidence: 75%", method="explicit") == pytest.approx(0.75, abs=0.01)
@@ -50,7 +50,7 @@ class TestExplicitConfidenceExtraction:
 
     def test_no_explicit_marker_returns_none(self):
         """Return None when no explicit marker found."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "The answer is definitely X."
         result = extract_confidence(text, method="explicit")
@@ -59,7 +59,7 @@ class TestExplicitConfidenceExtraction:
 
     def test_extract_from_middle_of_text(self):
         """Extract confidence marker from anywhere in text."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = """
         Based on my analysis, the root cause is a memory leak.
@@ -72,7 +72,7 @@ class TestExplicitConfidenceExtraction:
 
     def test_first_marker_wins(self):
         """If multiple markers, use the first one."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "First answer (Confidence: 60%). Second answer (Confidence: 90%)."
         result = extract_confidence(text, method="explicit")
@@ -85,7 +85,7 @@ class TestHedgingDetection:
 
     def test_single_hedging_word(self):
         """Single hedging word should lower confidence."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "I think the answer is X."
         result = extract_confidence(text, method="hedging")
@@ -96,7 +96,7 @@ class TestHedgingDetection:
 
     def test_multiple_hedging_words(self):
         """Multiple hedging words should lower confidence more."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         single = "I think the answer is X."
         multiple = "I think maybe the answer might possibly be X."
@@ -108,7 +108,7 @@ class TestHedgingDetection:
 
     def test_no_hedging_high_confidence(self):
         """No hedging words should result in high confidence."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "The answer is X. This is correct."
         result = extract_confidence(text, method="hedging")
@@ -117,7 +117,7 @@ class TestHedgingDetection:
 
     def test_hedging_words_recognized(self):
         """Common hedging words should be detected."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         hedging_phrases = [
             "I think",
@@ -143,7 +143,7 @@ class TestHedgingDetection:
 
     def test_negated_hedging_not_counted(self):
         """'I am sure' should not be counted as hedging."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         # "not sure" is hedging
         uncertain = "I'm not sure about this."
@@ -161,7 +161,7 @@ class TestCertaintyDetection:
 
     def test_certainty_words_boost_confidence(self):
         """Certainty markers should increase confidence."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "This is definitely the correct answer."
         result = extract_confidence(text, method="certainty")
@@ -170,7 +170,7 @@ class TestCertaintyDetection:
 
     def test_no_certainty_markers_neutral(self):
         """No certainty markers should return neutral confidence."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "The answer is X."
         result = extract_confidence(text, method="certainty")
@@ -180,7 +180,7 @@ class TestCertaintyDetection:
 
     def test_certainty_words_recognized(self):
         """Common certainty words should be detected."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         certainty_phrases = [
             "definitely",
@@ -202,7 +202,7 @@ class TestCertaintyDetection:
 
     def test_multiple_certainty_markers(self):
         """Multiple certainty markers should boost more."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         single = "This is definitely correct."
         multiple = "This is definitely, absolutely, certainly correct."
@@ -218,7 +218,7 @@ class TestAutoMethod:
 
     def test_auto_uses_explicit_when_present(self):
         """Auto should use explicit confidence when available."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "I think this is right. Confidence: 90%"
         result = extract_confidence(text, method="auto")
@@ -228,7 +228,7 @@ class TestAutoMethod:
 
     def test_auto_falls_back_to_linguistic(self):
         """Auto should use linguistic analysis when no explicit marker."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "I think maybe this could be the answer."
         result = extract_confidence(text, method="auto")
@@ -238,7 +238,7 @@ class TestAutoMethod:
 
     def test_auto_takes_conservative_estimate(self):
         """Auto should be conservative when methods disagree."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         # Hedging AND certainty in same text
         text = "I think this is definitely the answer."
@@ -249,7 +249,7 @@ class TestAutoMethod:
 
     def test_default_method_is_auto(self):
         """Default method should be 'auto'."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "Confidence: 85%"
 
@@ -264,7 +264,7 @@ class TestEdgeCases:
 
     def test_empty_string(self):
         """Empty string should return neutral/low confidence."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         result = extract_confidence("", method="auto")
 
@@ -274,7 +274,7 @@ class TestEdgeCases:
 
     def test_whitespace_only(self):
         """Whitespace-only string should return low confidence."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         result = extract_confidence("   \n\t  ", method="auto")
 
@@ -283,7 +283,7 @@ class TestEdgeCases:
 
     def test_very_long_text(self):
         """Long text should not cause issues."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "The answer is X. " * 1000 + "Confidence: 75%"
         result = extract_confidence(text, method="explicit")
@@ -292,7 +292,7 @@ class TestEdgeCases:
 
     def test_special_characters(self):
         """Special characters should not break extraction."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "Answer: <code>X</code> 🎉 Confidence: 80%"
         result = extract_confidence(text, method="explicit")
@@ -301,7 +301,7 @@ class TestEdgeCases:
 
     def test_invalid_percentage(self):
         """Invalid percentage values should be handled gracefully."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         # Over 100%
         text = "Confidence: 150%"
@@ -316,7 +316,7 @@ class TestEdgeCases:
 
     def test_returns_float(self):
         """Result should always be a float or None."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         result = extract_confidence("Confidence: 85%", method="explicit")
         assert isinstance(result, float)
@@ -330,14 +330,14 @@ class TestMethodParameter:
 
     def test_invalid_method_raises(self):
         """Invalid method should raise ValueError."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         with pytest.raises(ValueError):
             extract_confidence("test", method="invalid_method")
 
     def test_all_methods_available(self):
         """All documented methods should work."""
-        from convergence.evaluators.confidence import extract_confidence
+        from armature.evaluators.confidence import extract_confidence
 
         text = "I think the answer is X. Confidence: 70%"
 

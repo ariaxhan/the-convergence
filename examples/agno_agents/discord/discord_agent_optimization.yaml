@@ -16,7 +16,7 @@
 #   7. Configure models in agent.models registry below
 #   8. Select active model(s) in search_space.parameters.model.values
 #   9. Update channel_id and guild_id in test cases to match your server
-#   10. convergence optimize discord_agent_optimization.yaml
+#   10. armature optimize discord_agent_optimization.yaml
 
 api:
   name: "agno_discord_agent"

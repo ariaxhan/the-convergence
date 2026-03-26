@@ -1,6 +1,6 @@
 # Discord Integration
 
-A self-evolving Discord bot powered by Convergence.
+A self-evolving Discord bot powered by Armature.
 
 ## What It Does
 

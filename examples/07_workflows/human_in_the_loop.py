@@ -8,11 +8,11 @@ What this demonstrates:
 - Simulated human override for low-confidence responses
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Lower the auto-respond threshold and watch automation increase
-- Make both arms have similar confidence and see slower convergence
+- Make both arms have similar confidence and see slower armature
 - Track which arm gets flagged for human review most often
 
 No API keys required. Pure local.
@@ -21,9 +21,9 @@ No API keys required. Pure local.
 import asyncio
 import random
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 # --- Configuration ---
 SYSTEM = "hitl_demo"

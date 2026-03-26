@@ -18,7 +18,7 @@ Suggested prompts / test inputs:
 # --- Configuration ---
 import random
 
-from convergence.evaluators.confidence import extract_confidence
+from armature.evaluators.confidence import extract_confidence
 
 NUM_INTERACTIONS = 50
 NUM_BUCKETS = 5

@@ -1,6 +1,6 @@
 # Discord Agent Optimization Examples
 
-This directory contains examples of optimizing Agno Discord agents using the Convergence framework.
+This directory contains examples of optimizing Agno Discord agents using the Armature framework.
 
 ## Two Ways to Run
 
@@ -10,7 +10,7 @@ Uses the traditional YAML configuration approach:
 
 ```bash
 # Requires config file
-convergence optimize discord_agent_optimization.yaml
+armature optimize discord_agent_optimization.yaml
 ```
 
 **Files:**
@@ -63,9 +63,9 @@ evaluation:
 
 ```python
 # discord_programmatic_example.py
-from convergence.types import ConvergenceConfig, ApiConfig, SearchSpaceConfig
+from armature.types import ArmatureConfig, ApiConfig, SearchSpaceConfig
 
-config = ConvergenceConfig(
+config = ArmatureConfig(
     api=ApiConfig(name="agno_discord_agent", endpoint="https://..."),
     search_space=SearchSpaceConfig(
         parameters={
@@ -118,14 +118,14 @@ export GEMINI_API_KEY="your_gemini_key"
 ### Run YAML Example
 
 ```bash
-cd /path/to/the-convergence/examples/agno_agents/discord
-convergence optimize discord_agent_optimization.yaml
+cd /path/to/armature-ai/examples/agno_agents/discord
+armature optimize discord_agent_optimization.yaml
 ```
 
 ### Run Programmatic Example
 
 ```bash
-cd /path/to/the-convergence/examples/agno_agents/discord
+cd /path/to/armature-ai/examples/agno_agents/discord
 python discord_programmatic_example.py
 ```
 
@@ -149,5 +149,5 @@ asyncio.run(discord_optimization_example())
 
 - [SDK Usage Guide](../../../SDK_USAGE.md)
 - [SDK Migration Guide](../../../SDK_MIGRATION.md)
-- [Convergence Documentation](../../../README.md)
+- [Armature Documentation](../../../README.md)
 

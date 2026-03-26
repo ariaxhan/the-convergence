@@ -4,23 +4,23 @@ Specialist Routing - Thompson Sampling Routes Queries to Experts
 What this demonstrates:
 - Three specialist agents (code, writing, math) as runtime arms
 - Thompson Sampling learns which specialist handles which query type best
-- Routing convergence: the right expert gets the right queries over time
+- Routing armature: the right expert gets the right queries over time
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Add a 4th specialist for "research" queries
 - Change reward logic to make one specialist dominant
-- Increase queries to 100 and watch tighter convergence
+- Increase queries to 100 and watch tighter armature
 """
 
 import asyncio
 import random
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 # --- Configuration ---
 SYSTEM = "specialist_team"

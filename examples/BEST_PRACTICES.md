@@ -1,6 +1,6 @@
 # Best Practices for API Optimization
 
-**Quick reference for getting optimal results with The Convergence.**
+**Quick reference for getting optimal results with Armature.**
 
 ---
 
@@ -9,7 +9,7 @@
 ### 1. Start with a Good Preset
 
 ```bash
-convergence init  # Choose template matching your API
+armature init  # Choose template matching your API
 ```
 
 ### 2. Use Representative Test Cases
@@ -143,7 +143,7 @@ optimization:
       min_improvement: 0.01  # Must improve by 1%
 ```
 
-**Saves time** when convergence is reached!
+**Saves time** when armature is reached!
 
 ---
 
@@ -227,7 +227,7 @@ metrics:
 ### Before Deploying to Production
 
 1. **Baseline**: Run current config, record metrics
-2. **Optimize**: Run convergence, get best config
+2. **Optimize**: Run armature, get best config
 3. **Validate**: Test best config in staging
 4. **A/B test**: 10% → 50% → 100% rollout
 5. **Monitor**: Watch metrics for regressions
@@ -304,7 +304,7 @@ search_space:
 
 ```bash
 # Save results with descriptive names
-convergence optimize config.yaml \
+armature optimize config.yaml \
   --output results/chatbot_v2_optimization_2024_10_15
 ```
 

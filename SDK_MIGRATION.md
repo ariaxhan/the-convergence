@@ -1,15 +1,15 @@
-# Convergence SDK Migration to Programmatic-Only Interface
+# Armature SDK Migration to Programmatic-Only Interface
 
 ## Overview
 
-The Convergence SDK has been refactored to provide a fully programmatic interface without YAML configuration files.
+Armature SDK has been refactored to provide a fully programmatic interface without YAML configuration files.
 
 ## Key Changes
 
 ### Before (YAML-Based)
 
 ```python
-from convergence.sdk import run_optimization
+from armature.sdk import run_optimization
 
 # Had to create YAML files
 result = await run_optimization(
@@ -20,17 +20,17 @@ result = await run_optimization(
 ### After (Programmatic-Only)
 
 ```python
-from convergence.types import (
-    ConvergenceConfig,
+from armature.types import (
+    ArmatureConfig,
     ApiConfig,
     SearchSpaceConfig,
     RunnerConfig,
     EvaluationConfig,
 )
-from convergence.sdk import run_optimization
+from armature.sdk import run_optimization
 
 # Define everything as Python objects
-config = ConvergenceConfig(
+config = ArmatureConfig(
     api=ApiConfig(name="my_api", endpoint="http://localhost:8000"),
     search_space=SearchSpaceConfig(parameters={...}),
     runner=RunnerConfig(generations=10, population=20),
@@ -55,9 +55,9 @@ result = await run_optimization(
 
 ## What Was Added
 
-### New Type System (`convergence.types`)
+### New Type System (`armature.types`)
 
-- `ConvergenceConfig`: Top-level configuration
+- `ArmatureConfig`: Top-level configuration
 - `ApiConfig`: API endpoint configuration
 - `SearchSpaceConfig`: Search space parameters
 - `RunnerConfig`: Runner settings (generations, population, etc.)
@@ -79,11 +79,11 @@ result = await run_optimization(
 
 ```python
 # Old
-from convergence.sdk import run_optimization, load_config_from_file
+from armature.sdk import run_optimization, load_config_from_file
 
 # New
-from convergence.types import ConvergenceConfig, ApiConfig, ...
-from convergence.sdk import run_optimization
+from armature.types import ArmatureConfig, ApiConfig, ...
+from armature.sdk import run_optimization
 ```
 
 ### Step 2: Convert YAML to Python Config
@@ -95,7 +95,7 @@ from convergence.sdk import run_optimization
 #   endpoint: "http://localhost:8000"
 
 # New: config.py
-config = ConvergenceConfig(
+config = ArmatureConfig(
     api=ApiConfig(name="test", endpoint="http://localhost:8000"),
     # ... other configs
 )
@@ -141,7 +141,7 @@ result = await run_optimization(
 ### Step 5: Update Adapters (If Using)
 
 ```python
-from convergence.types import AdaptersConfig
+from armature.types import AdaptersConfig
 
 def input_adapter(payload, *, context=None):
     return transformed_payload
@@ -185,6 +185,6 @@ See `examples/simple_programmatic_example.py` for a complete working example.
 ## Questions?
 
 - See `examples/simple_programmatic_example.py` for examples
-- Check `convergence/types/` for all available types
-- Read SDK documentation in `convergence/sdk.py`
+- Check `armature/types/` for all available types
+- Read SDK documentation in `armature/sdk.py`
 

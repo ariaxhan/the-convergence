@@ -12,7 +12,7 @@ class TestLLMResponseModel:
 
     def test_create_with_content_only(self):
         """Content is the only required field."""
-        from convergence.types.response import LLMResponse
+        from armature.types.response import LLMResponse
 
         response = LLMResponse(content="Hello, world!")
 
@@ -24,7 +24,7 @@ class TestLLMResponseModel:
 
     def test_create_with_all_fields(self):
         """All fields can be set explicitly."""
-        from convergence.types.response import LLMResponse
+        from armature.types.response import LLMResponse
 
         response = LLMResponse(
             content="The answer is 42.",
@@ -52,7 +52,7 @@ class TestLLMResponseModel:
 
     def test_confidence_validation_bounds(self):
         """Confidence must be between 0.0 and 1.0."""
-        from convergence.types.response import LLMResponse
+        from armature.types.response import LLMResponse
 
         # Valid bounds
         LLMResponse(content="test", confidence=0.0)
@@ -69,7 +69,7 @@ class TestLLMResponseModel:
 
     def test_json_serialization(self):
         """Response can be serialized to JSON and back."""
-        from convergence.types.response import LLMResponse
+        from armature.types.response import LLMResponse
 
         original = LLMResponse(
             content="Test response",
@@ -92,7 +92,7 @@ class TestLLMResponseModel:
 
     def test_dict_serialization(self):
         """Response can be converted to dict."""
-        from convergence.types.response import LLMResponse
+        from armature.types.response import LLMResponse
 
         response = LLMResponse(
             content="Test",
@@ -108,7 +108,7 @@ class TestLLMResponseModel:
 
     def test_immutable_by_default(self):
         """Response fields should not be accidentally mutated."""
-        from convergence.types.response import LLMResponse
+        from armature.types.response import LLMResponse
 
         response = LLMResponse(content="Original")
 
@@ -123,7 +123,7 @@ class TestDetectGap:
 
     def test_no_gap_high_confidence(self):
         """High confidence should not detect gap."""
-        from convergence.types.response import LLMResponse, detect_gap
+        from armature.types.response import LLMResponse, detect_gap
 
         response = LLMResponse(content="Answer", confidence=0.85)
         result = detect_gap(response, threshold=0.6)
@@ -133,7 +133,7 @@ class TestDetectGap:
 
     def test_gap_detected_low_confidence(self):
         """Low confidence should detect gap."""
-        from convergence.types.response import LLMResponse, detect_gap
+        from armature.types.response import LLMResponse, detect_gap
 
         response = LLMResponse(content="Maybe answer", confidence=0.4)
         result = detect_gap(response, threshold=0.6)
@@ -142,7 +142,7 @@ class TestDetectGap:
 
     def test_gap_at_threshold_boundary(self):
         """Confidence exactly at threshold should not detect gap."""
-        from convergence.types.response import LLMResponse, detect_gap
+        from armature.types.response import LLMResponse, detect_gap
 
         response = LLMResponse(content="Answer", confidence=0.6)
         result = detect_gap(response, threshold=0.6)
@@ -151,7 +151,7 @@ class TestDetectGap:
 
     def test_gap_just_below_threshold(self):
         """Confidence just below threshold should detect gap."""
-        from convergence.types.response import LLMResponse, detect_gap
+        from armature.types.response import LLMResponse, detect_gap
 
         response = LLMResponse(content="Answer", confidence=0.59)
         result = detect_gap(response, threshold=0.6)
@@ -160,7 +160,7 @@ class TestDetectGap:
 
     def test_gap_with_none_confidence(self):
         """None confidence should be treated as gap (unknown = uncertain)."""
-        from convergence.types.response import LLMResponse, detect_gap
+        from armature.types.response import LLMResponse, detect_gap
 
         response = LLMResponse(content="Answer", confidence=None)
         result = detect_gap(response, threshold=0.6)
@@ -169,7 +169,7 @@ class TestDetectGap:
 
     def test_gap_preserves_other_fields(self):
         """detect_gap should preserve all other response fields."""
-        from convergence.types.response import LLMResponse, detect_gap
+        from armature.types.response import LLMResponse, detect_gap
 
         response = LLMResponse(
             content="Answer",
@@ -190,7 +190,7 @@ class TestDetectGap:
 
     def test_custom_threshold(self):
         """Different thresholds should work correctly."""
-        from convergence.types.response import LLMResponse, detect_gap
+        from armature.types.response import LLMResponse, detect_gap
 
         response = LLMResponse(content="Answer", confidence=0.75)
 
@@ -209,7 +209,7 @@ class TestLLMResponseFromDict:
 
     def test_from_minimal_dict(self):
         """Create from dict with only content."""
-        from convergence.types.response import LLMResponse
+        from armature.types.response import LLMResponse
 
         data = {"content": "Hello"}
         response = LLMResponse.model_validate(data)
@@ -218,7 +218,7 @@ class TestLLMResponseFromDict:
 
     def test_from_api_response_format(self):
         """Create from a typical API response structure."""
-        from convergence.types.response import LLMResponse
+        from armature.types.response import LLMResponse
 
         # Simulating what might come from an LLM API
         data = {

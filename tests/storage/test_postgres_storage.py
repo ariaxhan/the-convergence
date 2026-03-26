@@ -21,7 +21,7 @@ def postgres_dsn():
     """Get PostgreSQL DSN from environment or use default."""
     return os.environ.get(
         "TEST_POSTGRES_DSN",
-        "postgresql://postgres:postgres@localhost:5432/convergence_test"
+        "postgresql://postgres:postgres@localhost:5432/armature_test"
     )
 
 
@@ -31,7 +31,7 @@ async def postgres_storage(postgres_dsn):
 
     Skips if database not available.
     """
-    from convergence.storage.postgres import PostgreSQLStorage
+    from armature.storage.postgres import PostgreSQLStorage
 
     try:
         storage = PostgreSQLStorage(dsn=postgres_dsn)
@@ -173,7 +173,7 @@ class TestPostgreSQLConnectionHandling:
     @pytest.mark.asyncio
     async def test_context_manager(self, postgres_dsn):
         """Should work as async context manager."""
-        from convergence.storage.postgres import PostgreSQLStorage
+        from armature.storage.postgres import PostgreSQLStorage
 
         try:
             async with PostgreSQLStorage(dsn=postgres_dsn) as storage:
@@ -259,11 +259,11 @@ class TestPostgreSQLRegistryIntegration:
     @pytest.mark.asyncio
     async def test_registered_in_registry(self):
         """PostgreSQLStorage should be registered in StorageRegistry."""
-        from convergence.storage.registry import StorageRegistry
+        from armature.storage.registry import StorageRegistry
 
         # Import to trigger registration
         try:
-            from convergence.storage.postgres import PostgreSQLStorage  # noqa: F401
+            from armature.storage.postgres import PostgreSQLStorage  # noqa: F401
 
             # Check if registered (may fail if asyncpg not available)
             assert StorageRegistry.is_registered("postgres")

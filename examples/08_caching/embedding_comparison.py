@@ -6,7 +6,7 @@ What this demonstrates:
 - Concept 2: Embedding quality directly controls cache effectiveness
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Add your own embedding function and compare"
@@ -18,7 +18,7 @@ import asyncio
 import hashlib
 import string
 
-from convergence.cache.semantic import SemanticCache
+from armature.cache.semantic import SemanticCache
 
 QUERY_PAIRS = [
     ("What is Python?", {"content": "A programming language", "tokens": 10}),

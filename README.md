@@ -1,16 +1,16 @@
-# The Convergence
+# Armature
 
 **AI agents that get better every time they run.**
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/the-convergence.svg)](https://pypi.org/project/the-convergence/)
+[![PyPI](https://img.shields.io/pypi/v/armature-ai.svg)](https://pypi.org/project/armature-ai/)
 
 ---
 
 You deploy an AI agent. It works okay. Then you spend weeks tweaking prompts, swapping models, adjusting temperatures — hoping something sticks. When user behavior shifts, you do it all over again.
 
-The Convergence wraps your agent in a **reinforcement learning loop**. The system learns what works, drops what doesn't, and adapts in real time. No retraining. No redeployment. Your agent evolves on its own.
+Armature wraps your agent in a **reinforcement learning loop**. The system learns what works, drops what doesn't, and adapts in real time. No retraining. No redeployment. Your agent evolves on its own.
 
 ## The API
 
@@ -18,7 +18,7 @@ Three functions. That's it.
 
 ```python
 import asyncio
-from convergence import configure_runtime, runtime_select, runtime_update
+from armature import configure_runtime, runtime_select, runtime_update
 
 async def main():
     # Define the strategies your agent can choose between
@@ -28,7 +28,7 @@ async def main():
             {"arm_id": "detailed", "params": {"temperature": 0.7, "max_tokens": 2000}},
             {"arm_id": "creative", "params": {"temperature": 0.9, "max_tokens": 1500}},
         ],
-        "storage": {"backend": "sqlite", "path": "convergence.db"}
+        "storage": {"backend": "sqlite", "path": "armature.db"}
     })
 
     # System picks the best strategy using Thompson Sampling
@@ -47,7 +47,7 @@ async def main():
 asyncio.run(main())
 ```
 
-Everything else — learning algorithms, exploration/exploitation tradeoffs, storage, convergence tracking — is handled for you.
+Everything else — learning algorithms, exploration/exploitation tradeoffs, storage, armature tracking — is handled for you.
 
 ---
 
@@ -55,7 +55,7 @@ Everything else — learning algorithms, exploration/exploitation tradeoffs, sto
 
 ### Research agent optimization
 
-You have an agent that runs parallel research tasks — verifying claims, cross-referencing sources, scoring confidence. Different research strategies work better for different domains. The Convergence learns that deep-dive verification works for neuroscience claims while rapid cross-referencing is better for psychology replication studies. Your research agent routes to the right strategy automatically.
+You have an agent that runs parallel research tasks — verifying claims, cross-referencing sources, scoring confidence. Different research strategies work better for different domains. Armature learns that deep-dive verification works for neuroscience claims while rapid cross-referencing is better for psychology replication studies. Your research agent routes to the right strategy automatically.
 
 ### Customer support routing
 
@@ -71,7 +71,7 @@ You generate reports, summaries, or scripts from data. The system learns which m
 
 ### Knowledge retrieval
 
-Your agent pulls from multiple data sources — databases, APIs, documents. Different retrieval paths work better for different query types. The Convergence learns which retrieval strategy actually answers questions accurately, cutting wasted API calls and improving hit rates.
+Your agent pulls from multiple data sources — databases, APIs, documents. Different retrieval paths work better for different query types. Armature learns which retrieval strategy actually answers questions accurately, cutting wasted API calls and improving hit rates.
 
 ### Self-improving classifiers
 
@@ -105,14 +105,14 @@ The system starts simple (Thompson Sampling only) and progressively unlocks more
 ## Install
 
 ```bash
-pip install the-convergence
+pip install armature-ai
 ```
 
 Or from source:
 
 ```bash
-git clone https://github.com/ariaxhan/the-convergence.git
-cd the-convergence
+git clone https://github.com/ariaxhan/armature-ai.git
+cd armature-ai
 pip install -e ".[dev]"
 ```
 
@@ -218,7 +218,7 @@ We especially welcome: integration examples, new storage backends, safety audit 
 
 ## Credits
 
-The Convergence was originally built at [Persistos](https://github.com/persist-os) by **Aria Han**, **Shreyash Hamal**, and **Myat Pyae Paing**. The original work (v0.1.x) included the optimization engine, SDK interface, evaluators, natural language processor, Agno adapters, Convex storage backend, Weave integration, and CLI.
+Armature was originally built at [Persistos](https://github.com/persist-os) by **Aria Han**, **Shreyash Hamal**, and **Myat Pyae Paing**. The original work (v0.1.x) included the optimization engine, SDK interface, evaluators, natural language processor, Agno adapters, Convex storage backend, Weave integration, and CLI.
 
 The 1.0 release and all subsequent development is by **Aria Han**: Thompson Sampling persistence, context graph, knowledge layer, semantic caching, safety guardrails, RLP/SAO plugins, 40+ examples cookbook, and the architecture rewrite from API optimization tool to self-evolving agent framework.
 

@@ -1,6 +1,6 @@
 # Quickstart Examples
 
-Progressive examples for The Convergence framework, from basic building blocks
+Progressive examples for Armature framework, from basic building blocks
 to a full self-evolving system.
 
 ## Prerequisites
@@ -25,7 +25,7 @@ Some examples require additional dependencies:
 | 07 | `07_knowledge_graph.py` | Build and traverse a context graph | None |
 | 08 | `08_reward_evaluation.py` | Multi-signal reward evaluation | None |
 | 09 | `09_optimization_local.py` | SDK optimization with a local function | None |
-| 10 | `10_full_loop.py` | All pieces combined: the convergence moment | None |
+| 10 | `10_full_loop.py` | All pieces combined: the armature moment | None |
 
 ## Progression
 
@@ -33,10 +33,10 @@ Some examples require additional dependencies:
 Individual components in isolation. Each runs standalone with no external services.
 
 **Phase 2: Learning Loops (05-08)**
-Components that learn from feedback. Persistence, convergence, knowledge, rewards.
+Components that learn from feedback. Persistence, armature, knowledge, rewards.
 
 **Phase 3: Full Systems (09-10)**
-Complete optimization and the full convergence loop tying everything together.
+Complete optimization and the full armature loop tying everything together.
 
 ## Running
 

@@ -9,7 +9,7 @@
 #   2. export AZURE_API_KEY="your_azure_key"
 #   3. Configure models in api.models registry below
 #   4. Select active model(s) in search_space.parameters.model.values
-#   5. convergence optimize azure_multi_model_optimization.yaml
+#   5. armature optimize azure_multi_model_optimization.yaml
 
 api:
   name: "azure_multi_model"

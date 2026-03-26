@@ -25,12 +25,12 @@ python cache_quality.py
 
 ## Prerequisites
 
-- `pip install the-convergence`
+- `pip install armature-ai`
 - No API keys required — all examples use pure-computation embeddings
 
 ## Design Principles
 
-- **No external dependencies beyond the-convergence** — uses `math`, `hashlib`, `collections` from stdlib
+- **No external dependencies beyond armature-ai** — uses `math`, `hashlib`, `collections` from stdlib
 - **Hash-based embeddings as baseline** — deterministic, reproducible, no network calls
 - **Full type annotations** — every function and method is typed
 - **Production error handling** — input validation, NaN/Inf guards, graceful fallbacks

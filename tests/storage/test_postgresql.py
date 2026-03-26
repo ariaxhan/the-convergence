@@ -17,7 +17,7 @@ class TestPostgreSQLConnection:
     @pytest.mark.asyncio
     async def test_connect_creates_schema(self, postgresql_dsn):
         """Connection should auto-create required tables."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         storage = PostgreSQLRuntimeStorage(dsn=postgresql_dsn)
 
@@ -33,7 +33,7 @@ class TestPostgreSQLConnection:
     @pytest.mark.asyncio
     async def test_context_manager(self, postgresql_dsn):
         """Should work as async context manager."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             assert storage.is_connected
@@ -44,7 +44,7 @@ class TestPostgreSQLConnection:
     @pytest.mark.asyncio
     async def test_invalid_dsn_raises(self):
         """Invalid DSN should raise connection error."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         storage = PostgreSQLRuntimeStorage(dsn="postgresql://invalid:5432/nonexistent")
 
@@ -59,8 +59,8 @@ class TestRuntimeStorageProtocol:
     @pytest.mark.asyncio
     async def test_implements_protocol(self, postgresql_dsn):
         """Should implement RuntimeStorageProtocol."""
-        from convergence.storage import PostgreSQLRuntimeStorage
-        from convergence.storage.runtime_protocol import RuntimeStorageProtocol
+        from armature.storage import PostgreSQLRuntimeStorage
+        from armature.storage.runtime_protocol import RuntimeStorageProtocol
 
         storage = PostgreSQLRuntimeStorage(dsn=postgresql_dsn)
 
@@ -86,7 +86,7 @@ class TestGetArms:
     @pytest.mark.asyncio
     async def test_get_arms_empty_for_new_user(self, postgresql_dsn):
         """New user should have no arms."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -97,7 +97,7 @@ class TestGetArms:
     @pytest.mark.asyncio
     async def test_get_arms_returns_initialized(self, postgresql_dsn, sample_arms):
         """Should return arms after initialization."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -120,7 +120,7 @@ class TestGetArms:
     @pytest.mark.asyncio
     async def test_get_arms_user_isolation(self, postgresql_dsn, sample_arms):
         """Arms should be isolated per user."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user1 = f"user1_{uuid.uuid4()}"
@@ -150,7 +150,7 @@ class TestInitializeArms:
     @pytest.mark.asyncio
     async def test_initialize_arms_creates_arms(self, postgresql_dsn, sample_arms):
         """Should create arms for user."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -172,7 +172,7 @@ class TestInitializeArms:
     @pytest.mark.asyncio
     async def test_initialize_arms_idempotent(self, postgresql_dsn, sample_arms):
         """Calling initialize_arms twice should be safe (idempotent)."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -197,7 +197,7 @@ class TestInitializeArms:
     @pytest.mark.asyncio
     async def test_initialize_arms_with_priors(self, postgresql_dsn):
         """Should respect initial alpha/beta priors."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -231,7 +231,7 @@ class TestCreateDecision:
     @pytest.mark.asyncio
     async def test_create_decision_returns_id(self, postgresql_dsn, sample_arms):
         """Should return decision ID."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -258,7 +258,7 @@ class TestCreateDecision:
     @pytest.mark.asyncio
     async def test_create_decision_with_metadata(self, postgresql_dsn, sample_arms):
         """Should store optional metadata."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -297,7 +297,7 @@ class TestGetDecision:
     @pytest.mark.asyncio
     async def test_get_decision_returns_details(self, postgresql_dsn, sample_arms):
         """Should return full decision details."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -329,7 +329,7 @@ class TestGetDecision:
     @pytest.mark.asyncio
     async def test_get_decision_not_found(self, postgresql_dsn):
         """Should handle non-existent decision gracefully."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -350,7 +350,7 @@ class TestUpdatePerformance:
     @pytest.mark.asyncio
     async def test_update_performance_applies_reward(self, postgresql_dsn, sample_arms):
         """Should update arm stats with reward."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -390,7 +390,7 @@ class TestUpdatePerformance:
         self, postgresql_dsn, sample_arms
     ):
         """Should use pre-computed Bayesian updates when provided."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -442,7 +442,7 @@ class TestUpdatePerformance:
         self, postgresql_dsn, sample_arms
     ):
         """Reward should be recorded in decision."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:
             user_id = f"test_user_{uuid.uuid4()}"
@@ -484,7 +484,7 @@ class TestConcurrency:
     @pytest.mark.asyncio
     async def test_concurrent_decisions(self, postgresql_dsn, sample_arms):
         """Concurrent decision creation should work."""
-        from convergence.storage import PostgreSQLRuntimeStorage
+        from armature.storage import PostgreSQLRuntimeStorage
         import asyncio
 
         async with PostgreSQLRuntimeStorage(dsn=postgresql_dsn) as storage:

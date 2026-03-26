@@ -1,0 +1,48 @@
+"""
+Legacy System - Permanent optimization history and winner tracking.
+
+This module provides session-based tracking of optimization runs,
+allowing results to build on each other across multiple sessions.
+
+Key Features:
+- Session-based organization (never expires)
+- Winner tracking per test case
+- Full audit trail of all decisions
+- Works with any API type
+- No RL dependency
+- Optional external trackers (MLflow, Aim, Weave)
+
+Usage:
+    from armature.legacy import LegacyStore, LegacyConfig
+
+    config = LegacyConfig(enabled=True, tracking_backend="builtin")
+    store = LegacyStore(config)
+
+    await store.record_run(run_data)
+    winner = await store.get_winner("bedtime_story", "openai")
+"""
+
+from armature.legacy.models import (
+    DecisionLog,
+    LegacyConfig,
+    OptimizationRun,
+    RunLineage,
+    Session,
+    TestCaseResult,
+    TestCaseWinner,
+    TrackingBackend,
+)
+from armature.legacy.store import LegacyStore
+
+__all__ = [
+    "LegacyConfig",
+    "Session",
+    "OptimizationRun",
+    "TestCaseResult",
+    "TestCaseWinner",
+    "RunLineage",
+    "DecisionLog",
+    "TrackingBackend",
+    "LegacyStore",
+]
+

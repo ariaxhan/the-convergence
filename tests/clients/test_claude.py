@@ -18,7 +18,7 @@ class TestClaudeClientInitialization:
 
     def test_init_with_api_key(self):
         """Should initialize with explicit API key."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(
             api_key="test_api_key",
@@ -29,7 +29,7 @@ class TestClaudeClientInitialization:
 
     def test_init_from_environment(self):
         """Should read API key from environment."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         # Temporarily set env var
         original = os.environ.get("ANTHROPIC_API_KEY")
@@ -46,7 +46,7 @@ class TestClaudeClientInitialization:
 
     def test_init_without_api_key_raises(self):
         """Should raise if no API key available."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         # Ensure no env var
         original = os.environ.get("ANTHROPIC_API_KEY")
@@ -61,7 +61,7 @@ class TestClaudeClientInitialization:
 
     def test_default_model(self):
         """Should have sensible default model."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(
             api_key="test_key",
@@ -73,7 +73,7 @@ class TestClaudeClientInitialization:
 
     def test_custom_model(self):
         """Should accept custom model."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(
             api_key="test_key",
@@ -89,7 +89,7 @@ class TestClaudeClientConfiguration:
 
     def test_system_prompt_configuration(self):
         """Should support system prompt configuration."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(
             api_key="test_key",
@@ -101,7 +101,7 @@ class TestClaudeClientConfiguration:
 
     def test_max_tokens_configuration(self):
         """Should support max_tokens configuration."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(
             api_key="test_key",
@@ -113,7 +113,7 @@ class TestClaudeClientConfiguration:
 
     def test_default_max_tokens(self):
         """Should have reasonable default max_tokens."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(
             api_key="test_key",
@@ -128,7 +128,7 @@ class TestChatInterface:
 
     def test_chat_method_exists(self):
         """Chat method should exist and be async."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
         import inspect
 
         client = ClaudeClient(
@@ -141,7 +141,7 @@ class TestChatInterface:
 
     def test_chat_accepts_required_params(self):
         """Chat should accept message and user_id."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
         import inspect
 
         client = ClaudeClient(
@@ -157,7 +157,7 @@ class TestChatInterface:
 
     def test_chat_accepts_tools(self):
         """Chat should accept optional tools parameter."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
         import inspect
 
         client = ClaudeClient(
@@ -178,8 +178,8 @@ class TestChatLiveAPI:
     @pytest.mark.asyncio
     async def test_chat_returns_llm_response(self):
         """Chat should return LLMResponse type."""
-        from convergence.clients import ClaudeClient
-        from convergence.types.response import LLMResponse
+        from armature.clients import ClaudeClient
+        from armature.types.response import LLMResponse
 
         client = ClaudeClient(system="test")
 
@@ -195,7 +195,7 @@ class TestChatLiveAPI:
     @pytest.mark.asyncio
     async def test_chat_extracts_confidence(self):
         """Chat should auto-extract confidence."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(system="test")
 
@@ -211,7 +211,7 @@ class TestChatLiveAPI:
     @pytest.mark.asyncio
     async def test_chat_returns_decision_id(self):
         """Chat should return decision_id for tracking."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(system="test")
 
@@ -227,7 +227,7 @@ class TestChatLiveAPI:
     @pytest.mark.asyncio
     async def test_chat_with_tools(self):
         """Chat should support tool use."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(system="test")
 
@@ -264,7 +264,7 @@ class TestRecordOutcome:
 
     def test_record_outcome_method_exists(self):
         """record_outcome method should exist and be async."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
         import inspect
 
         client = ClaudeClient(
@@ -277,7 +277,7 @@ class TestRecordOutcome:
 
     def test_record_outcome_accepts_params(self):
         """record_outcome should accept decision_id, user_id, and reward."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
         import inspect
 
         client = ClaudeClient(
@@ -295,13 +295,13 @@ class TestRecordOutcome:
 
 @requires_anthropic
 class TestRuntimeIntegration:
-    """Test integration with convergence runtime."""
+    """Test integration with armature runtime."""
 
     @pytest.mark.asyncio
     async def test_chat_uses_runtime_select(self, tmp_path):
         """Chat should use runtime_select for parameter selection."""
-        from convergence.clients import ClaudeClient
-        from convergence import configure_runtime
+        from armature.clients import ClaudeClient
+        from armature import configure_runtime
 
         # Configure runtime with arms
         await configure_runtime(
@@ -328,8 +328,8 @@ class TestRuntimeIntegration:
     @pytest.mark.asyncio
     async def test_record_outcome_updates_runtime(self, tmp_path):
         """record_outcome should update runtime with reward."""
-        from convergence.clients import ClaudeClient
-        from convergence import configure_runtime
+        from armature.clients import ClaudeClient
+        from armature import configure_runtime
 
         await configure_runtime(
             "claude_outcome_test",
@@ -364,7 +364,7 @@ class TestGapDetection:
     @pytest.mark.asyncio
     async def test_gap_detected_flag(self):
         """Response should include gap_detected flag."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(
             api_key="test_key",
@@ -378,7 +378,7 @@ class TestGapDetection:
 
     def test_custom_gap_threshold(self):
         """Should support custom gap detection threshold."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(
             api_key="test_key",
@@ -395,7 +395,7 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_handles_api_error_gracefully(self):
         """Should handle API errors gracefully."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(
             api_key="invalid_key_for_testing",
@@ -415,7 +415,7 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_handles_empty_message(self):
         """Should handle empty message input."""
-        from convergence.clients import ClaudeClient
+        from armature.clients import ClaudeClient
 
         client = ClaudeClient(
             api_key="test_key",

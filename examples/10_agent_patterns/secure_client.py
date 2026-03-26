@@ -11,7 +11,7 @@ What this demonstrates:
 - Fallback chain: LLM -> cached response -> static message
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Send adversarial inputs to test sanitization"
@@ -29,7 +29,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from convergence.types.response import LLMResponse
+from armature.types.response import LLMResponse
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +113,7 @@ class CostTracker:
         }
 
 
-class SecureConvergenceClient:
+class SecureArmatureClient:
     """
     Security-hardened LLM client wrapper.
 
@@ -400,7 +400,7 @@ class SecureConvergenceClient:
 
 # --- Execution ---
 async def main() -> None:
-    client = SecureConvergenceClient(system="secure_demo", rate_limit_per_minute=20)
+    client = SecureArmatureClient(system="secure_demo", rate_limit_per_minute=20)
 
     # Normal messages
     normal_messages = [

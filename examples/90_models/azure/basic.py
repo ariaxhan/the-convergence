@@ -2,7 +2,7 @@
 Azure OpenAI Integration -- Runtime Pattern
 
 What this demonstrates:
-- Using Convergence runtime with Azure OpenAI endpoints
+- Using Armature runtime with Azure OpenAI endpoints
 - Environment-based configuration for Azure credentials
 - The same select -> call -> evaluate -> update pattern
 
@@ -24,8 +24,8 @@ import sys
 import uuid
 from typing import Any, Dict, List
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.types import RuntimeArmTemplate, RuntimeConfig
 
 # --- Setup ---
 SYSTEM = "azure_demo"

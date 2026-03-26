@@ -1,7 +1,7 @@
 # External Service Integrations
 
 Integration with external services. Each subdirectory documents a
-self-evolving agent that uses Convergence to optimize its behavior
+self-evolving agent that uses Armature to optimize its behavior
 over time.
 
 The full implementation code lives in `examples/agno_agents/`. These
@@ -24,10 +24,10 @@ Each integration follows the same pattern:
 1. **Agent Runner** -- orchestrates the agent lifecycle
 2. **Evaluator** -- scores agent performance on service-specific metrics
 3. **Test Cases** -- JSON files defining expected behaviors
-4. **Convergence Config** -- search space and optimization parameters
+4. **Armature Config** -- search space and optimization parameters
 
 The agent runner calls the external service, the evaluator scores results,
-and Convergence optimizes the configuration across runs.
+and Armature optimizes the configuration across runs.
 
 ## Getting Started
 

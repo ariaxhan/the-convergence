@@ -1,2 +1,2 @@
-# Tests for the-convergence
+# Tests for armature-ai
 # TDD: Tests written first to define behavior

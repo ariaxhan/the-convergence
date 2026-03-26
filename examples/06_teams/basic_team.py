@@ -7,17 +7,17 @@ What this demonstrates:
 - Comparing performance across different exploration strategies
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Change strategy strings to see how reward changes
 - Add a 4th agent with strategy "cooperate"
-- Increase max_iterations to 100 and watch convergence
+- Increase max_iterations to 100 and watch armature
 """
 
 import asyncio
 
-from convergence.core.runtime import CivilizationRuntime
+from armature.core.runtime import CivilizationRuntime
 
 
 # --- Configuration ---

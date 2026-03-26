@@ -4,11 +4,11 @@ on:
   push:
     paths:
       - 'examples/**'
-      - 'convergence/**'
+      - 'armature/**'
   pull_request:
     paths:
       - 'examples/**'
-      - 'convergence/**'
+      - 'armature/**'
 
 jobs:
   syntax-check:
@@ -73,7 +73,7 @@ jobs:
                    examples/00_quickstart/10_full_loop.py \
                    examples/02_optimization/thompson_basic.py \
                    examples/02_optimization/reward_evaluation.py \
-                   examples/02_optimization/convergence_visualization.py \
+                   examples/02_optimization/armature_visualization.py \
                    examples/03_knowledge/basic_graph.py \
                    examples/03_knowledge/graph_queries.py \
                    examples/03_knowledge/graph_relationships.py \

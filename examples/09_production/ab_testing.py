@@ -1,5 +1,5 @@
 """
-A/B Testing with Convergence
+A/B Testing with Armature
 
 What this demonstrates:
 - Running a controlled A/B test using Thompson Sampling
@@ -7,7 +7,7 @@ What this demonstrates:
 - Exploration bonus to ensure both arms get sufficient samples
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Set both arms to the same TRUE_RATE and confirm no significance
@@ -19,10 +19,10 @@ import asyncio
 import math
 import random
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
-from convergence.types.runtime import SelectionStrategyConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
+from armature.types.runtime import SelectionStrategyConfig
 
 SYSTEM = "ab_test"
 USERS = 100

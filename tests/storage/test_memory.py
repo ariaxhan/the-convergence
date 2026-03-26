@@ -6,8 +6,8 @@ This backend is critical for testing - must work reliably.
 import pytest
 import asyncio
 
-from convergence.storage.memory import MemoryStorage
-from convergence.storage.base import StorageError
+from armature.storage.memory import MemoryStorage
+from armature.storage.base import StorageError
 
 
 class TestMemoryStorageBasics:

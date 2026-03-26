@@ -5,10 +5,10 @@ What this demonstrates:
 - Phased introduction of a new arm alongside the incumbent
 - Phase 1: exploration bonus ensures the new arm gets sampled
 - Phase 2: reduced bonus lets Thompson Sampling weigh in
-- Phase 3: full Thompson Sampling for natural convergence
+- Phase 3: full Thompson Sampling for natural armature
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - Set the new arm's TRUE_RATE below incumbent to watch rollback
@@ -19,10 +19,10 @@ Suggested prompts / test inputs:
 import asyncio
 import random
 
-from convergence import configure_runtime, runtime_select, runtime_update
-from convergence.storage.memory import MemoryRuntimeStorage
-from convergence.types import RuntimeArmTemplate, RuntimeConfig
-from convergence.types.runtime import SelectionStrategyConfig
+from armature import configure_runtime, runtime_select, runtime_update
+from armature.storage.memory import MemoryRuntimeStorage
+from armature.types import RuntimeArmTemplate, RuntimeConfig
+from armature.types.runtime import SelectionStrategyConfig
 
 SYSTEM = "canary"
 USER = "user_1"

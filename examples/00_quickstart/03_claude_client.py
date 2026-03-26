@@ -19,7 +19,7 @@ import asyncio
 import os
 import sys
 
-from convergence.clients.claude import ClaudeClient
+from armature.clients.claude import ClaudeClient
 
 # --- Configuration ---
 API_KEY = os.environ.get("ANTHROPIC_API_KEY")

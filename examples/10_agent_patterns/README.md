@@ -18,7 +18,7 @@ Each file is a complete, production-ready module. Copy, configure, deploy.
 Every file is self-contained and runnable:
 
 ```bash
-pip install the-convergence
+pip install armature-ai
 python production_runtime.py
 python secure_client.py
 python resilient_cache.py

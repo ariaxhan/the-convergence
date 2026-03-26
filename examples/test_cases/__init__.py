@@ -1,2 +1,2 @@
-"""Test case examples for The Convergence."""
+"""Test case examples for The Armature."""
 

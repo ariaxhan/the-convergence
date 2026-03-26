@@ -10,7 +10,7 @@ What this demonstrates:
 - Structured metrics per tier
 
 Prerequisites:
-- pip install the-convergence
+- pip install armature-ai
 
 Suggested prompts / test inputs:
 - "Warm cache then query similar phrases"
@@ -30,7 +30,7 @@ import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from convergence.cache.semantic import SemanticCache
+from armature.cache.semantic import SemanticCache
 
 logger = logging.getLogger(__name__)
 

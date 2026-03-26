@@ -2,7 +2,7 @@
 
 Text classifier that evolves its own approach using Thompson Sampling.
 Selects between four classification strategies, measures certainty with
-confidence extraction, and prints an ASCII convergence chart.
+confidence extraction, and prints an ASCII armature chart.
 
 ## Modules Demonstrated
 
